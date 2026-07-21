@@ -33,7 +33,7 @@
   .restart{border:1px solid var(--line); background:#fff; color:var(--brand-press); font:inherit; font-size:13px; font-weight:800; padding:8px 14px; border-radius:10px; cursor:pointer; box-shadow:0 2px 8px rgba(28,20,54,.06);}
   .restart:hover{background:var(--brand-soft);}
 
-  .phone{width:412px; max-width:100%; height:860px; max-height:88vh; background:#000; border-radius:52px; padding:11px;
+  .phone{aspect-ratio:393 / 852; height:min(852px, 88vh); width:auto; max-width:100%; background:#000; border-radius:52px; padding:11px;
     box-shadow:0 40px 80px -24px rgba(28,20,54,.55), 0 0 0 1px rgba(0,0,0,.4); position:relative;}
   .screen{position:relative; width:100%; height:100%; background:var(--page); border-radius:42px; overflow:hidden; display:flex; flex-direction:column;}
   .statusbar{height:46px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 30px; font-size:15px; font-weight:700; color:#000; z-index:6; background:#fff;}
@@ -177,14 +177,14 @@
   .toast{position:absolute; left:50%; bottom:84px; transform:translateX(-50%) translateY(10px); background:#16121f; color:#fff; font-size:12.5px; font-weight:600; padding:9px 15px; border-radius:20px; opacity:0; transition:.2s; pointer-events:none; z-index:20; max-width:80%; text-align:center;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-  @media (max-width:460px){ .phone{height:82vh; border-radius:40px} .screen{border-radius:32px} }
+  @media (max-width:460px){ .phone{width:100%; height:auto; border-radius:40px} .screen{border-radius:32px} }
 </style>
 </head>
 <body>
 
   <div class="stage-head">
     <h1>Bold AI — coverage first, then setup</h1>
-    <p>The home screen opens with a single step: <b>Confirm your insurance</b>, done as a chat instead of a form. Once coverage is verified, the consents and intake unlock. Back arrow returns to
+    <p hidden>The home screen opens with a single step: <b>Confirm your insurance</b>, done as a chat instead of a form. Once coverage is verified, the consents and intake unlock. Back arrow returns to
       <a href="https://izabela-del.github.io/prototype-test/Bold-Wireframes.html" target="_blank">the member app</a>.</p>
   </div>
 
