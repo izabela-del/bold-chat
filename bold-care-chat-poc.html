@@ -178,6 +178,8 @@
   @keyframes aispin{to{transform:rotate(360deg)}}
   .task .tx{flex:1 1 auto; min-width:0;}
   .task .tt{font-size:14.5px; font-weight:800; display:flex; align-items:center; gap:6px;}
+  .task.hero .tt{font-size:15.5px;}
+  .task .ailine{margin:3px 0 4px; line-height:1;}
   .task .ts{font-size:12.5px; color:var(--ink-soft); font-weight:500; margin-top:2px;}
   .task .btn{flex:0 0 auto; border:1.5px solid #d9d2f2; color:var(--brand-press); background:#fff; font:inherit; font-size:12.5px; font-weight:800; padding:7px 13px; border-radius:18px; cursor:pointer;}
   .task .btn.solid{background:var(--brand); color:#fff; border-color:var(--brand);}
@@ -249,7 +251,7 @@
             <div class="task ai hero" id="step-coverage">
               <div class="tick" id="cov-tick"></div>
               <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3z" stroke="#5b16e0" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#5b16e0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              <div class="tx"><div class="tt">Confirm your insurance <span class="ai-label"><span class="ai-spin"></span>Bold AI</span></div><div class="ts" id="cov-sub"></div></div>
+              <div class="tx"><div class="tt">Confirm your insurance</div><div class="ailine"><span class="ai-label"><span class="ai-spin"></span>Bold AI</span></div><div class="ts" id="cov-sub"></div></div>
               <button class="btn solid" id="cov-btn">Start ›</button>
             </div>
             <div class="locked-note" id="locked-note">
@@ -695,7 +697,7 @@ function renderHome(){
   } else {
     gs.textContent="First, let's confirm your coverage — it's the one thing we need to move your visit forward.";
     stepCov.classList.remove("done"); covTick.innerHTML=""; covBtn.textContent="Start ›";
-    covSub.textContent="The one thing we need to cover your visit — a minute by chat";
+    covSub.textContent="No cost surprises — we'll walk you through what's covered.";
     lockedList.hidden=true; lockedNote.hidden=false;
     ohCta.textContent="Confirm your coverage to move this forward →";
   }
