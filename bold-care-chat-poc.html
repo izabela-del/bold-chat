@@ -260,7 +260,7 @@
               </div>
               <div class="tt">Confirm your insurance</div>
               <div class="ts" id="cov-sub"></div>
-              <button class="btn solid" id="cov-btn">Start ›</button>
+              <button class="btn solid" id="cov-btn">Chat now</button>
             </div>
             <div class="locked-note" id="locked-note">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#5a5566" stroke-width="1.6"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#5a5566" stroke-width="1.6"/></svg>
@@ -387,8 +387,8 @@ const NODES = {
   /* ---------- COVERAGE VERIFICATION (the gate) ---------- */
   coverageStart(){
     return {
-      text:["Let's confirm your insurance — it's the one thing we need to get your first visit covered.",
-            "Which type of insurance do you have?"],
+      text:["Let's get your visit covered — it takes about a minute, and I'll walk you through every step.",
+            "First up: what kind of insurance are you on?"],
       sugg:[
         {label:"Medicare", key:"Original — Part A & B", go:"covMedicare", collect:true},
         {label:"Medicare Advantage", key:"Private plan — UnitedHealthcare, Humana…", go:"covAdvantage", collect:true},
@@ -398,7 +398,7 @@ const NODES = {
   },
   covAdvantage(){
     return {
-      text:["Great — Medicare Advantage plans are usually in-network. Which carrier is on your card?"],
+      text:["Nice — Medicare Advantage plans are usually in-network. Which carrier's on your card?"],
       sugg:[
         {label:"UnitedHealthcare", go:"cov:carrier:UnitedHealthcare", collect:true},
         {label:"Humana", go:"cov:carrier:Humana", collect:true},
@@ -412,8 +412,8 @@ const NODES = {
   covMedicare(){ return NODES.coverageDone("Medicare"); },
   covNone(){
     return {
-      text:["No problem — your Care Coordinator can confirm your coverage with you in just a couple of minutes.",
-            "You can reach them at 424-577-5266. I can still get the rest of your setup started now."],
+      text:["No worries at all — your Care Coordinator can sort this out with you in just a couple of minutes.",
+            "Give them a call at 424-577-5266 whenever works. In the meantime, I can get the rest of your setup started."],
       sugg:[{label:"Start my setup anyway", go:"cov:carrier:", collect:true},{label:"I found my card", go:"coverageStart"}]
     };
   },
@@ -473,7 +473,7 @@ const NODES = {
         sugg:[{label:"What about the medication cost?", go:"medCost"},{label:"What if I have secondary insurance?", go:"secondary"}, READY]
       };
     }
-    return { text:["Happy to help with cost. First, let's confirm which plan you have."], sugg:[{label:"Confirm my insurance", go:"coverageStart"}] };
+    return { text:["Happy to help with cost! First, let's confirm which plan you're on."], sugg:[{label:"Confirm my insurance", go:"coverageStart"}] };
   },
   secondary(){
     return { text:["Many members have extra coverage — a Medigap plan, or a spouse's or employer plan.","That coverage often picks up any remaining balance. Your Care Coordinator confirms this before your visit, so you'll know your exact cost with no surprises."],
@@ -628,13 +628,13 @@ function greet(){
   thread.innerHTML="";
   if(coverageConfirmed){
     const c=document.createElement("div"); c.innerHTML=knownCardHTML(); thread.appendChild(c.firstChild);
-    addBot({ text:[`Hi ${PROFILE.name}, I'm Bold AI, your care coordinator. Your coverage is confirmed and on file, so I can give you real answers — not guesses.`,"What's on your mind? Tap a topic below, or type your own question anytime."], sugg: NODES.menu().sugg });
+    addBot({ text:[`Hi ${PROFILE.name} — good to see you again. Your coverage is confirmed and on file, so I can give you real answers, not guesses.`,"What's on your mind? Tap a topic below, or just type — I'm all ears."], sugg: NODES.menu().sugg });
   } else {
-    addBot({ text:[`Hi ${PROFILE.name}, I'm Bold AI, your care coordinator.`,"Before anything else, let's confirm your insurance so your visit is covered. You can also ask me anything along the way."], sugg:[{label:"Confirm my insurance", go:"coverageStart"},{label:"Why do you need this?", go:"whyInsurance"},{label:"How does the visit work?", go:"visit"}] });
+    addBot({ text:[`Hi ${PROFILE.name} — I'm Bold AI, your care coordinator, and I'm really glad you're here.`,"Let's start by getting your insurance sorted so your visit's covered — and you can ask me anything along the way, that's what I'm here for."], sugg:[{label:"Confirm my insurance", go:"coverageStart"},{label:"Why do you need this?", go:"whyInsurance"},{label:"How does the visit work?", go:"visit"}] });
   }
 }
 NODES.whyInsurance = function(){
-  return { text:["Good question. Confirming your plan lets us show your real cost up front — most Bold members pay $0 — and bill your plan directly, so there are no surprise bills later.","It's the one thing we need before booking your visit."],
+  return { text:["Great question. Confirming your plan lets me show your real cost up front — most Bold members pay $0 — and bill your plan directly, so no surprise bills later.","It's the one thing we need before booking your visit."],
     sugg:[{label:"OK, confirm my insurance", go:"coverageStart"},{label:"How does the visit work?", go:"visit"}] };
 };
 
@@ -694,7 +694,7 @@ function renderHome(){
   const lockedList=document.getElementById("locked-list");
   const lockedNote=document.getElementById("locked-note");
   if(coverageConfirmed){
-    gs.textContent="Welcome to Bold, Carol. A few quick steps and you're set for your first visit.";
+    gs.textContent="Great start, Carol — a couple more quick steps and you're set for your first visit.";
     stepCov.classList.add("done"); covTick.innerHTML=CHECK; covBtn.textContent="Done";
     covSub.textContent=(PROFILE.planName==="your plan"?"Coverage":PROFILE.planName)+" · $0 visit — confirmed";
     lockedList.hidden=false; lockedNote.hidden=true;
@@ -703,8 +703,8 @@ function renderHome(){
     else { task.classList.remove("done"); tick.innerHTML=""; btn.textContent="Start ›"; count.textContent="0 of 4 done"; }
     ohCta.textContent = intakeComplete ? "You're all set — see you Nov 3 ✓" : "Finish your intake to confirm this visit →";
   } else {
-    gs.textContent="First, let's confirm your coverage — it's the one thing we need to move your visit forward.";
-    stepCov.classList.remove("done"); covTick.innerHTML=""; covBtn.textContent="Start ›";
+    gs.textContent="Welcome to Bold — let's get you ready for your first visit.";
+    stepCov.classList.remove("done"); covTick.innerHTML=""; covBtn.textContent="Chat now";
     covSub.textContent="No cost surprises — we'll walk you through what's covered.";
     lockedList.hidden=true; lockedNote.hidden=false;
     ohCta.textContent="Confirm your coverage to move this forward →";
