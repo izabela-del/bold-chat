@@ -123,19 +123,19 @@
   .row.bot .say{margin:7px 0 0 1px;}
   /* Meta-style voice welcome header */
   .chat-welcome{display:flex; flex-direction:column; align-items:center; text-align:center; padding:14px 6px 8px;}
-  .orb{position:relative; width:112px; height:112px; margin:2px auto 16px; border-radius:50%; cursor:pointer; animation:orbpulse 3.6s ease-in-out infinite;}
-  .orb::before{content:""; position:absolute; inset:-12px; border-radius:50%; z-index:0; background:conic-gradient(from 120deg,#7b3af0,#2f8bff,#12c2c2,#ff5fa2,#7b3af0); filter:blur(18px); opacity:.8; animation:orbspin 7s linear infinite;}
-  .orb::after{content:""; position:absolute; inset:0; border-radius:50%; z-index:1; background:conic-gradient(from 120deg,#7b3af0,#2f8bff,#12c2c2,#ff5fa2,#7b3af0); animation:orbspin 7s linear infinite; -webkit-mask:radial-gradient(circle at 50% 50%, transparent 41%, #000 42%); mask:radial-gradient(circle at 50% 50%, transparent 41%, #000 42%);}
-  .orb:focus-visible{outline:2px solid var(--brand); outline-offset:4px;}
-  .orb.listening{animation:orbpulse 1s ease-in-out infinite;}
-  .orb.speaking{animation:orbpulse 1.7s ease-in-out infinite;}
+  .cworb{position:relative; width:112px; height:112px; margin:2px auto 16px; border-radius:50%; cursor:pointer; animation:orbpulse 3.6s ease-in-out infinite;}
+  .cworb::before{content:""; position:absolute; inset:-12px; border-radius:50%; z-index:0; background:conic-gradient(from 120deg,#7b3af0,#2f8bff,#12c2c2,#ff5fa2,#7b3af0); filter:blur(18px); opacity:.8; animation:orbspin 7s linear infinite;}
+  .cworb::after{content:""; position:absolute; inset:0; border-radius:50%; z-index:1; background:conic-gradient(from 120deg,#7b3af0,#2f8bff,#12c2c2,#ff5fa2,#7b3af0); animation:orbspin 7s linear infinite; -webkit-mask:radial-gradient(circle at 50% 50%, transparent 41%, #000 42%); mask:radial-gradient(circle at 50% 50%, transparent 41%, #000 42%);}
+  .cworb:focus-visible{outline:2px solid var(--brand); outline-offset:4px;}
+  .cworb.listening{animation:orbpulse 1s ease-in-out infinite;}
+  .cworb.speaking{animation:orbpulse 1.7s ease-in-out infinite;}
   @keyframes orbspin{to{transform:rotate(360deg)}}
   @keyframes orbpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
   .cw-title{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-size:20px; font-weight:600; letter-spacing:-.2px; color:var(--ink); margin:0 0 6px;}
   .cw-sub{font-size:14px; line-height:1.5; color:var(--ink-soft); max-width:290px; margin:0 auto 13px;}
   .cw-say{margin:0 auto 14px;}
   .cw-sugg{justify-content:center; margin-bottom:2px;}
-  @media (prefers-reduced-motion: reduce){ .orb, .orb::before, .orb::after, .mic.on, .say .dots i{animation:none !important;} }
+  @media (prefers-reduced-motion: reduce){ .cworb, .cworb::before, .cworb::after, .mic.on, .say .dots i{animation:none !important;} }
   .foot{text-align:center; font-size:10.5px; color:#6b6678; margin:9px 2px 0; line-height:1.4;}
   .esc{color:var(--brand-press); font-weight:700;}
   .composer.locked{padding:14px;}
@@ -730,7 +730,7 @@ const SPEAK_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" 
 const SPEAK_LABEL = SPEAK_ICON+"Read aloud";
 const STOP_LABEL = `<span class="dots"><i></i><i></i><i></i><i></i></span>Stop`;
 let curSay=null;
-function orbSetState(s){ const o=document.getElementById("orb"); if(o) o.className="orb"+(s?" "+s:""); }
+function orbSetState(s){ const o=document.getElementById("cw-orb"); if(o) o.className="cworb"+(s?" "+s:""); }
 function stopSpeak(){ try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} if(curSay){ curSay.classList.remove("speaking"); curSay.innerHTML=SPEAK_LABEL; curSay=null; } orbSetState(""); }
 function sayText(text, btn){
   if(!("speechSynthesis" in window)){ toast("Read-aloud isn't supported in this browser."); return; }
@@ -796,7 +796,7 @@ function chatWelcome(){
   const sugg = coverageConfirmed ? NODES.menu().sugg
     : [{label:"Confirm my insurance", go:"coverageStart"},{label:"How does a visit work?", go:"visit"},{label:"What will it cost?", go:"cost"}];
   const wrap=document.createElement("div"); wrap.className="chat-welcome";
-  wrap.innerHTML = `<div class="orb" id="orb" role="button" tabindex="0" title="Tap to talk" aria-label="Tap to talk"></div>`+
+  wrap.innerHTML = `<div class="cworb" id="cw-orb" role="button" tabindex="0" title="Tap to talk" aria-label="Tap to talk"></div>`+
     `<div class="cw-title">Hi ${esc(name)} — I'm Bold AI</div>`+
     `<div class="cw-sub">${esc(sub)}</div>`;
   const say=document.createElement("button"); say.type="button"; say.className="say cw-say"; say.innerHTML=SPEAK_LABEL;
@@ -806,7 +806,7 @@ function chatWelcome(){
   sugg.forEach(p=>{ const b=document.createElement("button"); b.type="button"; b.className="pill"; b.innerHTML=esc(p.label); b.onclick=()=>choose(p); s.appendChild(b); });
   wrap.appendChild(s);
   thread.appendChild(wrap); scroll();
-  const orb=document.getElementById("orb");
+  const orb=document.getElementById("cw-orb");
   if(orb){ orb.onclick=toggleMic; orb.onkeydown=(e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggleMic(); } }; }
 }
 function greet(){ chatWelcome(); }
