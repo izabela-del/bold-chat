@@ -142,6 +142,9 @@
   .home{flex:1 1 auto; overflow-y:auto; padding:4px 15px 8px;} .home::-webkit-scrollbar{width:0}
   .greet{position:relative; z-index:2; font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-size:26px; font-weight:600; letter-spacing:-.3px; margin:6px 0 4px;}
   .greet-sub{position:relative; z-index:2; font-size:14px; color:var(--ink-soft); font-weight:500; margin:0 0 16px; line-height:1.45;}
+  .frosted{position:relative; z-index:2; display:inline-block; max-width:100%; margin-bottom:14px; padding:11px 15px; border-radius:16px; background:rgba(255,255,255,.42); -webkit-backdrop-filter:blur(10px) saturate(1.3); backdrop-filter:blur(10px) saturate(1.3); border:1px solid rgba(255,255,255,.55);}
+  .frosted .greet{margin:0 0 3px;}
+  .frosted .greet-sub{margin:0;}
 
   /* time-of-day sky behind the greeting */
   .sky{position:relative; overflow:hidden; margin:-4px -15px 14px; padding:18px 15px 16px; transition:background .6s ease;}
@@ -157,7 +160,7 @@
   .onhold .oh-top{background:linear-gradient(90deg,#b6862e,#caa042); color:#fff; padding:9px 14px; display:flex; align-items:center; gap:8px; font-weight:800; font-size:13.5px;}
   .onhold .oh-top .q{margin-left:auto; width:18px; height:18px; border-radius:50%; border:1.4px solid rgba(255,255,255,.75); font-size:11px; display:flex; align-items:center; justify-content:center;}
   .onhold .oh-body{background:#fff; border:1px solid #eee; border-top:0; padding:14px; display:flex; gap:12px; align-items:center;}
-  .onhold .docav{width:52px; height:52px; border-radius:50%; background:#e9e6f0; color:#4a10bd; font-weight:800; font-size:16px; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .onhold .docav{width:52px; height:52px; border-radius:50%; background:#e9e6f0; color:#4a10bd; font-weight:800; font-size:16px; object-fit:cover; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
   .onhold .dn{font-size:16px; font-weight:800;}
   .onhold .dm{font-size:13px; color:var(--ink-soft); font-weight:600; margin-top:4px; display:flex; align-items:center; gap:6px;}
   .onhold .oh-cta{background:var(--brand-soft); color:var(--brand-press); font-size:12.5px; font-weight:800; padding:9px 14px; text-align:center;}
@@ -182,6 +185,7 @@
   @keyframes aispin{to{transform:rotate(360deg)}}
   .task .tx{flex:1 1 auto; min-width:0;}
   .task .tt{font-size:14.5px; font-weight:800; display:flex; align-items:center; gap:6px;}
+  .todo-req{flex-direction:column; align-items:flex-start; gap:2px;}
   .todo-req .t{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-weight:600; font-size:18px;}
   .task .ts{font-size:12.5px; color:var(--ink-soft); font-weight:500; margin-top:2px;}
   .task .btn{flex:0 0 auto; border:1.5px solid #d9d2f2; color:var(--brand-press); background:#fff; font:inherit; font-size:12.5px; font-weight:800; padding:7px 13px; border-radius:18px; cursor:pointer;}
@@ -231,8 +235,10 @@
               <div class="glow" id="glow"></div>
               <div class="stars" id="stars"></div>
               <div class="orb" id="orb"><div class="sun" id="sun"></div><div class="moon" id="moon"></div></div>
-              <div class="greet" id="greet">Good afternoon, Carol</div>
-              <p class="greet-sub" id="greet-sub"></p>
+              <div class="frosted">
+                <div class="greet" id="greet">Good afternoon, Carol</div>
+                <p class="greet-sub" id="greet-sub"></p>
+              </div>
 
               <div class="onhold" id="onhold">
                 <div class="oh-top">
@@ -240,7 +246,7 @@
                   On hold <span class="q">?</span>
                 </div>
                 <div class="oh-body">
-                  <div class="docav">MD</div>
+                  <img class="docav" src="profile-avatar.png" alt="Dr. Mitul S. Desai, MD">
                   <div>
                     <div class="dn">Dr. Mitul S. Desai, MD</div>
                     <div class="dm"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="#5a5566" stroke-width="1.6"/><path d="M4 9h16M8 3v4M16 3v4" stroke="#5a5566" stroke-width="1.6" stroke-linecap="round"/></svg>Proposed: Mon, Nov 3 · 9:00am</div>
