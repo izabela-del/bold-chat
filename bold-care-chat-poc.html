@@ -167,6 +167,16 @@
   .onhold .oh-when{display:flex; align-items:center; gap:8px; margin-top:7px; font-size:15px; color:var(--ink-soft); font-weight:500;}
   .onhold .oh-when svg{flex:0 0 auto;}
   .onhold .oh-why{display:flex; gap:7px; align-items:flex-start; margin-top:12px; padding:9px 12px; border-radius:11px; background:var(--amber-soft); color:var(--amber-ink); font-size:12.5px; font-weight:600; line-height:1.4;}
+
+  /* Ask Bold AI — Q&A entry point */
+  .askbold{margin:22px 0 6px; border:1px solid #e7e0fb; border-radius:16px; padding:14px 15px; background:linear-gradient(180deg,#faf8ff,#fff); box-shadow:var(--shadow);}
+  .askbold .ai-label{margin-bottom:7px;}
+  .askbold .ab-title{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-size:18px; font-weight:600; letter-spacing:-.2px; color:var(--ink); margin:2px 0 3px;}
+  .askbold .ab-sub{font-size:13px; color:var(--ink-soft); font-weight:500; margin:0 0 12px; line-height:1.45;}
+  .askbold .ab-chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .askbold .ab-chip{border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); font:inherit; font-size:13px; font-weight:700; padding:8px 13px; border-radius:20px; cursor:pointer; transition:transform .06s, background .12s, border-color .12s;}
+  .askbold .ab-chip:hover{background:var(--brand-soft); border-color:var(--brand);}
+  .askbold .ab-chip:active{transform:scale(.97);}
   .todo-h{display:flex; align-items:baseline; justify-content:space-between; margin:2px 2px 10px;}
   .todo-h .t{font-size:17px; font-weight:900;} .todo-h .c{font-size:12.5px; color:var(--ink-soft); font-weight:700;}
   .task{display:flex; gap:12px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 13px; margin-bottom:10px;}
@@ -311,6 +321,19 @@
                 <div class="tt">Weight management intake</div>
                 <div class="ts">A few simple questions about your health — by chat, not a form</div>
                 <button class="btn solid" id="intake-btn">Chat now</button>
+              </div>
+            </div>
+
+            <!-- Ask Bold AI — Q&A entry point -->
+            <div class="askbold">
+              <span class="ai-label"><span class="ai-spin"></span>Bold AI</span>
+              <div class="ab-title">New to Bold? Ask me anything</div>
+              <div class="ab-sub">Real answers about your care, visits, and costs — instantly, any time.</div>
+              <div class="ab-chips">
+                <button class="ab-chip" data-q="What is Bold?" data-go="program">What is Bold?</button>
+                <button class="ab-chip" data-q="How does the video visit work?" data-go="visit">How do visits work?</button>
+                <button class="ab-chip" data-q="Am I eligible for medication?" data-go="glp1">Am I eligible for medication?</button>
+                <button class="ab-chip" data-q="What will this cost me?" data-go="cost">What will it cost?</button>
               </div>
             </div>
           </div>
@@ -604,7 +627,7 @@ const NODES = {
   },
 
   menu(){
-    const base=[{label:"What will this cost me?", go:"cost"},{label:"Am I eligible for medication?", go:"glp1"},{label:"How does the video visit work?", go:"visit"}];
+    const base=[{label:"What is Bold?", go:"program"},{label:"What will this cost me?", go:"cost"},{label:"Am I eligible for medication?", go:"glp1"},{label:"How does the video visit work?", go:"visit"}];
     if(!coverageConfirmed) base.unshift({label:"Confirm my insurance", go:"coverageStart"});
     else base.push({label:"Book my first visit", go:"book"});
     return { text:["Of course — what would you like to know?"], sugg:base };
@@ -775,6 +798,7 @@ function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg
 function showPage(id){ ["page-home","page-inbox","page-chat","page-simple"].forEach(p=>{ document.getElementById(p).hidden=(p!==id); }); const sb=document.querySelector(".statusbar"); if(sb) sb.style.background=(id==="page-home")?(window.SKY_BASE||"#fff"):"#fff"; if(id==="page-home") renderHome(); }
 function launchCoverage(){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; addBot(NODES.coverageStart()); showPage("page-chat"); }
 function launchIntake(){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; const c=document.createElement("div"); c.innerHTML=knownCardHTML(); thread.appendChild(c.firstChild); addBot(NODES.intakeStart()); showPage("page-chat"); }
+function askBold(q, go){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; showPage("page-chat"); addMe(q); typing(); setTimeout(()=>{ untype(); addBot(resolve(go)); },450); }
 function openConv(id){
   if(id==="ai"){ chatFromInbox=true; if(!coverageConfirmed){ chatStarted=true; thread.innerHTML=""; addBot(NODES.coverageStart()); } else if(!chatStarted){ greet(); chatStarted=true; } showPage("page-chat"); return; }
   openSimple(id);
@@ -793,6 +817,7 @@ ta.addEventListener("keydown", e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preven
 document.getElementById("cov-btn").onclick = launchCoverage;
 document.getElementById("onhold").onclick = ()=>{ if(!coverageConfirmed) launchCoverage(); else if(!intakeComplete) launchIntake(); };
 document.getElementById("intake-btn").onclick = launchIntake;
+document.querySelectorAll(".ab-chip").forEach(b=>{ b.onclick=()=>askBold(b.dataset.q, b.dataset.go); });
 document.querySelectorAll(".task[data-consent]").forEach(el=>{ el.querySelector(".btn").onclick=()=>toast(el.dataset.consent+" — opens a review-and-sign page (concept)"); });
 document.querySelectorAll(".bottomnav").forEach(nav=>{ nav.addEventListener("click", e=>{ const it=e.target.closest(".navitem"); if(it) navTo(it.dataset.nav); }); });
 
