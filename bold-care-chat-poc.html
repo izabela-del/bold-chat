@@ -107,6 +107,35 @@
   .input-shell textarea{flex:1; border:0; outline:0; resize:none; font:inherit; font-size:15px; color:var(--ink); background:transparent; max-height:90px; padding:8px 0; line-height:1.35;}
   .send{border:0; background:var(--brand); color:#fff; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:18px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
   .send:hover{background:var(--brand-press);} .send:disabled{opacity:.35; cursor:default;}
+  /* voice input mic (Web Speech API) */
+  .mic{flex:0 0 auto; width:40px; height:40px; border-radius:50%; border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); cursor:pointer; display:flex; align-items:center; justify-content:center; align-self:flex-end; transition:background .12s, border-color .12s;}
+  .mic:hover{background:var(--brand-soft); border-color:var(--brand);} .mic svg{display:block;}
+  .mic.on{background:#fde8ee; border-color:#f3b6c8; color:#c2185b; animation:micpulse 1.2s ease-in-out infinite;}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(194,24,91,.30)}50%{box-shadow:0 0 0 7px rgba(194,24,91,0)}}
+  /* read-aloud button (speechSynthesis) */
+  .say{display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:#fff; color:var(--brand-press); font:inherit; font-size:12px; font-weight:700; padding:6px 12px; border-radius:16px; cursor:pointer; transition:background .12s, border-color .12s;}
+  .say:hover{background:var(--brand-soft); border-color:var(--brand);} .say svg{flex:0 0 auto; display:block;}
+  .say.speaking{background:#fde8ee; border-color:#f6c6d4; color:#c2185b;}
+  .say .dots{display:inline-flex; gap:2px; align-items:center;}
+  .say .dots i{width:3px; height:3px; border-radius:50%; background:currentColor; animation:saydot 1s infinite;}
+  .say .dots i:nth-child(2){animation-delay:.15s} .say .dots i:nth-child(3){animation-delay:.3s} .say .dots i:nth-child(4){animation-delay:.45s}
+  @keyframes saydot{0%,100%{opacity:.3}50%{opacity:1}}
+  .row.bot .say{margin:7px 0 0 1px;}
+  /* Meta-style voice welcome header */
+  .chat-welcome{display:flex; flex-direction:column; align-items:center; text-align:center; padding:14px 6px 8px;}
+  .orb{position:relative; width:112px; height:112px; margin:2px auto 16px; border-radius:50%; cursor:pointer; animation:orbpulse 3.6s ease-in-out infinite;}
+  .orb::before{content:""; position:absolute; inset:-12px; border-radius:50%; z-index:0; background:conic-gradient(from 120deg,#7b3af0,#2f8bff,#12c2c2,#ff5fa2,#7b3af0); filter:blur(18px); opacity:.8; animation:orbspin 7s linear infinite;}
+  .orb::after{content:""; position:absolute; inset:0; border-radius:50%; z-index:1; background:conic-gradient(from 120deg,#7b3af0,#2f8bff,#12c2c2,#ff5fa2,#7b3af0); animation:orbspin 7s linear infinite; -webkit-mask:radial-gradient(circle at 50% 50%, transparent 41%, #000 42%); mask:radial-gradient(circle at 50% 50%, transparent 41%, #000 42%);}
+  .orb:focus-visible{outline:2px solid var(--brand); outline-offset:4px;}
+  .orb.listening{animation:orbpulse 1s ease-in-out infinite;}
+  .orb.speaking{animation:orbpulse 1.7s ease-in-out infinite;}
+  @keyframes orbspin{to{transform:rotate(360deg)}}
+  @keyframes orbpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
+  .cw-title{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-size:20px; font-weight:600; letter-spacing:-.2px; color:var(--ink); margin:0 0 6px;}
+  .cw-sub{font-size:14px; line-height:1.5; color:var(--ink-soft); max-width:290px; margin:0 auto 13px;}
+  .cw-say{margin:0 auto 14px;}
+  .cw-sugg{justify-content:center; margin-bottom:2px;}
+  @media (prefers-reduced-motion: reduce){ .orb, .orb::before, .orb::after, .mic.on, .say .dots i{animation:none !important;} }
   .foot{text-align:center; font-size:10.5px; color:#6b6678; margin:9px 2px 0; line-height:1.4;}
   .esc{color:var(--brand-press); font-weight:700;}
   .composer.locked{padding:14px;}
@@ -157,15 +186,21 @@
   .sky .star{position:absolute; background:#fff; border-radius:50%; box-shadow:0 0 4px #fff;}
   .sky .onhold{position:relative; z-index:2; margin-bottom:0;}
   @media (prefers-reduced-motion: reduce){ .sky, .sky *{transition:none !important;} }
-  .onhold{position:relative; background:#fff; border-radius:22px; overflow:hidden; margin-bottom:18px; box-shadow:0 8px 24px rgba(28,20,54,.13); cursor:pointer; transition:transform .12s, box-shadow .12s;}
-  .onhold:hover{transform:translateY(-1px); box-shadow:0 14px 32px rgba(28,20,54,.18);}
-  .onhold .oh-banner{display:inline-flex; align-items:center; gap:9px; background:linear-gradient(105deg,#5f4614 0%,#9c7521 55%,#c39a34 100%); color:#fff; font-weight:800; font-size:15.5px; letter-spacing:.1px; padding:12px 62px 13px 17px; border-radius:22px 0 34px 0;}
-  .onhold .oh-banner svg{flex:0 0 auto;}
-  .onhold .oh-photo{position:absolute; top:7px; right:14px; width:94px; height:94px; border-radius:50%; object-fit:cover; border:4px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,.16); z-index:2;}
-  .onhold .oh-body{padding:11px 16px 15px;}
-  .onhold .oh-name{font-size:21px; font-weight:800; letter-spacing:-.4px; color:var(--ink); line-height:1.15; padding-right:84px;}
-  .onhold .oh-when{display:flex; align-items:center; gap:8px; margin-top:7px; font-size:15px; color:var(--ink-soft); font-weight:500;}
-  .onhold .oh-when svg{flex:0 0 auto;}
+  /* Figma Member-Dashboard node 1238:3139 "Compact card -dahs >30min" — exact spec.
+     Kept in the app's Figtree family (design uses Inter) but matched to Figma sizes/weights/colors/spacing/radii. */
+  .onhold{position:relative; background:#804F00; border-radius:16px 46px 16px 16px; margin-bottom:18px; cursor:pointer; transition:transform .12s, filter .12s; filter:drop-shadow(0 8px 22px rgba(28,20,54,.14));}
+  .onhold:hover{transform:translateY(-1px); filter:drop-shadow(0 14px 30px rgba(28,20,54,.20));}
+  /* amber tab (Badge 1238:3140): warning icon + label, amber shows through from the card bg */
+  .onhold .oh-banner{display:flex; align-items:center; gap:10px; padding:10px 16px 8px; color:#fff; font-weight:600; font-size:14px; line-height:22px; letter-spacing:0; position:relative;}
+  .onhold .oh-banner svg{flex:0 0 auto; display:block;}
+  /* white card (Component 7 1238:3143) */
+  .onhold .oh-card{position:relative; background:#fff; border:1px solid #e5e5e5; border-radius:16px; overflow:hidden; box-shadow:0 -1px 4.8px rgba(16,24,40,.10), 0 1px 2px rgba(16,24,40,.06);}
+  /* circular photo (Profile Avatar 1238:3161) nested in the concave top-right notch */
+  .onhold .oh-photo{position:absolute; top:0; right:1px; width:96px; height:96px; border-radius:50%; object-fit:cover; border:1.6px solid #e5e5e5; background:#dfe3e6; z-index:2;}
+  .onhold .oh-body{padding:21px 16px 16px;}
+  .onhold .oh-name{font-size:20px; font-weight:600; letter-spacing:0; color:#171717; line-height:24px; padding-right:96px;}
+  .onhold .oh-when{display:flex; align-items:center; gap:8px; margin-top:4px; font-size:16px; color:#171717; font-weight:400; line-height:24px;}
+  .onhold .oh-when svg{flex:0 0 auto; display:block;}
   .onhold .oh-why{display:flex; gap:7px; align-items:flex-start; margin-top:12px; padding:9px 12px; border-radius:11px; background:var(--amber-soft); color:var(--amber-ink); font-size:12.5px; font-weight:600; line-height:1.4;}
 
   /* Ask Bold AI — Q&A entry point */
@@ -178,34 +213,27 @@
   .askbold .ab-chip:hover{background:var(--brand-soft); border-color:var(--brand);}
   .askbold .ab-chip:active{transform:scale(.97);}
 
-  /* checklist to-do cards (ci-card, matched to Bold wireframes) */
-  .ci-card{background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:0 6px 18px rgba(28,20,54,.08); padding:15px; margin-bottom:11px; transition:border-color .15s, box-shadow .15s;}
-  .ci-card:hover{border-color:#d8d2ec; box-shadow:0 12px 24px rgba(28,20,54,.13);}
-  .ci-card .ci-head{display:flex; gap:12px; align-items:center;}
-  .ci-card .ci-icon{width:40px; height:40px; border-radius:50%; background:var(--brand-soft); flex:0 0 40px; display:flex; align-items:center; justify-content:center;}
-  .ci-card .ci-title{flex:1; min-width:0; margin:0; font-size:15.5px; font-weight:700; line-height:1.3; color:var(--ink);}
-  .ci-card .ci-head>.ci-cta{margin-left:auto;}
-  .ci-card .ci-cta{border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); border-radius:20px; padding:7px 13px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; transition:background .12s, border-color .12s, transform .06s;}
-  .ci-card .ci-cta:hover{background:var(--brand-soft); border-color:var(--brand);}
-  .ci-card .ci-cta:active{transform:scale(.97);}
-  .ci-card .ci-cta.solid{background:var(--brand); color:#fff; border-color:var(--brand);}
-  .ci-card .ci-cta.solid:hover{background:var(--brand-press); border-color:var(--brand-press);}
-  .ci-card .ci-cta.done{background:var(--teal-soft); border-color:#cfe9e2; color:var(--teal-ink); pointer-events:none;}
-  .ci-card .ci-desc{margin:9px 0 0 52px; font-size:13.5px; line-height:1.4; color:var(--ink-soft);}
-  .ci-card .ci-pills{display:flex; flex-wrap:wrap; gap:8px; margin:11px 0 0 52px;}
-  .ci-card.done .ci-title{color:var(--ink-soft);}
+  /* To-do cards — Figma Member-Dashboard node 188:8538 "Callout" (unified tappable card, blue #3366FF bullet) */
+  .tcard{display:flex; gap:12px; align-items:flex-start; width:100%; text-align:left; font:inherit; color:inherit;
+         background:#fff; border:1px solid #e5e5e5; border-radius:16px; padding:16px; margin-bottom:12px; cursor:pointer;
+         box-shadow:0 4px 6px -2px rgba(16,24,40,.03), 0 12px 16px -4px rgba(16,24,40,.08);
+         transition:transform .1s ease, box-shadow .15s ease;}
+  .tcard:hover{transform:translateY(-1px); box-shadow:0 8px 10px -4px rgba(16,24,40,.05), 0 18px 26px -6px rgba(16,24,40,.13);}
+  .tcard:active{transform:translateY(0);}
+  .tcard.done{cursor:default;}
+  .tcard.done:hover{transform:none; box-shadow:0 4px 6px -2px rgba(16,24,40,.03), 0 12px 16px -4px rgba(16,24,40,.08);}
+  .tcard .tc-bullet{flex:0 0 40px; width:40px; height:40px; border-radius:50%; background:#3366FF; display:flex; align-items:center; justify-content:center;}
+  .tcard .tc-bullet svg{display:block;}
+  .tcard .tc-main{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px;}
+  .tcard .tc-top{display:flex; align-items:flex-start; justify-content:space-between; gap:8px;}
+  .tcard .tc-title{font-size:16px; font-weight:600; line-height:24px; color:#171717;}
+  .tcard .tc-desc{font-size:16px; font-weight:400; line-height:24px; color:#4d4d4d;}
+  .tcard.done .tc-title{color:var(--ink-soft);}
+  .tcard .tc-tag{display:inline-flex; align-items:center; gap:4px; flex:0 0 auto; white-space:nowrap; background:#f5f5f5; color:#525252; border-radius:19px; min-height:24px; padding:4px 9px 4px 6px; font-size:12px; font-weight:600; line-height:16px;}
+  .tcard .tc-tag svg{display:block; flex:0 0 auto;}
+  .tcard .tc-tag.done{background:var(--teal-soft); color:var(--teal-ink);}
   .todo-h{display:flex; align-items:baseline; justify-content:space-between; margin:2px 2px 10px;}
   .todo-h .t{font-size:17px; font-weight:900;} .todo-h .c{font-size:12.5px; color:var(--ink-soft); font-weight:700;}
-  .task{display:flex; gap:12px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 13px; margin-bottom:10px;}
-  .task.ai{border-color:#d9c9ff; background:linear-gradient(180deg,#faf7ff,#fff);}
-  .task.hero{border-color:#c9b4ff; box-shadow:0 6px 18px rgba(91,22,224,.12); display:block;}
-  .task.hero .hero-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
-  .task.hero .tt{display:block; font-size:15.5px;}
-  .task.hero .btn{display:block; width:100%; margin-top:10px; padding:11px 14px; border-radius:12px; text-align:center;}
-  .task .tick{display:none; width:24px; height:24px; border-radius:50%; border:2px solid #d7d2e6; flex:0 0 auto; align-items:center; justify-content:center;}
-  .task.done .tick{background:var(--teal); border-color:var(--teal);}
-  .task .ico{width:38px; height:38px; border-radius:10px; background:#f1eef8; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
-  .task.ai .ico{background:transparent; width:30px; height:30px;}
   /* Meta-style AI shimmer label */
   .ai-label{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:800; letter-spacing:.2px;
     background:linear-gradient(90deg,#7b3af0,#2f8bff,#12c2c2); -webkit-background-clip:text; background-clip:text; color:transparent;}
@@ -213,23 +241,13 @@
     background:conic-gradient(from 0deg,#7b3af0,#2f8bff,#12c2c2,#ff5fa2,#7b3af0); animation:aispin 1.1s linear infinite;}
   .ai-spin::after{content:""; position:absolute; inset:3px; border-radius:50%; background:#fff;}
   @keyframes aispin{to{transform:rotate(360deg)}}
-  .task .tx{flex:1 1 auto; min-width:0;}
-  .task .tt{font-size:14.5px; font-weight:800; display:flex; align-items:center; gap:6px;}
   .todo-req{flex-direction:column; align-items:flex-start; gap:2px;}
   .todo-req .t{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-weight:600; font-size:18px;}
   .todo-req .c{font-size:14px; font-weight:400; line-height:1.45;}
-  .task .ts{font-size:12.5px; color:var(--ink-soft); font-weight:500; margin-top:2px;}
-  .task .btn{flex:0 0 auto; border:1.5px solid #d9d2f2; color:var(--brand-press); background:#fff; font:inherit; font-size:12.5px; font-weight:800; padding:7px 13px; border-radius:18px; cursor:pointer;}
-  .task .btn.solid{background:var(--brand); color:#fff; border-color:var(--brand);}
-  .task .btn{transition:transform .06s, background .12s, border-color .12s;}
-  .task .btn:hover{background:var(--brand-soft); border-color:var(--brand);}
-  .task .btn.solid:hover{background:var(--brand-press); border-color:var(--brand-press); color:#fff;}
-  .task .btn:active{transform:scale(.98);}
   .todo-progress{margin:0 2px 10px; font-size:12.5px; color:var(--ink-soft); font-weight:700; text-align:right;}
   :focus-visible{outline:2px solid var(--brand); outline-offset:2px;}
-  .task.done .tt{color:var(--ink-soft);} .task.done .ts{color:var(--teal-ink); font-weight:700;}
-  .task.done .btn{opacity:.5; pointer-events:none;}
   .locked-note{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-soft); font-weight:600; background:#f6f4fb; border-radius:12px; padding:11px 13px; margin:0 0 6px;}
+  .locked-note[hidden]{display:none;}
 
   .toast{position:absolute; left:50%; bottom:84px; transform:translateX(-50%) translateY(10px); background:#16121f; color:#fff; font-size:12.5px; font-weight:600; padding:9px 15px; border-radius:20px; opacity:0; transition:.2s; pointer-events:none; z-index:20; max-width:80%; text-align:center;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
@@ -279,30 +297,32 @@
 
               <div class="onhold" id="onhold">
                 <div class="oh-banner">
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="2"/><path d="M12 7.5V12l3 2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="22" height="22" viewBox="0 0 256 256" fill="none"><path d="M128 44 L232 214 a10 10 0 0 1 -8.6 15 H32.6 a10 10 0 0 1 -8.6 -15 Z" stroke="#fff" stroke-width="16" stroke-linejoin="round"/><line x1="128" y1="108" x2="128" y2="150" stroke="#fff" stroke-width="16" stroke-linecap="round"/><circle cx="128" cy="186" r="10.5" fill="#fff"/></svg>
                   Appointment on hold
                 </div>
                 <img class="oh-photo" src="profile-avatar.png" alt="Dr. Mitul S. Desai, MD">
-                <div class="oh-body">
-                  <div class="oh-name">Dr. Mitul S. Desai, MD</div>
-                  <div class="oh-when"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2.5" stroke="#5a5566" stroke-width="1.7"/><path d="M4 9.5h16M8.5 3.5v3M15.5 3.5v3" stroke="#5a5566" stroke-width="1.7" stroke-linecap="round"/></svg>Proposed Mon, Nov 3</div>
-                  <div class="oh-why" id="oh-why"></div>
+                <div class="oh-card">
+                  <div class="oh-body">
+                    <div class="oh-name">Dr. Mitul S. Desai, MD</div>
+                    <div class="oh-when"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 A8 8 0 1 1 6.0 6.4"/><polyline points="5.6 3.1 5.6 6.8 9.3 6.8"/><polyline points="12 8 12 12 15 13.6"/></svg>Proposed Mon, Nov 3</div>
+                    <div class="oh-why" id="oh-why"></div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- STEP 1: coverage (always visible) -->
             <div class="todo-h todo-req"><span class="t">To do</span><span class="c">Required for booking</span></div>
-            <div class="task ai hero" id="step-coverage">
-              <div class="tick" id="cov-tick"></div>
-              <div class="hero-top">
-                <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3z" stroke="#5b16e0" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#5b16e0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                <span class="ai-label"><span class="ai-spin"></span>Bold AI</span>
-              </div>
-              <div class="tt">Confirm your insurance</div>
-              <div class="ts" id="cov-sub"></div>
-              <button class="btn solid" id="cov-btn">Chat now</button>
-            </div>
+            <button type="button" class="tcard" id="step-coverage">
+              <span class="tc-bullet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+              <span class="tc-main">
+                <span class="tc-top">
+                  <span class="tc-title">Confirm your insurance</span>
+                  <span class="tc-tag" id="cov-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg>2 min</span>
+                </span>
+                <span class="tc-desc" id="cov-sub"></span>
+              </span>
+            </button>
             <div class="locked-note" id="locked-note">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#5a5566" stroke-width="1.6"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#5a5566" stroke-width="1.6"/></svg>
               Just a few simple questions unlock once your coverage is confirmed.
@@ -311,39 +331,46 @@
             <!-- STEP 2: unlocked after coverage -->
             <div id="locked-list" hidden>
               <div class="todo-progress"><span id="todo-count">0 of 4 done</span></div>
-              <div class="ci-card" data-consent="HIPAA authorization">
-                <div class="ci-head">
-                  <span class="ci-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6z" stroke="#5b16e0" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h6M9 16h6" stroke="#5b16e0" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-                  <p class="ci-title">HIPAA authorization</p>
-                  <button class="ci-cta">Review ›</button>
-                </div>
-                <p class="ci-desc">How your care and billing work</p>
-              </div>
-              <div class="ci-card" data-consent="New Patient Agreement">
-                <div class="ci-head">
-                  <span class="ci-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l3 3v15H6z" stroke="#5b16e0" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12h6M9 16h6" stroke="#5b16e0" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-                  <p class="ci-title">New Patient Agreement</p>
-                  <button class="ci-cta">Review ›</button>
-                </div>
-                <p class="ci-desc">Your agreement with Bold</p>
-              </div>
-              <div class="ci-card" data-consent="Telemedicine consent">
-                <div class="ci-head">
-                  <span class="ci-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" stroke="#5b16e0" stroke-width="1.7"/><path d="M16 10l5-3v10l-5-3z" stroke="#5b16e0" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
-                  <p class="ci-title">Telemedicine consent</p>
-                  <button class="ci-cta">Review ›</button>
-                </div>
-                <p class="ci-desc">Care by video</p>
-              </div>
-              <div class="ci-card" id="task-intake">
-                <div class="ci-head">
-                  <span class="ci-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#5b16e0"/><circle cx="18.5" cy="17.5" r="2.2" fill="#5b16e0"/></svg></span>
-                  <p class="ci-title">Weight management intake</p>
-                  <button class="ci-cta solid" id="intake-btn">Chat now ›</button>
-                </div>
-                <p class="ci-desc">A few simple questions about your health — by chat, not a form</p>
-                <div class="ci-pills"><span class="ai-label"><span class="ai-spin"></span>Bold AI</span></div>
-              </div>
+              <button type="button" class="tcard" data-consent="HIPAA authorization">
+                <span class="tc-bullet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8z"/><path d="M13 3v5h5"/><path d="M9 13h6M9 16.5h6"/></svg></span>
+                <span class="tc-main">
+                  <span class="tc-top">
+                    <span class="tc-title">HIPAA authorization</span>
+                    <span class="tc-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg>1 min</span>
+                  </span>
+                  <span class="tc-desc">How your care and billing work</span>
+                </span>
+              </button>
+              <button type="button" class="tcard" data-consent="New Patient Agreement">
+                <span class="tc-bullet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8z"/><path d="M13 3v5h5"/><path d="M9 13h6M9 16.5h6"/></svg></span>
+                <span class="tc-main">
+                  <span class="tc-top">
+                    <span class="tc-title">New Patient Agreement</span>
+                    <span class="tc-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg>1 min</span>
+                  </span>
+                  <span class="tc-desc">Your agreement with Bold</span>
+                </span>
+              </button>
+              <button type="button" class="tcard" data-consent="Telemedicine consent">
+                <span class="tc-bullet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="12" height="11" rx="2.4"/><path d="M15 10l5.5-2.6v9.2L15 14z"/></svg></span>
+                <span class="tc-main">
+                  <span class="tc-top">
+                    <span class="tc-title">Telemedicine consent</span>
+                    <span class="tc-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg>1 min</span>
+                  </span>
+                  <span class="tc-desc">Care by video</span>
+                </span>
+              </button>
+              <button type="button" class="tcard" id="task-intake">
+                <span class="tc-bullet"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M11.5 3.2l1.7 4.3 4.3 1.7-4.3 1.7-1.7 4.3-1.7-4.3L5.5 9.2l4.3-1.7z" fill="#fff"/><path d="M18 15l.7 1.8 1.8.7-1.8.7L18 20l-.7-1.8-1.8-.7 1.8-.7z" fill="#fff"/></svg></span>
+                <span class="tc-main">
+                  <span class="tc-top">
+                    <span class="tc-title">Weight management intake</span>
+                    <span class="tc-tag" id="intake-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg>3 min</span>
+                  </span>
+                  <span class="tc-desc">A few simple questions about your health — by chat, not a form</span>
+                </span>
+              </button>
             </div>
 
             <!-- Ask Bold AI — Q&A entry point -->
@@ -384,7 +411,10 @@
               <button class="topics" id="topics" title="Browse all topics">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2.5h10M1 6h10M1 9.5h10" stroke="#4a10bd" stroke-width="1.6" stroke-linecap="round"/></svg>Topics
               </button>
-              <textarea id="ta" rows="1" placeholder="Type your own question…"></textarea>
+              <textarea id="ta" rows="1" placeholder="Talk or type…"></textarea>
+              <button class="mic" id="mic" type="button" title="Talk">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+              </button>
               <button class="send" id="send" title="Send">&#8593;</button>
             </div>
             <div class="foot">Prototype · not medical advice · anything I can't answer goes to your
@@ -695,9 +725,41 @@ function bubbleHTML(m){
   if(m.callout) h+=`<div class="callout">&#9432;&nbsp;<span>${rich(m.callout)}</span></div>`;
   return h;
 }
+/* ===== voice: read-aloud (speechSynthesis) + voice input (SpeechRecognition) ===== */
+const SPEAK_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a9 9 0 0 1 0 12"/></svg>`;
+const SPEAK_LABEL = SPEAK_ICON+"Read aloud";
+const STOP_LABEL = `<span class="dots"><i></i><i></i><i></i><i></i></span>Stop`;
+let curSay=null;
+function orbSetState(s){ const o=document.getElementById("orb"); if(o) o.className="orb"+(s?" "+s:""); }
+function stopSpeak(){ try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} if(curSay){ curSay.classList.remove("speaking"); curSay.innerHTML=SPEAK_LABEL; curSay=null; } orbSetState(""); }
+function sayText(text, btn){
+  if(!("speechSynthesis" in window)){ toast("Read-aloud isn't supported in this browser."); return; }
+  if(curSay===btn){ stopSpeak(); return; }
+  stopSpeak();
+  const u=new SpeechSynthesisUtterance(text); u.rate=1.0; u.pitch=1.0; u.lang="en-US";
+  u.onend=()=>{ if(curSay===btn){ btn.classList.remove("speaking"); btn.innerHTML=SPEAK_LABEL; curSay=null; orbSetState(""); } };
+  curSay=btn; btn.classList.add("speaking"); btn.innerHTML=STOP_LABEL; orbSetState("speaking");
+  speechSynthesis.speak(u);
+}
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog=null, listening=false;
+function toggleMic(){
+  if(!SR){ toast("Voice input needs Chrome or Safari."); return; }
+  if(listening){ try{ if(recog) recog.stop(); }catch(e){} return; }
+  stopSpeak();
+  recog=new SR(); recog.lang="en-US"; recog.interimResults=true; recog.continuous=false;
+  recog.onstart=()=>{ listening=true; const m=document.getElementById("mic"); if(m) m.classList.add("on"); orbSetState("listening"); ta.placeholder="Listening…"; };
+  recog.onresult=(e)=>{ let s=""; for(let i=0;i<e.results.length;i++) s+=e.results[i][0].transcript; ta.value=s; ta.style.height="auto"; ta.style.height=Math.min(ta.scrollHeight,90)+"px"; sendBtn.disabled=!ta.value.trim(); };
+  recog.onerror=()=>{};
+  recog.onend=()=>{ listening=false; const m=document.getElementById("mic"); if(m) m.classList.remove("on"); orbSetState(""); ta.placeholder="Talk or type…"; if(ta.value.trim()) sendText(); };
+  try{ recog.start(); }catch(e){}
+}
+
 function addBot(m){
   const row=document.createElement("div"); row.className="row bot";
   row.innerHTML=`<div class="who">Bold AI</div><div class="bubble">${bubbleHTML(m)}</div>`;
+  const spoken=(m.text||[]).join(" ").replace(/<\/?b>/g,"").trim();
+  if(spoken){ const say=document.createElement("button"); say.type="button"; say.className="say"; say.innerHTML=SPEAK_LABEL; say.onclick=()=>sayText(spoken, say); row.appendChild(say); }
   if(m.sugg && m.sugg.length){
     const s=document.createElement("div"); s.className="sugg";
     m.sugg.forEach(p=>{ const b=document.createElement("button"); b.className="pill"+(p.collect?" collect":"");
@@ -725,15 +787,29 @@ function knownCardHTML(){
     </div>
     <p class="known-note">I use these so you never have to repeat yourself.</p></div>`;
 }
-function greet(){
+function chatWelcome(){
   thread.innerHTML="";
-  if(coverageConfirmed){
-    const c=document.createElement("div"); c.innerHTML=knownCardHTML(); thread.appendChild(c.firstChild);
-    addBot({ text:[`Hi ${PROFILE.name} — good to see you again. Your coverage is confirmed and on file, so I can give you real answers, not guesses.`,"What's on your mind? Tap a topic below, or just type — I'm all ears."], sugg: NODES.menu().sugg });
-  } else {
-    addBot({ text:[`Hi ${PROFILE.name} — I'm Bold AI, your care coordinator, and I'm really glad you're here.`,"Let's start by getting your insurance sorted so your visit's covered — and you can ask me anything along the way, that's what I'm here for."], sugg:[{label:"Confirm my insurance", go:"coverageStart"},{label:"Why do you need this?", go:"whyInsurance"},{label:"How does the visit work?", go:"visit"}] });
-  }
+  const name = PROFILE.name || "there";
+  const sub = coverageConfirmed
+    ? "Good to see you again — your coverage is confirmed and on file, so I can give you real answers about your visit, your costs, or your medication. Ask me anything, or tap a topic to start."
+    : "I'm your care coordinator, here to answer anything about Bold — your coverage, what a visit costs, or how it all works. Ask me anything, or tap a topic to start.";
+  const sugg = coverageConfirmed ? NODES.menu().sugg
+    : [{label:"Confirm my insurance", go:"coverageStart"},{label:"How does a visit work?", go:"visit"},{label:"What will it cost?", go:"cost"}];
+  const wrap=document.createElement("div"); wrap.className="chat-welcome";
+  wrap.innerHTML = `<div class="orb" id="orb" role="button" tabindex="0" title="Tap to talk" aria-label="Tap to talk"></div>`+
+    `<div class="cw-title">Hi ${esc(name)} — I'm Bold AI</div>`+
+    `<div class="cw-sub">${esc(sub)}</div>`;
+  const say=document.createElement("button"); say.type="button"; say.className="say cw-say"; say.innerHTML=SPEAK_LABEL;
+  const spoken=`Hi ${name}. ${sub}`; say.onclick=()=>sayText(spoken, say);
+  wrap.appendChild(say);
+  const s=document.createElement("div"); s.className="sugg cw-sugg";
+  sugg.forEach(p=>{ const b=document.createElement("button"); b.type="button"; b.className="pill"; b.innerHTML=esc(p.label); b.onclick=()=>choose(p); s.appendChild(b); });
+  wrap.appendChild(s);
+  thread.appendChild(wrap); scroll();
+  const orb=document.getElementById("orb");
+  if(orb){ orb.onclick=toggleMic; orb.onkeydown=(e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggleMic(); } }; }
 }
+function greet(){ chatWelcome(); }
 NODES.whyInsurance = function(){
   return { text:["Great question. Confirming your plan lets me show your real cost up front — most Bold members pay $0 — and bill your plan directly, so no surprise bills later.","It's the one thing we need before booking your visit."],
     sugg:[{label:"OK, confirm my insurance", go:"coverageStart"},{label:"How does the visit work?", go:"visit"}] };
@@ -785,27 +861,31 @@ function openSimple(kind){
 }
 
 /* ===== home ===== */
+/* To-do card tag helpers (Figma Callout node 188:8538) */
+const TAG_CLOCK = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></svg>`;
+const TAG_CHECK = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`;
+function timeTag(el,label){ if(!el) return; el.className="tc-tag"; el.innerHTML=TAG_CLOCK+label; }
+function doneTag(el){ if(!el) return; el.className="tc-tag done"; el.innerHTML=TAG_CHECK+"Done"; }
 function renderHome(){
   const gs=document.getElementById("greet-sub");
   const ohWhy=document.getElementById("oh-why");
-  const covTick=document.getElementById("cov-tick");
+  const covTag=document.getElementById("cov-tag");
   const covSub=document.getElementById("cov-sub");
-  const covBtn=document.getElementById("cov-btn");
   const stepCov=document.getElementById("step-coverage");
   const lockedList=document.getElementById("locked-list");
   const lockedNote=document.getElementById("locked-note");
   if(coverageConfirmed){
     gs.textContent="Great start, Carol — a couple more quick steps and you're set for your first visit.";
-    stepCov.classList.add("done"); covTick.innerHTML=CHECK; covBtn.textContent="Done";
+    stepCov.classList.add("done"); doneTag(covTag);
     covSub.textContent=(PROFILE.planName==="your plan"?"Coverage":PROFILE.planName)+" · $0 visit — confirmed";
     lockedList.hidden=false; lockedNote.hidden=true;
-    const task=document.getElementById("task-intake"), btn=document.getElementById("intake-btn"), count=document.getElementById("todo-count");
-    if(intakeComplete){ task.classList.add("done"); btn.classList.add("done"); btn.textContent="Done ✓"; count.textContent="1 of 4 done"; }
-    else { task.classList.remove("done"); btn.classList.remove("done"); btn.textContent="Chat now ›"; count.textContent="0 of 4 done"; }
+    const task=document.getElementById("task-intake"), tag=document.getElementById("intake-tag"), count=document.getElementById("todo-count");
+    if(intakeComplete){ task.classList.add("done"); doneTag(tag); count.textContent="1 of 4 done"; }
+    else { task.classList.remove("done"); timeTag(tag,"3 min"); count.textContent="0 of 4 done"; }
     ohWhy.textContent = intakeComplete ? "You're all set — your visit is confirmed for Mon, Nov 3." : "Almost there — finish your intake to lock in this time.";
   } else {
     gs.textContent="Welcome to Bold — let's get you ready for your first visit.";
-    stepCov.classList.remove("done"); covTick.innerHTML=""; covBtn.textContent="Chat now";
+    stepCov.classList.remove("done"); timeTag(covTag,"2 min");
     covSub.textContent="No cost surprises — we'll walk you through what's covered.";
     lockedList.hidden=true; lockedNote.hidden=false;
     ohWhy.textContent="On hold until we confirm your coverage — it only takes a minute.";
@@ -817,12 +897,12 @@ let toastT;
 function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
 
 /* ===== nav ===== */
-function showPage(id){ ["page-home","page-inbox","page-chat","page-simple"].forEach(p=>{ document.getElementById(p).hidden=(p!==id); }); const sb=document.querySelector(".statusbar"); if(sb) sb.style.background=(id==="page-home")?(window.SKY_BASE||"#fff"):"#fff"; if(id==="page-home") renderHome(); }
+function showPage(id){ stopSpeak(); if(listening&&recog){ try{recog.stop();}catch(e){} } ["page-home","page-inbox","page-chat","page-simple"].forEach(p=>{ document.getElementById(p).hidden=(p!==id); }); const sb=document.querySelector(".statusbar"); if(sb) sb.style.background=(id==="page-home")?(window.SKY_BASE||"#fff"):"#fff"; if(id==="page-home") renderHome(); }
 function launchCoverage(){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; addBot(NODES.coverageStart()); showPage("page-chat"); }
 function launchIntake(){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; const c=document.createElement("div"); c.innerHTML=knownCardHTML(); thread.appendChild(c.firstChild); addBot(NODES.intakeStart()); showPage("page-chat"); }
 function askBold(q, go){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; showPage("page-chat"); addMe(q); typing(); setTimeout(()=>{ untype(); addBot(resolve(go)); },450); }
 function openConv(id){
-  if(id==="ai"){ chatFromInbox=true; if(!coverageConfirmed){ chatStarted=true; thread.innerHTML=""; addBot(NODES.coverageStart()); } else if(!chatStarted){ greet(); chatStarted=true; } showPage("page-chat"); return; }
+  if(id==="ai"){ chatFromInbox=true; if(!chatStarted){ chatWelcome(); chatStarted=true; } showPage("page-chat"); return; }
   openSimple(id);
 }
 function navTo(dest){ if(dest==="home") showPage("page-home"); else if(dest==="messages") showPage("page-inbox"); else toast(dest==="care"?"Care tab — concept screen":"My Health tab — concept screen"); }
@@ -835,12 +915,13 @@ topicsBtn.onclick = ()=>go("menu");
 sendBtn.onclick = sendText; sendBtn.disabled = true;
 ta.addEventListener("input", ()=>{ ta.style.height="auto"; ta.style.height=Math.min(ta.scrollHeight,90)+"px"; sendBtn.disabled=!ta.value.trim(); });
 ta.addEventListener("keydown", e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendText(); } });
+const micBtn=document.getElementById("mic"); if(micBtn) micBtn.onclick=toggleMic;
 
-document.getElementById("cov-btn").onclick = launchCoverage;
+document.getElementById("step-coverage").onclick = ()=>{ if(!coverageConfirmed) launchCoverage(); };
 document.getElementById("onhold").onclick = ()=>{ if(!coverageConfirmed) launchCoverage(); else if(!intakeComplete) launchIntake(); };
-document.getElementById("intake-btn").onclick = launchIntake;
+document.getElementById("task-intake").onclick = ()=>{ if(!intakeComplete) launchIntake(); };
 document.querySelectorAll(".ab-chip").forEach(b=>{ b.onclick=()=>askBold(b.dataset.q, b.dataset.go); });
-document.querySelectorAll(".ci-card[data-consent]").forEach(el=>{ el.querySelector(".ci-cta").onclick=()=>toast(el.dataset.consent+" — opens a review-and-sign page (concept)"); });
+document.querySelectorAll(".tcard[data-consent]").forEach(el=>{ el.onclick=()=>toast(el.dataset.consent+" — opens a review-and-sign page (concept)"); });
 document.querySelectorAll(".bottomnav").forEach(nav=>{ nav.addEventListener("click", e=>{ const it=e.target.closest(".navitem"); if(it) navTo(it.dataset.nav); }); });
 
 document.getElementById("restart").onclick = ()=>{
