@@ -431,9 +431,47 @@ const NODES = {
   covMedicare(){ return NODES.coverageDone("Medicare"); },
   covNone(){
     return {
-      text:["No worries at all — your Care Coordinator can sort this out with you in just a couple of minutes.",
-            "Give them a call at 424-577-5266 whenever works. In the meantime, I can get the rest of your setup started."],
-      sugg:[{label:"Start my setup anyway", go:"cov:carrier:", collect:true},{label:"I found my card", go:"coverageStart"}]
+      text:["No problem — let's figure it out together. What's easiest for you?"],
+      sugg:[
+        {label:"Scan my insurance card", key:"I'll read it for you", go:"covScan"},
+        {label:"Help me find my plan info", go:"covFind"},
+        {label:"Just start — confirm coverage later", go:"covLater"},
+        {label:"Talk to a Care Coordinator", go:"covCoordinator"}
+      ]
+    };
+  },
+  covScan(){
+    return {
+      text:["Great choice. In the app this opens your camera — snap a clear photo of the front of your card and I'll read your plan and member ID for you.",
+            "No typing, no squinting at the fine print."],
+      sugg:[{label:"I've taken the photo ✓", go:"cov:carrier:", collect:true},{label:"I'll pick from a list instead", go:"covFind"}]
+    };
+  },
+  covFind(){
+    return {
+      text:["Easy — grab your <b>Medicare</b> or <b>Medicaid</b> card, your insurer's app, or a recent statement.",
+            "Then just tell me who you're covered by:"],
+      sugg:[
+        {label:"Medicare", key:"Parts A & B", go:"covMedicare", collect:true},
+        {label:"Medicare Advantage", go:"covAdvantage", collect:true},
+        {label:"Medicaid", go:"cov:carrier:", collect:true},
+        {label:"Medicare & Medicaid (dual)", go:"cov:carrier:", collect:true},
+        {label:"Still not sure", go:"covLater"}
+      ]
+    };
+  },
+  covLater(){
+    return {
+      text:["Totally fine — I'll get the rest of your setup going now, and we'll confirm your coverage before anything's booked. Nothing gets scheduled until it's sorted.",
+            "You can add your plan details anytime from your checklist."],
+      sugg:[{label:"Great, start my setup", go:"cov:carrier:", collect:true},{label:"Actually, I found my card", go:"coverageStart"}]
+    };
+  },
+  covCoordinator(){
+    return {
+      text:["Happy to connect you. Your Care Coordinator can sort this out with you in a couple of minutes — call 424-577-5266 whenever works.",
+            "I can get the rest of your setup started in the meantime."],
+      sugg:[{label:"Start my setup meanwhile", go:"cov:carrier:", collect:true},{label:"Back to insurance options", go:"coverageStart"}]
     };
   },
   coverageDone(plan){
