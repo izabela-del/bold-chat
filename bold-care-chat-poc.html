@@ -277,15 +277,20 @@
          transition:transform .1s ease, box-shadow .15s ease;}
   .tcard:hover{transform:translateY(-1px); box-shadow:0 8px 10px -4px rgba(16,24,40,.05), 0 18px 26px -6px rgba(16,24,40,.13);}
   .tcard:active{transform:translateY(0);}
-  .tcard.done{cursor:default;}
-  .tcard.done:hover{transform:none; box-shadow:0 4px 6px -2px rgba(16,24,40,.03), 0 12px 16px -4px rgba(16,24,40,.08);}
+  /* Completed state — Figma "Callout / Completed" (node 188:8602): compact grey row, teal check, title only */
+  .tcard.done{cursor:default; background:#f5f5f5; align-items:center; gap:14px; box-shadow:none;}
+  .tcard.done:hover{transform:none; box-shadow:none;}
+  .tcard.done .tc-bullet{flex:0 0 24px; width:24px; height:24px; background:var(--teal);}
+  .tcard.done .tc-bullet svg{display:none;}
+  .tcard.done .tc-bullet::after{content:""; width:5px; height:9px; border:solid #fff; border-width:0 2px 2px 0; transform:rotate(45deg); margin-top:-1px;}
+  .tcard.done .tc-desc, .tcard.done .tc-tag{display:none;}
   .tcard .tc-bullet{flex:0 0 40px; width:40px; height:40px; border-radius:50%; background:#3366FF; display:flex; align-items:center; justify-content:center;}
   .tcard .tc-bullet svg{display:block;}
   .tcard .tc-main{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px;}
   .tcard .tc-top{display:flex; align-items:flex-start; justify-content:space-between; gap:8px;}
   .tcard .tc-title{font-size:16px; font-weight:600; line-height:24px; color:#171717;}
   .tcard .tc-desc{font-size:16px; font-weight:400; line-height:24px; color:#4d4d4d;}
-  .tcard.done .tc-title{color:var(--ink-soft);}
+  .tcard.done .tc-title{color:#171717;}
   .tcard .tc-tag{display:inline-flex; align-items:center; gap:4px; flex:0 0 auto; white-space:nowrap; background:#f5f5f5; color:#525252; border-radius:19px; min-height:24px; padding:4px 9px 4px 6px; font-size:12px; font-weight:600; line-height:16px;}
   .tcard .tc-tag svg{display:block; flex:0 0 auto;}
   .tcard .tc-tag.done{background:var(--teal-soft); color:var(--teal-ink);}
@@ -1035,18 +1040,19 @@ function renderHome(){
   const stepCov=document.getElementById("step-coverage");
   const lockedList=document.getElementById("locked-list");
   const lockedNote=document.getElementById("locked-note");
+  const covTitle=stepCov.querySelector(".tc-title");
   if(coverageConfirmed){
     gs.textContent="Great start, Carol — a couple more quick steps and you're set for your first visit.";
-    stepCov.classList.add("done"); doneTag(covTag);
+    stepCov.classList.add("done"); doneTag(covTag); if(covTitle) covTitle.textContent="Insurance coverage confirmed";
     covSub.textContent=(PROFILE.planName==="your plan"?"Coverage":PROFILE.planName)+" · $0 visit — confirmed";
     lockedList.hidden=false; lockedNote.hidden=true;
-    const task=document.getElementById("task-intake"), tag=document.getElementById("intake-tag"), count=document.getElementById("todo-count");
-    if(intakeComplete){ task.classList.add("done"); doneTag(tag); count.textContent="1 of 4 done"; }
-    else { task.classList.remove("done"); timeTag(tag,"3 min"); count.textContent="0 of 4 done"; }
+    const task=document.getElementById("task-intake"), tag=document.getElementById("intake-tag"), count=document.getElementById("todo-count"), taskTitle=task.querySelector(".tc-title");
+    if(intakeComplete){ task.classList.add("done"); doneTag(tag); if(taskTitle) taskTitle.textContent="Weight management intake complete"; count.textContent="1 of 4 done"; }
+    else { task.classList.remove("done"); timeTag(tag,"3 min"); if(taskTitle) taskTitle.textContent="Weight management intake"; count.textContent="0 of 4 done"; }
     ohWhy.textContent = intakeComplete ? "You're all set — your visit is confirmed for Mon, Nov 3." : "Almost there — finish your intake to lock in this time.";
   } else {
     gs.textContent="Welcome to Bold — let's get you ready for your first visit.";
-    stepCov.classList.remove("done"); timeTag(covTag,"2 min");
+    stepCov.classList.remove("done"); timeTag(covTag,"2 min"); if(covTitle) covTitle.textContent="Confirm your insurance";
     covSub.textContent="No cost surprises — we'll walk you through what's covered.";
     lockedList.hidden=true; lockedNote.hidden=false;
     ohWhy.textContent="On hold until we confirm your coverage — it only takes a minute.";
