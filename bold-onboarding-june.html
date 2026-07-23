@@ -71,6 +71,23 @@
   .typing i:nth-child(2){animation-delay:.18s} .typing i:nth-child(3){animation-delay:.36s}
   @keyframes blink{0%,60%,100%{opacity:.3} 30%{opacity:1}}
 
+  /* big June orb welcome hero (matches the main prototype) */
+  .chat-welcome{display:flex; flex-direction:column; align-items:center; text-align:center; padding:16px 6px 6px;}
+  .cworb{position:relative; width:112px; height:112px; margin:4px auto 18px; border-radius:50%; background:radial-gradient(circle at 48% 36%, #ffffff, #eef0ff 58%, #e7dbfb 100%); box-shadow:0 8px 24px rgba(123,58,240,.18); animation:orbfloat 6s ease-in-out infinite;}
+  .cworb::before{content:""; position:absolute; inset:-16px; border-radius:50%; z-index:-1; background:conic-gradient(from 200deg,#a78bff,#7cc4ff,#7ff0dd,#ffa6d4,#a78bff); filter:blur(26px); opacity:.7; animation:orbspin 9s linear infinite;}
+  .cworb::after{content:""; position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 50% 84%, rgba(150,120,210,.15), transparent 42%);}
+  .cworb-face{position:absolute; inset:0; z-index:2; border-radius:50%;}
+  .cworb-face .eyes{position:absolute; top:43%; left:50%; transform:translate(-50%,-50%); display:flex; gap:13px;}
+  .cworb-face .eye{width:13px; height:15px; border-radius:50%; background:#2e2050; position:relative; animation:orbBlink 4s infinite;}
+  .cworb-face .eye::after{content:""; position:absolute; top:16%; left:22%; width:36%; height:32%; border-radius:50%; background:rgba(255,255,255,.92);}
+  .cworb-face .mouth{position:absolute; top:57%; left:50%; transform:translateX(-50%); width:17px; height:5px; border:2.5px solid #2e2050; border-top-width:0; border-left-width:0; border-right-width:0; border-radius:0 0 22px 22px;}
+  @keyframes orbspin{to{transform:rotate(360deg)}}
+  @keyframes orbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes orbBlink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
+  .cw-title{font-family:"Source Serif 4",Georgia,serif; font-size:23px; font-weight:600; letter-spacing:-.3px; color:var(--ink); margin:0 0 9px;}
+  .cw-sub{font-size:15px; line-height:1.55; color:var(--ink-soft); max-width:300px; margin:0 auto 18px;}
+  .cw-go{width:auto; min-width:220px; padding:0 30px; margin:0 auto;}
+
   /* a control block (widgets rendered on the bot side) */
   .ctl{width:100%; animation:pop .2s ease;}
   .ctl.done{opacity:.55; pointer-events:none;}
@@ -205,6 +222,11 @@
 
   /* open-text composer — ask June anything, anytime */
   .composer{flex:0 0 auto; background:#fff; border-top:1px solid var(--line); padding:9px 12px 6px;}
+  .type-toggle{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:46px; border:1.5px dashed #cdc4ec; background:#faf8ff; color:var(--brand-press); font:inherit; font-size:14.5px; font-weight:800; border-radius:23px; cursor:pointer;}
+  .type-toggle:hover{background:var(--brand-soft); border-color:var(--brand);} .type-toggle svg{display:block;}
+  .composer .input-shell{display:none;}
+  .composer.open .type-toggle{display:none;}
+  .composer.open .input-shell{display:flex;}
   .input-shell{display:flex; gap:7px; align-items:center; background:#fff; border:1.5px solid #d9d2f2; border-radius:24px; padding:4px 5px 4px 15px;}
   .input-shell:focus-within{border-color:var(--brand);}
   .input-shell input{flex:1; min-width:0; border:0; outline:0; font:inherit; font-size:15px; color:var(--ink); background:transparent; padding:9px 0;}
@@ -252,9 +274,13 @@
 
       <div class="thread" id="thread"></div>
 
-      <div class="composer">
+      <div class="composer" id="composer">
+        <button class="type-toggle" id="typeToggle" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7.5 14h9"/></svg>
+          Type your own answer
+        </button>
         <div class="input-shell">
-          <input id="ta" type="text" placeholder="Ask June anything…" autocomplete="off">
+          <input id="ta" type="text" placeholder="Type or ask June anything…" autocomplete="off">
           <button class="mic" id="mic" type="button" title="Talk">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
           </button>
@@ -312,6 +338,22 @@ async function bot(text,{first=false}={}){
 }
 function control(node){ const wrap=el(`<div class="row bot"></div>`); const ctl=el(`<div class="ctl"></div>`); ctl.appendChild(node); wrap.appendChild(ctl); thread.appendChild(wrap); scroll(); return ctl; }
 function lock(ctl){ ctl.classList.add("done"); }
+/* big June orb welcome hero (like the main prototype) */
+function welcomeHero(){
+  return new Promise(resolve=>{
+    const node=el(`<div class="chat-welcome">
+      <div class="cworb" id="cw-orb"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
+      <div class="cw-title">Hi Carol — I'm June</div>
+      <div class="cw-sub">I'm your AI health assistant. I'll get you set up with Bold in about 2 minutes — your coverage, your cost, and your first visit. A real person on your care team is one tap away anytime.</div>
+      <button class="go cw-go">Let's get started</button>
+    </div>`);
+    node.querySelector(".cw-go").onclick=()=>{ node.querySelector(".cw-go").remove(); resolve(); };
+    thread.appendChild(node);
+    lastBotText="Hi Carol, I'm June, your AI health assistant. I'll get you set up with Bold in about 2 minutes — your coverage, your cost, and your first visit. A real person on your care team is one tap away anytime.";
+    if(autoRead) speakOne(lastBotText);
+    scroll();
+  });
+}
 
 /* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
 const sayBtn=document.getElementById("sayBtn"), sayLbl=document.getElementById("sayLbl");
@@ -677,9 +719,8 @@ async function run(){
   thread.innerHTML=""; setProgress(.04);
   Object.assign(PROFILE,{ goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
 
-  await bot("Hi, I'm June — Bold's AI health assistant. 👋", {first:true});
-  await bot("I'll get you set up in about 2 minutes. I'll ask a few quick things, sort out your coverage and cost, then book your first call. Anytime you want a real person, just say so.");
-  await bot("First, let's make sure your visits are covered — no cost surprises. Can you confirm a few details?");
+  await welcomeHero();
+  await bot("First, let's make sure your visits are covered — no cost surprises. Can you confirm a few details?", {first:true});
   await askIdentity();
   setProgress(.15);
   await bot(`Thanks, ${PROFILE.name}. Let me check your Medicare coverage…`);
@@ -799,6 +840,9 @@ function sendText(){
 sendBtn.onclick=sendText;
 ta.addEventListener("input",()=>{ sendBtn.disabled=!ta.value.trim(); });
 ta.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(); } });
+/* free-text input stays hidden until the member taps "Type your own answer" */
+const composer=document.getElementById("composer"), typeToggle=document.getElementById("typeToggle");
+typeToggle.onclick=()=>{ composer.classList.add("open"); ta.focus(); };
 
 /* ---------- voice input (Web Speech API), same as the main mock ---------- */
 const micBtn=document.getElementById("mic");
