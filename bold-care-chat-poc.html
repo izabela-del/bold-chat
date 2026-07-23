@@ -142,6 +142,11 @@
   .cw-sub{font-size:14px; line-height:1.5; color:var(--ink-soft); max-width:290px; margin:0 auto 13px;}
   .cw-say{margin:0 auto 14px;}
   .cw-sugg{justify-content:center; margin-bottom:2px;}
+  /* compact orb header shown above a task (coverage/intake) */
+  .chat-welcome.compact{padding:6px 6px 2px;}
+  .chat-welcome.compact .cworb{width:84px; height:84px; margin:0 auto 10px;}
+  .chat-welcome.compact .cw-title{font-size:19px; margin-bottom:4px;}
+  .chat-welcome.compact .cw-say{margin-bottom:16px;}
   @media (prefers-reduced-motion: reduce){ .cworb, .cworb::before, .cworb::after, .mic.on, .say .dots i{animation:none !important;} }
   .foot{text-align:center; font-size:10.5px; color:#6b6678; margin:9px 2px 0; line-height:1.4;}
   .esc{color:var(--brand-press); font-weight:700;}
@@ -818,24 +823,27 @@ function knownCardHTML(){
     </div>
     <p class="known-note">I use these so you never have to repeat yourself.</p></div>`;
 }
-function chatWelcome(){
+function chatWelcome(compact){
   thread.innerHTML="";
   const name = PROFILE.name || "there";
   const sub = coverageConfirmed
     ? "Your coverage is confirmed and on file, so I can give you straight answers — about your visit, your costs, or your medication. Ask me anything, or I'll connect you with your care team whenever you like."
     : "I can help with your coverage, your costs, and how your first visit works — and I'll get you to a real person on your care team whenever you want one. Ask me anything, or tap a topic to start.";
-  const sugg = coverageConfirmed ? NODES.menu().sugg
-    : [{label:"Confirm my insurance", go:"coverageStart"},{label:"How does a visit work?", go:"visit"},{label:"What will it cost?", go:"cost"}];
-  const wrap=document.createElement("div"); wrap.className="chat-welcome";
+  const wrap=document.createElement("div"); wrap.className="chat-welcome"+(compact?" compact":"");
   wrap.innerHTML = `<div class="cworb" id="cw-orb" role="button" tabindex="0" title="Tap to talk" aria-label="Tap to talk"></div>`+
     `<div class="cw-title">Hi ${esc(name)} — I'm Bold AI</div>`+
-    `<div class="cw-sub">${esc(sub)}</div>`;
+    (compact ? "" : `<div class="cw-sub">${esc(sub)}</div>`);
   const say=document.createElement("button"); say.type="button"; say.className="say cw-say"; say.innerHTML=SPEAK_LABEL;
-  const spoken=`Hi ${name}. ${sub}`; say.onclick=()=>sayText(spoken, say);
+  const spoken = compact ? `Hi ${name}, I'm Bold AI, your health assistant.` : `Hi ${name}. ${sub}`;
+  say.onclick=()=>sayText(spoken, say);
   wrap.appendChild(say);
-  const s=document.createElement("div"); s.className="sugg cw-sugg";
-  sugg.forEach(p=>{ const b=document.createElement("button"); b.type="button"; b.className="pill"; b.innerHTML=esc(p.label); b.onclick=()=>choose(p); s.appendChild(b); });
-  wrap.appendChild(s);
+  if(!compact){
+    const sugg = coverageConfirmed ? NODES.menu().sugg
+      : [{label:"Confirm my insurance", go:"coverageStart"},{label:"How does a visit work?", go:"visit"},{label:"What will it cost?", go:"cost"}];
+    const s=document.createElement("div"); s.className="sugg cw-sugg";
+    sugg.forEach(p=>{ const b=document.createElement("button"); b.type="button"; b.className="pill"; b.innerHTML=esc(p.label); b.onclick=()=>choose(p); s.appendChild(b); });
+    wrap.appendChild(s);
+  }
   thread.appendChild(wrap); scroll();
   const orb=document.getElementById("cw-orb");
   if(orb){ orb.onclick=toggleMic; orb.onkeydown=(e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggleMic(); } }; }
@@ -929,8 +937,8 @@ function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg
 
 /* ===== nav ===== */
 function showPage(id){ stopSpeak(); if(listening&&recog){ try{recog.stop();}catch(e){} } ["page-home","page-inbox","page-chat","page-simple"].forEach(p=>{ document.getElementById(p).hidden=(p!==id); }); const sb=document.querySelector(".statusbar"); if(sb) sb.style.background=(id==="page-home")?(window.SKY_BASE||"#fff"):"#fff"; if(id==="page-home") renderHome(); }
-function launchCoverage(){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; addBot(NODES.coverageStart()); showPage("page-chat"); }
-function launchIntake(){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; const c=document.createElement("div"); c.innerHTML=knownCardHTML(); thread.appendChild(c.firstChild); addBot(NODES.intakeStart()); showPage("page-chat"); }
+function launchCoverage(){ chatFromInbox=false; chatStarted=true; chatWelcome(true); addBot(NODES.coverageStart()); showPage("page-chat"); requestAnimationFrame(()=>{ thread.scrollTop=0; }); }
+function launchIntake(){ chatFromInbox=false; chatStarted=true; chatWelcome(true); const c=document.createElement("div"); c.innerHTML=knownCardHTML(); thread.appendChild(c.firstChild); addBot(NODES.intakeStart()); showPage("page-chat"); requestAnimationFrame(()=>{ thread.scrollTop=0; }); }
 function askBold(q, go){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; showPage("page-chat"); addMe(q); typing(); setTimeout(()=>{ untype(); addBot(resolve(go)); },450); }
 function openConv(id){
   if(id==="ai"){ chatFromInbox=true; if(!thread.querySelector(".row")){ chatWelcome(); } chatStarted=true; showPage("page-chat"); return; }
