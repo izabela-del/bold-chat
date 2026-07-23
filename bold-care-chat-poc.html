@@ -1051,10 +1051,11 @@ function renderHome(){
     const task=document.getElementById("task-intake"), tag=document.getElementById("intake-tag"), count=document.getElementById("todo-count"), taskTitle=task.querySelector(".tc-title");
     if(intakeComplete){ task.classList.add("done"); doneTag(tag); if(taskTitle) taskTitle.textContent="Weight management intake complete"; }
     else { task.classList.remove("done"); timeTag(tag,"3 min"); if(taskTitle) taskTitle.textContent="Weight management intake"; }
-    // counter tracks the follow-up tasks in the list
+    // counter tracks every step with a check — coverage included — so no done card goes uncounted
     const tasks = Array.from(lockedList.querySelectorAll(".tcard"));
-    const doneCount = tasks.filter(c=>c.classList.contains("done")).length;
-    count.textContent = doneCount + " of " + tasks.length + " done";
+    const counted = [stepCov, ...tasks];
+    const doneCount = counted.filter(c=>c.classList.contains("done")).length;
+    count.textContent = doneCount + " of " + counted.length + " done";
     // completed cards sink to the bottom of the list; coverage-confirmed sinks below all tasks
     const progress = lockedList.querySelector(".todo-progress");
     tasks.sort((a,b)=> (a.classList.contains("done")?1:0)-(b.classList.contains("done")?1:0))
