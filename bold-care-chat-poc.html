@@ -56,10 +56,10 @@
   .av.ai .cworb-face{background:radial-gradient(circle at 26% 65%, rgba(255,120,175,.6), transparent 17%), radial-gradient(circle at 74% 65%, rgba(255,120,175,.6), transparent 17%);}
   .av.ai .cworb-face .eyes{top:44%; gap:4px;}
   .av.ai .cworb-face .eye{width:5px; height:6px;}
-  .av.ai .cworb-face .mouth{width:6px; height:3px; border-width:1.8px; border-top-width:0; border-left-width:0; border-right-width:0; top:55%;}
+  .av.ai .cworb-face .mouth{width:6.5px; height:2.5px; border-width:1.6px; border-top-width:0; border-left-width:0; border-right-width:0; top:56%;}
   .conv .av.ai .cworb-face .eyes{gap:5px;}
   .conv .av.ai .cworb-face .eye{width:6px; height:7px;}
-  .conv .av.ai .cworb-face .mouth{width:7.5px; height:4px; border-width:2px; top:54%;}
+  .conv .av.ai .cworb-face .mouth{width:8px; height:3px; border-width:1.8px; top:55%;}
   .av.team{background:var(--teal);}
   .av.doc{background:#e9e6f0; color:#4a10bd;}
 
@@ -144,7 +144,7 @@
   .cworb-face .eyes{position:absolute; top:43%; left:50%; transform:translate(-50%,-50%); display:flex; gap:13px;}
   .cworb-face .eye{width:13px; height:15px; border-radius:50%; background:#2e2050; position:relative; animation:orbBlink 4s infinite;}
   .cworb-face .eye::after{content:""; position:absolute; top:16%; left:22%; width:36%; height:32%; border-radius:50%; background:rgba(255,255,255,.92);}
-  .cworb-face .mouth{position:absolute; top:56%; left:50%; transform:translateX(-50%); width:15px; height:7px; border:3px solid #2e2050; border-top-width:0; border-left-width:0; border-right-width:0; border-radius:0 0 30px 30px;}
+  .cworb-face .mouth{position:absolute; top:57%; left:50%; transform:translateX(-50%); width:17px; height:5px; border:2.5px solid #2e2050; border-top-width:0; border-left-width:0; border-right-width:0; border-radius:0 0 22px 22px;}
   .cworb:focus-visible{outline:2px solid var(--brand); outline-offset:4px;}
   .cworb.listening{animation:orbpulse 1s ease-in-out infinite;}
   .cworb.speaking{animation:orbpulse 1.7s ease-in-out infinite;}
@@ -161,7 +161,7 @@
   .chat-welcome.compact .cworb{width:84px; height:84px; margin:0 auto 10px;}
   .chat-welcome.compact .cworb-face .eyes{gap:10px;}
   .chat-welcome.compact .cworb-face .eye{width:11px; height:12px;}
-  .chat-welcome.compact .cworb-face .mouth{width:12px; height:6px; border-width:2.5px;}
+  .chat-welcome.compact .cworb-face .mouth{width:13px; height:4px; border-width:2.2px;}
   .chat-welcome.compact .cw-title{font-size:19px; margin-bottom:4px;}
   .chat-welcome.compact .cw-say{margin-bottom:16px;}
   @media (prefers-reduced-motion: reduce){ .cworb, .cworb::before, .cworb-face .eye, .mic.on, .say .dots i{animation:none !important;} }
@@ -737,6 +737,22 @@ const NODES = {
   crisis(){
     return { text:["I'm really glad you told me, and you don't have to go through this alone.","Please reach the 988 Suicide & Crisis Lifeline — call or text 988, anytime. If you're in danger right now, call 911.","I can also connect you with a real person on your care team, right now."],
       sugg:[{label:"Connect me with my care team", go:"escalate"}] };
+  },
+  hello(){
+    return { text:[`Hi ${PROFILE.name} — lovely to see you. I'm June, your AI health assistant here at Bold.`,"What can I help you with today? Ask me anything, or tap a topic below."],
+      sugg: NODES.menu().sugg };
+  },
+  thanks(){
+    return { text:["You're so welcome — anytime.","Is there anything else I can look into for you?"],
+      sugg: NODES.menu().sugg };
+  },
+  howareyou(){
+    return { text:["That's kind of you to ask — I'm doing well, and ready to help.","What's on your mind today? I can walk you through your coverage, costs, or how your visit works."],
+      sugg: NODES.menu().sugg };
+  },
+  fallback(){
+    return { text:["Good question. I'm best with the Bold side of things — your coverage, your costs, medication, and how your visits work. Tell me a little more and I'll do my best.","Here are a few things I can walk you through. And if you'd ever rather talk to a person, I can connect you with your care team — just say the word."],
+      sugg: NODES.menu().sugg };
   }
 };
 
@@ -746,16 +762,26 @@ function resolve(go){
   return NODES.escalate();
 }
 function routeText(t){
-  const s=t.toLowerCase(); const has=(...w)=>w.some(x=>s.includes(x));
+  const s=t.toLowerCase().trim(); const has=(...w)=>w.some(x=>s.includes(x));
+  // safety first
   if(has("chest pain","chest pressure","can't breathe","cannot breathe","trouble breathing","face drooping","slurred speech","passed out","fainting","severe allergic","heart attack","stroke")) return "emergency";
   if(has("suicide","kill myself","end my life","take my life","self-harm","hurt myself","want to die","don't want to live","no reason to live")) return "crisis";
+  // only hand off to a person when they ask, or for clinical judgment
+  if(has("talk to a person","talk to someone","speak to someone","speak to a person","speak with someone","real person","a real human","talk to a human","care coordinator","representative","live agent","human being")) return "escalate";
+  if(has("dose","dosage","refill","prescription","side effect","side-effect","lab result","my results","my labs","diagnos","interpret my")) return "escalate";
+  // small talk — keep it conversational
+  if(/^(hi|hii|hey|hello|hiya|yo|howdy|good (morning|afternoon|evening))\b/.test(s)) return "hello";
+  if(has("thank")) return "thanks";
+  if(has("how are you","how're you","how are u","how you doing","how r u","how's it going")) return "howareyou";
+  // topics
   if(has("insurance","coverage","covered","in-network","carrier","medicare","medicaid","member id","plan")) return coverageConfirmed ? "cost" : "coverageStart";
   if(has("cost","price","pay","copay","co-pay","afford","expensive","much","$","deductible")) return "cost";
   if(has("glp","ozempic","wegovy","zepbound","mounjaro","medication","medicine","drug","shot","injection","eligible","qualify","bridge")) return "glp1";
   if(has("book","schedule","sign up","get started","opening","ready to book")) return "book";
-  if(has("zoom","video","visit","appointment","call","download","telehealth","virtual","in person","in-person","office","ready")) return "visit";
+  if(has("zoom","video","visit","appointment","download","telehealth","virtual","in person","in-person","office","ready")) return "visit";
   if(has("what is bold","program","muscle","strength","pcp","doctor","how does bold","difference","intake")) return "program";
-  return "escalate";
+  // otherwise: a warm, conversational reply (not an escalation)
+  return "fallback";
 }
 
 /* ===== chat render ===== */
