@@ -33,7 +33,7 @@
   .restart{border:1px solid var(--line); background:#fff; color:var(--brand-press); font:inherit; font-size:13px; font-weight:800; padding:8px 14px; border-radius:10px; cursor:pointer; box-shadow:0 2px 8px rgba(28,20,54,.06);}
   .restart:hover{background:var(--brand-soft);}
 
-  .phone{width:393px; max-width:92vw; aspect-ratio:393 / 852; height:auto; background:#000; border-radius:52px; padding:11px;
+  .phone{aspect-ratio:393 / 852; height:min(852px, calc(100vh - 160px)); width:auto; max-width:92vw; background:#000; border-radius:52px; padding:11px;
     box-shadow:0 40px 80px -24px rgba(28,20,54,.55), 0 0 0 1px rgba(0,0,0,.4); position:relative;}
   .screen{position:relative; width:100%; height:100%; background:var(--page); border-radius:42px; overflow:hidden; display:flex; flex-direction:column;}
   .statusbar{height:46px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 30px; font-size:15px; font-weight:700; color:#000; z-index:6; background:#fff;}
@@ -203,7 +203,14 @@
   .callcard .cf{font-size:12.5px; color:var(--teal-ink); font-weight:700; margin-top:4px;}
   .sumcov{text-align:left; background:var(--teal-soft); border:1px solid #cfe9e2; border-radius:14px; padding:13px 14px; font-size:13.5px; color:var(--teal-ink); font-weight:600; line-height:1.5;}
 
-  .foot{flex:0 0 auto; text-align:center; font-size:10.5px; color:#6b6678; padding:9px 16px 12px; line-height:1.4; border-top:1px solid var(--line); background:#fff;}
+  /* open-text composer — ask June anything, anytime */
+  .composer{flex:0 0 auto; background:#fff; border-top:1px solid var(--line); padding:9px 12px 6px;}
+  .input-shell{display:flex; gap:7px; align-items:center; background:#fff; border:1.5px solid #d9d2f2; border-radius:24px; padding:4px 5px 4px 15px;}
+  .input-shell:focus-within{border-color:var(--brand);}
+  .input-shell input{flex:1; min-width:0; border:0; outline:0; font:inherit; font-size:15px; color:var(--ink); background:transparent; padding:9px 0;}
+  .send{border:0; background:var(--brand); color:#fff; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:18px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
+  .send:hover{background:var(--brand-press);} .send:disabled{opacity:.35; cursor:default;}
+  .foot{flex:0 0 auto; text-align:center; font-size:10.5px; color:#6b6678; padding:6px 16px 10px; line-height:1.4; background:#fff;}
 
   @media (prefers-reduced-motion: reduce){ *{animation:none !important;} .faq .ans{transition:none;} .prog .bar{transition:none;} }
   @media (max-width:460px){ .phone{width:100%; height:auto; border-radius:40px} .screen{border-radius:32px} }
@@ -241,6 +248,12 @@
 
       <div class="thread" id="thread"></div>
 
+      <div class="composer">
+        <div class="input-shell">
+          <input id="ta" type="text" placeholder="Ask June anything…" autocomplete="off">
+          <button class="send" id="send" title="Send" disabled>&#8593;</button>
+        </div>
+      </div>
       <div class="foot">June is Bold's AI assistant, not a medical provider · a real care coordinator confirms your coverage and cost before anything is prescribed · concept, not medical advice.</div>
 
       <!-- consent sheet -->
@@ -726,6 +739,40 @@ async function run(){
   await bot(`That's everything, ${PROFILE.name}. You're all set. 💜`);
   summary();
 }
+
+/* ---------- open-text chat: ask June anything, anytime (runs alongside the guided flow) ---------- */
+const ta=document.getElementById("ta"), sendBtn=document.getElementById("send");
+let replying=false;
+async function juneReply(t){
+  const s=t.toLowerCase();
+  let ans;
+  if(/chest pain|can'?t breathe|cannot breathe|trouble breathing|stroke|passed out|suicide|kill myself|harm myself|hurt myself|end my life|want to die/.test(s)){
+    ans="If this is a medical emergency, please call 911 right now. And if you're ever having thoughts of harming yourself, you can call or text 988 for the Suicide & Crisis Lifeline — 24/7, free. I can't help with emergencies myself, but real people are ready to.";
+  } else if(/\b(human|real person|someone|representative|agent|coordinator|talk to|speak to|call me)\b/.test(s)){
+    ans="Of course — you can reach a real person anytime. Your free 15-minute care coordinator call is part of getting set up, and they can go deeper on anything I can't. Want to keep going and book it?";
+  } else if(/glp|wegovy|ozempic|zepbound|semaglutide|mounjaro|medication|medicine|\bdrug/.test(s)){
+    ans="GLP-1s are FDA-approved medications that help with weight by gently curbing appetite. Whether one's right for you is a decision you and your Bold provider make together — and I'll show you exactly what it would cost before anything is prescribed.";
+  } else if(/cost|price|pay|how much|afford|copay|expensive|money|insurance|cover|\$/.test(s)){
+    ans="Your Bold visits are $0 with your plan. If a GLP-1 is ever prescribed, you'll see the exact cost first — a care coordinator confirms it for free before anything happens. No surprises.";
+  } else if(/safe|side effect|risk|dangerous|worried|scared|nervous|afraid/.test(s)){
+    ans="That's a really good thing to ask. Your provider reviews your full health picture and stays in the loop to keep you safe, adjusting the plan as you go. Anything specific on your mind? I can make sure your provider sees it.";
+  } else if(/how long|time|minutes|quick|fast/.test(s)){
+    ans="This takes about 2 minutes — just a few taps. You can stop and pick up anytime, and your free coordinator call is only 15 minutes.";
+  } else if(/^(hi|hello|hey|thanks|thank you|ok|okay|great|cool)\b/.test(s)){
+    ans="You're very welcome. I'm right here — ask me anything, or tap an option above whenever you're ready.";
+  } else {
+    ans="Good question. I'll make sure your care team can walk you through that on your call. For now, tap an option above and we'll keep going — and ask me anything along the way.";
+  }
+  await bot(ans);
+}
+function sendText(){
+  const t=(ta.value||"").trim(); if(!t||replying) return;
+  me(t); ta.value=""; sendBtn.disabled=true; replying=true;
+  juneReply(t).finally(()=>{ replying=false; });
+}
+sendBtn.onclick=sendText;
+ta.addEventListener("input",()=>{ sendBtn.disabled=!ta.value.trim(); });
+ta.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(); } });
 
 document.getElementById("restart").onclick=()=>{ if(speaking) speechSynthesis.cancel(); run(); };
 run();
