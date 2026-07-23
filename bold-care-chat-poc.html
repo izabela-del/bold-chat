@@ -68,31 +68,38 @@
   .krow .kv{color:var(--ink); font-weight:600;}
   .known-note{font-size:12px; color:var(--teal-ink); margin:10px 0 0; opacity:.85;}
 
+  /* Chat output — tuned for the 65+ audience: larger type, high contrast, roomy tap targets */
   .row{display:flex; flex-direction:column;}
+  .row + .row{margin-top:16px;}
   .row.me{align-items:flex-end;}
-  .who{font-size:11.5px; color:var(--ink-soft); font-weight:700; margin:0 0 4px 4px;}
-  .bubble{max-width:90%; padding:13px 15px; border-radius:var(--radius); font-size:15.5px; line-height:1.5; animation:pop .18s ease;}
+  .who{font-size:12px; color:var(--ink-soft); font-weight:700; letter-spacing:.01em; margin:0 0 5px 4px;}
+  .bubble{max-width:92%; padding:14px 16px; border-radius:var(--radius); font-size:16px; line-height:1.55; animation:pop .18s ease;}
   @keyframes pop{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
-  .bot .bubble{background:#f6f4fb; border:1px solid var(--line); border-top-left-radius:6px; color:var(--ink);}
-  .me .bubble{background:var(--user); color:var(--user-ink); border-top-right-radius:6px; font-weight:600;}
-  .bubble p{margin:0 0 9px;} .bubble p:last-child{margin-bottom:0;} .bubble b{font-weight:800;}
-  .why{background:var(--brand-soft); border-left:4px solid var(--brand); border-radius:9px; padding:9px 12px; margin:11px 0 2px; font-size:14px; color:#3a2b6b;}
-  .why b{color:var(--brand-press);}
-  .steps{margin:9px 0 0; padding-left:20px;} .steps li{margin:5px 0;}
-  .pay{border:1px solid #cfe9e2; border-radius:12px; overflow:hidden; margin:11px 0 2px;}
-  .pay .ph{background:var(--teal-soft); color:var(--teal-ink); font-weight:800; font-size:12px; padding:7px 12px;}
-  .pay .pb{display:flex;} .pay .pcol{flex:1; padding:10px 12px;} .pay .pcol+.pcol{border-left:1px solid #eee;}
-  .pay .pk{font-size:12px; color:var(--ink-soft); font-weight:700;} .pay .pv{font-size:19px; font-weight:800; margin:2px 0 0;} .pay .ps{font-size:11.5px; color:var(--ink-soft);}
-  .callout{display:flex; gap:8px; align-items:flex-start; background:var(--amber-soft); border-radius:9px; padding:9px 12px; margin-top:11px; font-size:13.5px; color:var(--amber-ink);}
-  .verified{display:flex; align-items:center; gap:9px; background:var(--teal-soft); border:1px solid #cfe9e2; border-radius:12px; padding:11px 13px; margin:11px 0 2px;}
-  .verified .vb{width:24px;height:24px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-  .verified .vt{font-size:14px;} .verified .vt b{font-weight:800;}
+  .bot .bubble{background:#f6f4fc; border:1px solid #ece6f8; border-top-left-radius:7px; color:var(--ink); box-shadow:0 1px 2px rgba(28,20,54,.04);}
+  .me .bubble{background:var(--user); color:var(--user-ink); border-top-right-radius:7px; font-weight:600;}
+  .bubble p{margin:0 0 10px;} .bubble p:last-child{margin-bottom:0;} .bubble b{font-weight:700;}
+  /* reasoning aside — Bold's "explain the why" gets a calm, labelled treatment (the signature) */
+  .why{background:#faf8ff; border:1px solid #ece6f8; border-radius:12px; padding:11px 13px 12px; margin:12px 0 2px; font-size:15px; line-height:1.5; color:#463a63;}
+  .why::before{content:"Why"; display:block; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--brand-press); margin-bottom:4px;}
+  .why b{color:var(--brand-press); font-weight:700;}
+  /* numbered steps — a real sequence, so the numbering carries meaning */
+  .steps{margin:12px 0 0; padding-left:0; list-style:none; counter-reset:step;}
+  .steps li{position:relative; padding-left:34px; margin:10px 0; font-size:15px; line-height:1.5;}
+  .steps li::before{counter-increment:step; content:counter(step); position:absolute; left:0; top:-1px; width:24px; height:24px; border-radius:50%; background:var(--brand-soft); color:var(--brand-press); font-size:12.5px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+  .pay{border:1px solid #cfe9e2; border-radius:14px; overflow:hidden; margin:12px 0 2px;}
+  .pay .ph{background:var(--teal-soft); color:var(--teal-ink); font-weight:800; font-size:12px; letter-spacing:.04em; text-transform:uppercase; padding:8px 13px;}
+  .pay .pb{display:flex;} .pay .pcol{flex:1; padding:11px 13px;} .pay .pcol+.pcol{border-left:1px solid #e8f2ef;}
+  .pay .pk{font-size:12.5px; color:var(--ink-soft); font-weight:700;} .pay .pv{font-size:21px; font-weight:800; margin:3px 0 0; color:var(--ink);} .pay .ps{font-size:12px; color:var(--ink-soft);}
+  .callout{display:flex; gap:9px; align-items:flex-start; background:var(--amber-soft); border-radius:12px; padding:11px 13px; margin-top:12px; font-size:14.5px; line-height:1.45; color:var(--amber-ink);}
+  .verified{display:flex; align-items:center; gap:11px; background:var(--teal-soft); border:1px solid #cfe9e2; border-radius:14px; padding:12px 14px; margin:12px 0 2px;}
+  .verified .vb{width:26px;height:26px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .verified .vt{font-size:15px; line-height:1.4;} .verified .vt b{font-weight:800;}
 
-  .sugg{display:flex; flex-wrap:wrap; gap:8px; margin:11px 0 2px;}
-  .pill{border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); padding:9px 14px; border-radius:22px; font:inherit; font-size:13.5px; font-weight:700; cursor:pointer; transition:transform .06s, background .12s, border-color .12s; line-height:1.25; text-align:left;}
+  .sugg{display:flex; flex-wrap:wrap; gap:9px; margin:13px 0 2px;}
+  .pill{border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); padding:11px 16px; border-radius:22px; font:inherit; font-size:15px; font-weight:700; cursor:pointer; transition:transform .06s, background .12s, border-color .12s; line-height:1.3; text-align:left;}
   .pill:hover{background:var(--brand-soft); border-color:var(--brand);} .pill:active{transform:scale(.97);}
   .pill.collect{border-style:dashed;}
-  .pill .k{display:block; font-size:11px; color:var(--ink-soft); font-weight:600; margin-top:2px;}
+  .pill .k{display:block; font-size:12px; color:var(--ink-soft); font-weight:600; margin-top:2px;}
 
   .typing{display:inline-flex; gap:4px; padding:3px 2px;}
   .typing i{width:8px;height:8px;border-radius:50%;background:#c3bdd6;animation:blink 1.1s infinite;}
@@ -402,7 +409,7 @@
             </div>
             <div class="id">
               <div class="av ai"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/><circle cx="18.5" cy="17.5" r="2.2" fill="#fff"/></svg></div>
-              <div><div class="name">Bold AI <span class="aitag">AI</span></div><div class="role">Care Coordinator · replies instantly</div></div>
+              <div><div class="name">Bold AI <span class="aitag">AI</span></div><div class="role">Bold's AI health assistant · here to help</div></div>
             </div>
           </div>
           <div class="thread" id="thread"></div>
@@ -463,7 +470,7 @@ const PROFILE = {
   name:"Carol", planName:"", visitCost:"a $0 copay",
   glp1Pathway:"bridge", bridgeCopay:"$50 a month",
   provider:"Dr. Desai", apptProposed:"Mon, Nov 3 · 9:00am",
-  program:"Bold doctor-supervised GLP-1 weight loss program"
+  program:"Bold's doctor-supervised GLP-1 care"
 };
 let MODE = "new";            // becomes "known" once coverage is confirmed
 let coverageConfirmed = false;
@@ -518,7 +525,7 @@ const NODES = {
     return {
       text:["Great choice. In the app this opens your camera — snap a clear photo of the front of your card and I'll read your plan and member ID for you.",
             "No typing, no squinting at the fine print."],
-      sugg:[{label:"I've taken the photo ✓", go:"cov:carrier:", collect:true},{label:"I'll pick from a list instead", go:"covFind"}]
+      sugg:[{label:"I've taken the photo", go:"cov:carrier:", collect:true},{label:"I'll pick from a list instead", go:"covFind"}]
     };
   },
   covFind(){
@@ -581,7 +588,7 @@ const NODES = {
   intakeDone(){
     intakeComplete = true;
     return {
-      text:["Perfect — that's your intake complete. ✓","That was the last form standing between you and your visit, so I can take it off hold. Last step is confirming your time."],
+      text:["That's your intake complete — nicely done.","It was the last thing between you and your visit, so I can take it off hold. Last step is confirming your time."],
       callout:"Back on your home screen, your intake now shows as done.",
       sugg:[{label:`Confirm ${PROFILE.apptProposed}`, go:"booked", collect:true},{label:"Pick a different time", go:"book"},{label:"Back to my checklist", go:"nav:home"}]
     };
@@ -589,7 +596,7 @@ const NODES = {
   intakeChanged(){
     intakeComplete = true;
     return {
-      text:["Thanks for telling me — I've flagged it so your provider can review it with you on the call. Nothing you need to do now.","That completes your intake. ✓ Ready to confirm your visit?"],
+      text:["Thanks for telling me. I've flagged it so your provider can go over it with you on the call — nothing for you to do now.","That completes your intake. Ready to confirm your visit?"],
       sugg:[{label:`Confirm ${PROFILE.apptProposed}`, go:"booked", collect:true},{label:"Pick a different time", go:"book"},{label:"Back to my checklist", go:"nav:home"}]
     };
   },
@@ -622,7 +629,7 @@ const NODES = {
   /* ---------- GLP-1 ---------- */
   glp1(){
     return {
-      text:[`From what we have on file, you look like a strong candidate for the ${PROFILE.program}, through the Medicare Bridge at a flat <b>${PROFILE.bridgeCopay}</b>.`],
+      text:[`From what we have on file, you may be a good fit for ${PROFILE.program}, through the Medicare Bridge at a flat <b>${PROFILE.bridgeCopay}</b>.`],
       pay:{visit:{k:"Initial visit", v:"$0", s:"out of pocket"}, med:{k:"GLP-1 (if prescribed)", v:"$50", s:"monthly copay"}},
       why:"The Bridge is for members with a BMI of 27+ and a qualifying condition, with no diagnosis that would route to Part D instead. Your provider confirms this on your visit.",
       callout:"You and your provider decide together. Nothing is prescribed without your understanding and agreement.",
@@ -669,8 +676,8 @@ const NODES = {
 
   /* ---------- PROGRAM ---------- */
   program(){
-    return { text:["Bold is a weight program built for adults over 65. The goal is to lose fat while keeping your muscle and strength — so you stay strong and independent.","Your provider looks at your whole health, then builds a personal Action Plan: nutrition, movement, and medication if it's the right fit for you."],
-      callout:"We go beyond just a number on the scale, and we work alongside your regular doctor — not instead of them.",
+    return { text:["Bold is a medically supervised weight program for adults 65 and up. The goal: lose fat while keeping your muscle and strength, so you stay strong and independent.","Your provider looks at your whole health, then builds a personal Care Plan — nutrition, movement, and medication if it's the right fit for you."],
+      callout:"It's about more than a number on the scale. And we work alongside your regular doctor, not instead of them.",
       sugg:[{label:"How is this different from my PCP?", go:"pcp"},{label:"Am I eligible for medication?", go:"glp1"}, READY] };
   },
   pcp(){
@@ -682,11 +689,20 @@ const NODES = {
     const base=[{label:"What is Bold?", go:"program"},{label:"What will this cost me?", go:"cost"},{label:"Am I eligible for medication?", go:"glp1"},{label:"How does the video visit work?", go:"visit"}];
     if(!coverageConfirmed) base.unshift({label:"Confirm my insurance", go:"coverageStart"});
     else base.push({label:"Book my first visit", go:"book"});
-    return { text:["Of course — what would you like to know?"], sugg:base };
+    base.push({label:"Talk to my care team", go:"escalate"});
+    return { text:["Of course — what would you like to know? And if you'd rather talk to a person, that's always an option."], sugg:base };
   },
   escalate(){
-    return { text:["I want to make sure you get the right answer on this one, so I'll pass you to a real person on your care team.","You can reach your Care Coordinator at 424-577-5266 — call or text. They'll follow up quickly."],
+    return { text:["Let me get your care team on this — a real person can give you the right answer here.","You can reach them at 424-577-5266, by call or text. Asking for a person is never the wrong move."],
       sugg: NODES.menu().sugg };
+  },
+  emergency(){
+    return { text:["If this feels like an emergency, please call 911 now, or your local emergency number.","Do that first. When you're safe, your care team is here for you at 424-577-5266."],
+      sugg:[{label:"Reach my care team", go:"escalate"}] };
+  },
+  crisis(){
+    return { text:["I'm really glad you told me, and you don't have to go through this alone.","Please reach the 988 Suicide & Crisis Lifeline — call or text 988, anytime. If you're in danger right now, call 911.","I can also connect you with a real person on your care team, right now."],
+      sugg:[{label:"Connect me with my care team", go:"escalate"}] };
   }
 };
 
@@ -697,6 +713,8 @@ function resolve(go){
 }
 function routeText(t){
   const s=t.toLowerCase(); const has=(...w)=>w.some(x=>s.includes(x));
+  if(has("chest pain","chest pressure","can't breathe","cannot breathe","trouble breathing","face drooping","slurred speech","passed out","fainting","severe allergic","heart attack","stroke")) return "emergency";
+  if(has("suicide","kill myself","end my life","take my life","self-harm","hurt myself","want to die","don't want to live","no reason to live")) return "crisis";
   if(has("insurance","coverage","covered","in-network","carrier","medicare","medicaid","member id","plan")) return coverageConfirmed ? "cost" : "coverageStart";
   if(has("cost","price","pay","copay","co-pay","afford","expensive","much","$","deductible")) return "cost";
   if(has("glp","ozempic","wegovy","zepbound","mounjaro","medication","medicine","drug","shot","injection","eligible","qualify","bridge")) return "glp1";
@@ -717,7 +735,7 @@ function rich(s){return esc(s).replace(/&lt;b&gt;/g,"<b>").replace(/&lt;\/b&gt;/
 function bubbleHTML(m){
   let h=m.text.map(p=>`<p>${rich(p)}</p>`).join("");
   if(m.verified) h+=`<div class="verified"><span class="vb">${CHECK}</span><span class="vt">${rich(m.verified)}</span></div>`;
-  if(m.why) h+=`<div class="why"><b>Here's why:</b> ${rich(m.why)}</div>`;
+  if(m.why) h+=`<div class="why">${rich(m.why)}</div>`;
   if(m.pay) h+=`<div class="pay"><div class="ph">What you'll pay</div><div class="pb">`+
     `<div class="pcol"><div class="pk">${esc(m.pay.visit.k)}</div><div class="pv">${esc(m.pay.visit.v)}</div><div class="ps">${esc(m.pay.visit.s)}</div></div>`+
     `<div class="pcol"><div class="pk">${esc(m.pay.med.k)}</div><div class="pv">${esc(m.pay.med.v)}</div><div class="ps">${esc(m.pay.med.s)}</div></div></div></div>`;
@@ -804,8 +822,8 @@ function chatWelcome(){
   thread.innerHTML="";
   const name = PROFILE.name || "there";
   const sub = coverageConfirmed
-    ? "Good to see you again — your coverage is confirmed and on file, so I can give you real answers about your visit, your costs, or your medication. Ask me anything, or tap a topic to start."
-    : "I'm your care coordinator, here to answer anything about Bold — your coverage, what a visit costs, or how it all works. Ask me anything, or tap a topic to start.";
+    ? "Your coverage is confirmed and on file, so I can give you straight answers — about your visit, your costs, or your medication. Ask me anything, or I'll connect you with your care team whenever you like."
+    : "I can help with your coverage, your costs, and how your first visit works — and I'll get you to a real person on your care team whenever you want one. Ask me anything, or tap a topic to start.";
   const sugg = coverageConfirmed ? NODES.menu().sugg
     : [{label:"Confirm my insurance", go:"coverageStart"},{label:"How does a visit work?", go:"visit"},{label:"What will it cost?", go:"cost"}];
   const wrap=document.createElement("div"); wrap.className="chat-welcome";
