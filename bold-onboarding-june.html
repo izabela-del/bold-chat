@@ -327,6 +327,7 @@ const PROFILE = { name:"Carol", dob:"", state:"", insurer:"UnitedHealthcare", co
 
 /* ---------- helpers ---------- */
 function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstElementChild; }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function scroll(){ requestAnimationFrame(()=>{ thread.scrollTop=thread.scrollHeight; }); }
 function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 function setProgress(p){ pbar.style.width=Math.min(100,Math.round(p*100))+"%"; }
@@ -716,7 +717,7 @@ function summary(){
     : PROFILE.outcome==="partd" ? "Visits are $0. If a GLP-1 is prescribed, it's covered under Part D — your coordinator confirms the exact cost, free, before anything is prescribed."
     : "Visits are $0. You're starting with a lifestyle plan; your provider can revisit medication if your needs or coverage change.");
   const node=el(`<div class="allset">
-    <div class="big">You're all set, ${PROFILE.name}! 🎉</div>
+    <div class="big">You're all set, ${esc(PROFILE.name)}! 🎉</div>
     <p class="lead">Your care coordinator will call you at your scheduled time to confirm everything and book your provider visit.</p>
     <div class="callcard">
       <div class="ch">Upcoming call</div>
