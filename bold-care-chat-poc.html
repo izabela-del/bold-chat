@@ -443,7 +443,7 @@
             </div>
             <div class="id">
               <div class="av ai"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
-              <div><div class="name">Bold AI <span class="aitag">AI</span></div><div class="role">Bold's AI health assistant · here to help</div></div>
+              <div><div class="name">June <span class="aitag">AI</span></div><div class="role">Bold's AI health assistant · here to help</div></div>
             </div>
           </div>
           <div class="thread" id="thread"></div>
@@ -458,7 +458,7 @@
               </button>
               <button class="send" id="send" title="Send">&#8593;</button>
             </div>
-            <div class="foot">Prototype · not medical advice · anything I can't answer goes to your
+            <div class="foot">June is Bold's AI assistant, not a medical provider · prototype, not medical advice · anything I can't answer goes to your
               <span class="esc">Care Coordinator at 424-577-5266</span>.</div>
           </div>
         </div>
@@ -822,7 +822,7 @@ function toggleMic(){
 
 function addBot(m){
   const row=document.createElement("div"); row.className="row bot";
-  row.innerHTML=`<div class="who">Bold AI</div><div class="bubble">${bubbleHTML(m)}</div>`;
+  row.innerHTML=`<div class="who">June</div><div class="bubble">${bubbleHTML(m)}</div>`;
   const spoken=(m.text||[]).join(" ").replace(/<\/?b>/g,"").trim();
   if(spoken){ const say=document.createElement("button"); say.type="button"; say.className="say"; say.innerHTML=SPEAK_LABEL; say.onclick=()=>sayText(spoken, say); row.appendChild(say); }
   if(m.sugg && m.sugg.length){
@@ -856,14 +856,14 @@ function chatWelcome(compact){
   thread.innerHTML="";
   const name = PROFILE.name || "there";
   const sub = coverageConfirmed
-    ? "Your coverage is confirmed and on file, so I can give you straight answers — about your visit, your costs, or your medication. Ask me anything, or I'll connect you with your care team whenever you like."
-    : "I can help with your coverage, your costs, and how your first visit works — and I'll get you to a real person on your care team whenever you want one. Ask me anything, or tap a topic to start.";
+    ? "I'm your AI health assistant. Your coverage is confirmed and on file, so I can give you straight answers — about your visit, your costs, or your medication. Ask me anything, or I'll connect you with your care team whenever you like."
+    : "I'm your AI health assistant. I can help with your coverage, your costs, and how your first visit works — and I'll get you to a real person on your care team whenever you want one. Ask me anything, or tap a topic to start.";
   const wrap=document.createElement("div"); wrap.className="chat-welcome"+(compact?" compact":"");
   wrap.innerHTML = `<div class="cworb" id="cw-orb" role="button" tabindex="0" title="Tap to talk" aria-label="Tap to talk"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>`+
-    `<div class="cw-title">Hi ${esc(name)} — I'm Bold AI</div>`+
+    `<div class="cw-title">Hi ${esc(name)} — I'm June</div>`+
     (compact ? "" : `<div class="cw-sub">${esc(sub)}</div>`);
   const say=document.createElement("button"); say.type="button"; say.className="say cw-say"; say.innerHTML=SPEAK_LABEL;
-  const spoken = compact ? `Hi ${name}, I'm Bold AI, your health assistant.` : `Hi ${name}. ${sub}`;
+  const spoken = compact ? `Hi ${name}, I'm June, your AI health assistant.` : `Hi ${name}. ${sub}`;
   say.onclick=()=>sayText(spoken, say);
   wrap.appendChild(say);
   if(!compact){
@@ -889,7 +889,7 @@ function convData(){
   const aiPreview = coverageConfirmed ? `Coverage confirmed — ask me anything, ${PROFILE.name}.` : "First, let's confirm your insurance to cover your visit.";
   return [
     { id:"ai", av:'<div class="av ai"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>',
-      name:"Bold AI", ai:true, role:"AI health assistant · replies instantly", preview:aiPreview, time:"now", unread:!coverageConfirmed },
+      name:"June", ai:true, role:"AI health assistant · replies instantly", preview:aiPreview, time:"now", unread:!coverageConfirmed },
     { id:"team", av:'<div class="av team"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="9" r="3" stroke="#fff" stroke-width="1.6"/><circle cx="16.5" cy="10" r="2.4" stroke="#fff" stroke-width="1.6"/><path d="M4 19c0-2.8 2.2-5 5-5s5 2.2 5 5M15 19c0-2 .8-3.6 2.2-4.4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>',
       name:"Bold Care Team", role:"Nurses & coordinators · Mon–Fri, 8–6", preview:"We'll confirm your coverage before your visit.", time:"9:12 AM", unread:false },
     { id:"doc", av:'<img class="av doc" src="profile-avatar.png" alt="Dr. Mitul S. Desai, MD">',
@@ -905,7 +905,7 @@ function renderInbox(){
     inbox.appendChild(row);
   });
   const note=document.createElement("div"); note.className="inbox-note";
-  note.innerHTML="Bold AI answers instantly, any hour. For anything clinical, it hands you to your care team or doctor.";
+  note.innerHTML="June answers instantly, any hour — and for anything clinical, connects you with your care team or doctor.";
   inbox.appendChild(note);
 }
 
