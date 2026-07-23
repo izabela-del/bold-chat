@@ -52,7 +52,7 @@
   .aitag{font-size:10px; font-weight:800; color:#fff; background:var(--brand); padding:1px 6px; border-radius:6px; letter-spacing:.4px;}
 
   .av{width:38px; height:38px; border-radius:50%; flex:0 0 auto; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:14px; object-fit:cover;}
-  .av.ai{background:linear-gradient(135deg,#7b3af0,#5b16e0);}
+  .av.ai{background:conic-gradient(from 120deg,#7b3af0,#2f8bff,#12c2c2,#ff5fa2,#7b3af0);}
   .av.team{background:var(--teal);}
   .av.doc{background:#e9e6f0; color:#4a10bd;}
 
@@ -174,7 +174,7 @@
 
   /* Today / home */
   .homehead{flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:8px 15px 6px; transition:background .6s ease;}
-  .homehead .wm{font-weight:900; font-style:italic; font-size:22px; letter-spacing:.4px; color:#16121f;}
+  .homehead .wm-logo{height:28px; width:auto; display:block;}
   .homehead .cs{width:34px; height:34px; border-radius:50%; background:var(--brand); color:#fff; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center;}
   .home{flex:1 1 auto; overflow-y:auto; padding:4px 15px 8px;} .home::-webkit-scrollbar{width:0}
   .greet{position:relative; z-index:2; font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-size:26px; font-weight:600; letter-spacing:-.3px; margin:6px 0 4px;}
@@ -291,7 +291,7 @@
 
         <!-- ============ TODAY / HOME ============ -->
         <div class="page" id="page-home">
-          <div class="homehead"><span class="wm">BOLD</span><span class="cs">CS</span></div>
+          <div class="homehead"><img class="wm-logo" src="BoldLogo.png" alt="Bold"><span class="cs">CS</span></div>
           <div class="home">
             <div class="sky" id="sky">
               <div class="glow" id="glow"></div>
@@ -852,7 +852,7 @@ function convData(){
   const aiPreview = coverageConfirmed ? `Coverage confirmed — ask me anything, ${PROFILE.name}.` : "First, let's confirm your insurance to cover your visit.";
   return [
     { id:"ai", av:'<div class="av ai"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" fill="#fff"/><circle cx="18.5" cy="17.5" r="2.2" fill="#fff"/></svg></div>',
-      name:"Bold AI", ai:true, role:"Care Coordinator · instant answers", preview:aiPreview, time:"now", unread:!coverageConfirmed },
+      name:"Bold AI", ai:true, role:"AI health assistant · replies instantly", preview:aiPreview, time:"now", unread:!coverageConfirmed },
     { id:"team", av:'<div class="av team"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="9" r="3" stroke="#fff" stroke-width="1.6"/><circle cx="16.5" cy="10" r="2.4" stroke="#fff" stroke-width="1.6"/><path d="M4 19c0-2.8 2.2-5 5-5s5 2.2 5 5M15 19c0-2 .8-3.6 2.2-4.4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>',
       name:"Bold Care Team", role:"Nurses & coordinators · Mon–Fri, 8–6", preview:"We'll confirm your coverage before your visit.", time:"9:12 AM", unread:false },
     { id:"doc", av:'<img class="av doc" src="profile-avatar.png" alt="Dr. Mitul S. Desai, MD">',
@@ -933,7 +933,7 @@ function launchCoverage(){ chatFromInbox=false; chatStarted=true; thread.innerHT
 function launchIntake(){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; const c=document.createElement("div"); c.innerHTML=knownCardHTML(); thread.appendChild(c.firstChild); addBot(NODES.intakeStart()); showPage("page-chat"); }
 function askBold(q, go){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; showPage("page-chat"); addMe(q); typing(); setTimeout(()=>{ untype(); addBot(resolve(go)); },450); }
 function openConv(id){
-  if(id==="ai"){ chatFromInbox=true; if(!chatStarted){ chatWelcome(); chatStarted=true; } showPage("page-chat"); return; }
+  if(id==="ai"){ chatFromInbox=true; if(!thread.querySelector(".row")){ chatWelcome(); } chatStarted=true; showPage("page-chat"); return; }
   openSimple(id);
 }
 function navTo(dest){ if(dest==="home") showPage("page-home"); else if(dest==="messages") showPage("page-inbox"); else toast(dest==="care"?"Care tab — concept screen":"My Health tab — concept screen"); }
