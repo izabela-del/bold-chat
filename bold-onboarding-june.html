@@ -210,6 +210,10 @@
   .input-shell input{flex:1; min-width:0; border:0; outline:0; font:inherit; font-size:15px; color:var(--ink); background:transparent; padding:9px 0;}
   .send{border:0; background:var(--brand); color:#fff; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:18px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
   .send:hover{background:var(--brand-press);} .send:disabled{opacity:.35; cursor:default;}
+  .mic{flex:0 0 auto; width:40px; height:40px; border-radius:50%; border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .12s, border-color .12s;}
+  .mic:hover{background:var(--brand-soft); border-color:var(--brand);} .mic svg{display:block;}
+  .mic.on{background:#fde8ee; border-color:#f3b6c8; color:#c2185b; animation:micpulse 1.2s ease-in-out infinite;}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(194,24,91,.30)}50%{box-shadow:0 0 0 7px rgba(194,24,91,0)}}
   .foot{flex:0 0 auto; text-align:center; font-size:10.5px; color:#6b6678; padding:6px 16px 10px; line-height:1.4; background:#fff;}
 
   @media (prefers-reduced-motion: reduce){ *{animation:none !important;} .faq .ans{transition:none;} .prog .bar{transition:none;} }
@@ -251,6 +255,9 @@
       <div class="composer">
         <div class="input-shell">
           <input id="ta" type="text" placeholder="Ask June anything…" autocomplete="off">
+          <button class="mic" id="mic" type="button" title="Talk">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+          </button>
           <button class="send" id="send" title="Send" disabled>&#8593;</button>
         </div>
       </div>
@@ -773,6 +780,22 @@ function sendText(){
 sendBtn.onclick=sendText;
 ta.addEventListener("input",()=>{ sendBtn.disabled=!ta.value.trim(); });
 ta.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(); } });
+
+/* ---------- voice input (Web Speech API), same as the main mock ---------- */
+const micBtn=document.getElementById("mic");
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog=null, listening=false;
+function toggleMic(){
+  if(!SR){ return; }
+  if(listening){ try{ if(recog) recog.stop(); }catch(e){} return; }
+  recog=new SR(); recog.lang="en-US"; recog.interimResults=true; recog.continuous=false;
+  recog.onstart=()=>{ listening=true; micBtn.classList.add("on"); ta.placeholder="Listening…"; };
+  recog.onresult=(e)=>{ let s=""; for(let i=0;i<e.results.length;i++) s+=e.results[i][0].transcript; ta.value=s; sendBtn.disabled=!ta.value.trim(); };
+  recog.onerror=()=>{};
+  recog.onend=()=>{ listening=false; micBtn.classList.remove("on"); ta.placeholder="Ask June anything…"; if(ta.value.trim()) sendText(); };
+  try{ recog.start(); }catch(e){}
+}
+if(SR){ micBtn.onclick=toggleMic; } else { micBtn.style.display="none"; }
 
 document.getElementById("restart").onclick=()=>{ if(speaking) speechSynthesis.cancel(); run(); };
 run();
