@@ -281,7 +281,7 @@
 
       <div class="thread" id="thread"></div>
 
-      <div class="composer" id="composer">
+      <div class="composer" id="composer" hidden>
         <button class="type-toggle" id="typeToggle" type="button">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7.5 14h9"/></svg>
           Type your own answer
@@ -323,7 +323,7 @@
 const thread = document.getElementById("thread");
 const pbar = document.getElementById("pbar");
 
-const PROFILE = { name:"Carol", dob:"", state:"", insurer:"UnitedHealthcare", goal:"", conditions:[], contra:[], height:{ft:5,in:4}, weight:190, bmi:0, glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge" };
+const PROFILE = { name:"Carol", dob:"", state:"", insurer:"UnitedHealthcare", coverageConfirmed:false, goal:"", conditions:[], contra:[], height:{ft:5,in:4}, weight:190, bmi:0, glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge" };
 
 /* ---------- helpers ---------- */
 function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstElementChild; }
@@ -735,9 +735,12 @@ function summary(){
    ============================================================ */
 async function run(){
   thread.innerHTML=""; setProgress(.04);
-  Object.assign(PROFILE,{ goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
+  composer.hidden=true; composer.classList.remove("open"); // no free-text on the welcome screen
+  aiHistory=[];
+  Object.assign(PROFILE,{ coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
 
   await welcomeHero();
+  composer.hidden=false; // reveal the "Type your own answer" option once the conversation begins
   await bot("First, let's make sure your visits are covered — no cost surprises. Can you confirm a few details?", {first:true});
   await askIdentity();
   setProgress(.15);
@@ -745,6 +748,7 @@ async function run(){
   await wait(500);
   await bot("Great news — I found your plan, and your Bold visits are fully covered.");
   await showInsurance();
+  PROFILE.coverageConfirmed=true;
   setProgress(.28);
 
   await bot("What would you most like Bold to help you with?");
@@ -828,6 +832,44 @@ async function run(){
 /* ---------- open-text chat: ask June anything, anytime (runs alongside the guided flow) ---------- */
 const ta=document.getElementById("ta"), sendBtn=document.getElementById("send");
 let replying=false;
+
+/* ---------- live June backend: real Claude answers via the Vercel proxy ----------
+   Defaults on (same origin as the main mock, so CORS allows it). Emergencies are
+   caught client-side before any network call; if the proxy is unreachable, we fall
+   back to the canned juneReply(). Override the endpoint with ?proxy=<url>. */
+const JUNE_DEFAULT_PROXY="https://bold-chat.vercel.app/api/june";
+let JUNE_PROXY=(()=>{ try{ const p=new URLSearchParams(location.search).get("proxy"); if(p!==null){ localStorage.setItem("june_proxy",p); return p; } return localStorage.getItem("june_proxy")||JUNE_DEFAULT_PROXY; }catch(e){ return JUNE_DEFAULT_PROXY; } })();
+let aiHistory=[];
+function memberContext(){
+  return { name:PROFILE.name||"there",
+    state: PROFILE.goal==="weight" ? "weight-management onboarding" : (PROFILE.goal ? "onboarding" : "new sign-up"),
+    coverage_confirmed: !!PROFILE.coverageConfirmed,
+    plan: PROFILE.insurer||"" };
+}
+function splitParas(s){ return String(s).trim().split(/\n{2,}/).map(x=>x.replace(/\s*\n\s*/g," ").trim()).filter(Boolean); }
+function addBotBubble(text){ const r=el(`<div class="row bot"><div class="bubble"></div></div>`); r.querySelector(".bubble").textContent=text; thread.appendChild(r); scroll(); }
+function safetyText(t){ const s=t.toLowerCase();
+  if(/chest pain|can'?t breathe|cannot breathe|trouble breathing|stroke|passed out|suicide|kill myself|harm myself|hurt myself|end my life|want to die/.test(s))
+    return "If this is a medical emergency, please call 911 right now. And if you're ever having thoughts of harming yourself, you can call or text 988 for the Suicide & Crisis Lifeline — 24/7, free. I can't help with emergencies myself, but real people are ready to.";
+  return null;
+}
+async function askJune(text){
+  aiHistory.push({role:"user", content:text});
+  const typing=el(`<div class="row bot"><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
+  thread.appendChild(typing); scroll();
+  try{
+    const res=await fetch(JUNE_PROXY,{ method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({ messages: aiHistory.slice(-20), member: memberContext() }) });
+    const data=await res.json().catch(()=>null);
+    typing.remove();
+    if(res.ok && data && data.text){
+      aiHistory.push({role:"assistant", content:data.text});
+      splitParas(data.text).forEach(p=>addBotBubble(p));
+      lastBotText=data.text; if(autoRead) speakOne(data.text);
+    } else { await juneReply(text); }
+  }catch(e){ typing.remove(); await juneReply(text); }
+}
+
 async function juneReply(t){
   const s=t.toLowerCase();
   let ans;
@@ -853,7 +895,10 @@ async function juneReply(t){
 function sendText(){
   const t=(ta.value||"").trim(); if(!t||replying) return;
   me(t); ta.value=""; sendBtn.disabled=true; replying=true;
-  juneReply(t).finally(()=>{ replying=false; });
+  const safe=safetyText(t);
+  if(safe){ bot(safe).finally(()=>{ replying=false; }); return; }        // emergencies: no network
+  if(JUNE_PROXY){ askJune(t).finally(()=>{ replying=false; }); return; } // real Claude
+  juneReply(t).finally(()=>{ replying=false; });                        // canned fallback
 }
 sendBtn.onclick=sendText;
 ta.addEventListener("input",()=>{ sendBtn.disabled=!ta.value.trim(); });
