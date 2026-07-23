@@ -730,13 +730,26 @@ const SPEAK_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" 
 const SPEAK_LABEL = SPEAK_ICON+"Read aloud";
 const STOP_LABEL = `<span class="dots"><i></i><i></i><i></i><i></i></span>Stop`;
 let curSay=null;
+/* pick the most natural-sounding available voice (Google/Neural/Premium beat the default robotic one) */
+let bestVoice=null;
+function pickVoice(){
+  if(!("speechSynthesis" in window)) return null;
+  const vs=speechSynthesis.getVoices(); if(!vs.length) return null;
+  const en=vs.filter(v=>/^en(-|_|$)/i.test(v.lang)); const pool=en.length?en:vs;
+  const prefs=[/natural/i,/neural/i,/premium/i,/enhanced/i,/google us english/i,/google uk english female/i,/\bava\b/i,/\bzoe\b/i,/\bjenny\b/i,/\baria\b/i,/\bserena\b/i,/\ballison\b/i,/\bnicky\b/i,/samantha/i];
+  for(const re of prefs){ const m=pool.find(v=>re.test(v.name)); if(m) return m; }
+  return pool.find(v=>/female/i.test(v.name))||pool[0];
+}
+if("speechSynthesis" in window){ bestVoice=pickVoice(); speechSynthesis.onvoiceschanged=()=>{ bestVoice=pickVoice(); }; }
 function orbSetState(s){ const o=document.getElementById("cw-orb"); if(o) o.className="cworb"+(s?" "+s:""); }
 function stopSpeak(){ try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} if(curSay){ curSay.classList.remove("speaking"); curSay.innerHTML=SPEAK_LABEL; curSay=null; } orbSetState(""); }
 function sayText(text, btn){
   if(!("speechSynthesis" in window)){ toast("Read-aloud isn't supported in this browser."); return; }
   if(curSay===btn){ stopSpeak(); return; }
   stopSpeak();
-  const u=new SpeechSynthesisUtterance(text); u.rate=1.0; u.pitch=1.0; u.lang="en-US";
+  const u=new SpeechSynthesisUtterance(text);
+  const v=bestVoice||(bestVoice=pickVoice()); if(v){ u.voice=v; u.lang=v.lang; } else { u.lang="en-US"; }
+  u.rate=0.97; u.pitch=1.02;
   u.onend=()=>{ if(curSay===btn){ btn.classList.remove("speaking"); btn.innerHTML=SPEAK_LABEL; curSay=null; orbSetState(""); } };
   curSay=btn; btn.classList.add("speaking"); btn.innerHTML=STOP_LABEL; orbSetState("speaking");
   speechSynthesis.speak(u);
