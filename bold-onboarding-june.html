@@ -839,6 +839,7 @@ let replying=false;
    caught client-side before any network call; if the proxy is unreachable, we fall
    back to the canned juneReply(). Override the endpoint with ?proxy=<url>. */
 const JUNE_DEFAULT_PROXY="https://bold-chat.vercel.app/api/june";
+const JUNE_CLIENT_TOKEN="bjk_2f9Qv7Lp2Xr8Ka1Ns6Tz"; // handshake; set the same value as JUNE_CLIENT_TOKEN in Vercel
 let JUNE_PROXY=(()=>{ try{ const p=new URLSearchParams(location.search).get("proxy"); if(p!==null){ localStorage.setItem("june_proxy",p); return p; } return localStorage.getItem("june_proxy")||JUNE_DEFAULT_PROXY; }catch(e){ return JUNE_DEFAULT_PROXY; } })();
 let aiHistory=[];
 function memberContext(){
@@ -859,7 +860,7 @@ async function askJune(text){
   const typing=el(`<div class="row bot"><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
   thread.appendChild(typing); scroll();
   try{
-    const res=await fetch(JUNE_PROXY,{ method:"POST", headers:{"content-type":"application/json"},
+    const res=await fetch(JUNE_PROXY,{ method:"POST", headers:{"content-type":"application/json","x-june-key":JUNE_CLIENT_TOKEN},
       body: JSON.stringify({ messages: aiHistory.slice(-20), member: memberContext() }) });
     const data=await res.json().catch(()=>null);
     typing.remove();

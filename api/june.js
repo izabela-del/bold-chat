@@ -9,7 +9,9 @@
  *   1. Import this repo at vercel.com/new (or run `vercel` in the repo root).
  *      Vercel auto-detects this file as a serverless function at /api/june.
  *   2. Project → Settings → Environment Variables:
- *        ANTHROPIC_API_KEY = sk-ant-...   (then redeploy)
+ *        ANTHROPIC_API_KEY = sk-ant-...              (required)
+ *        JUNE_CLIENT_TOKEN = <same token the app sends in x-june-key>   (optional handshake)
+ *      then redeploy.
  *   3. Your function URL is  https://<project>.vercel.app/api/june
  *   4. Arm the app once with it (saved in the browser afterward):
  *        https://izabela-del.github.io/bold-chat/bold-care-chat-poc.html?proxy=https://<project>.vercel.app/api/june
@@ -25,6 +27,20 @@ const ALLOWED_ORIGINS = [
 ];
 
 const MODEL = "claude-opus-4-8"; // swap to "claude-sonnet-5" or "claude-haiku-4-5" for a cheaper/faster demo
+
+// Best-effort per-IP rate limiting. Serverless instances are ephemeral and can scale
+// out, so this throttles casual abuse per warm instance — it is NOT a hard guarantee.
+// The real cost backstop is a spend limit on the Anthropic key (set in the console).
+const RATE = { windowMs: 60 * 1000, max: 20 };
+const HITS = new Map(); // ip -> [timestamps]
+function rateLimited(ip) {
+  const now = Date.now();
+  const arr = (HITS.get(ip) || []).filter((t) => now - t < RATE.windowMs);
+  arr.push(now);
+  HITS.set(ip, arr);
+  if (HITS.size > 5000) { for (const [k, v] of HITS) { if (!v.length || now - v[v.length - 1] > RATE.windowMs) HITS.delete(k); } }
+  return arr.length > RATE.max;
+}
 
 function systemPrompt(member) {
   const name = "June";
@@ -63,19 +79,37 @@ module.exports = async (req, res) => {
   const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   res.setHeader("Access-Control-Allow-Origin", allow);
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader("Access-Control-Allow-Headers", "content-type, x-june-key");
   res.setHeader("Vary", "Origin");
 
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
   if (!process.env.ANTHROPIC_API_KEY) return res.status(500).json({ error: "Function missing ANTHROPIC_API_KEY env var" });
 
+  // Only allow calls from the Bold apps. Browsers always send Origin on this cross-origin
+  // POST, so legit traffic passes; bare curl/other sites are rejected (spoofable, but raises the bar).
+  if (!ALLOWED_ORIGINS.includes(origin)) return res.status(403).json({ error: "forbidden origin" });
+
+  // Shared-secret handshake. Skipped if JUNE_CLIENT_TOKEN isn't set (backward compatible), so
+  // deploying this never breaks the app. On a static site the token is visible in page source,
+  // so this blocks bots/other sites, not a determined source-reader — pair it with the spend cap.
+  const expected = process.env.JUNE_CLIENT_TOKEN;
+  if (expected && req.headers["x-june-key"] !== expected) return res.status(401).json({ error: "unauthorized" });
+
+  // Per-IP rate limit (best-effort).
+  const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
+  if (rateLimited(ip)) return res.status(429).json({ error: "Too many requests — please slow down and try again in a minute." });
+
   let body = req.body;
   if (typeof body === "string") { try { body = JSON.parse(body); } catch { body = {}; } }
   body = body || {};
 
-  const messages = Array.isArray(body.messages) ? body.messages.slice(-24) : [];
+  // Cap message count and length to bound per-request cost.
+  let messages = Array.isArray(body.messages) ? body.messages.slice(-24) : [];
   if (!messages.length) return res.status(400).json({ error: "no messages" });
+  messages = messages.map((x) => ({ role: x.role === "assistant" ? "assistant" : "user", content: String(x.content || "").slice(0, 4000) }));
+  const totalChars = messages.reduce((n, m) => n + m.content.length, 0);
+  if (totalChars > 24000) return res.status(413).json({ error: "conversation too long" });
 
   let resp;
   try {
@@ -90,7 +124,7 @@ module.exports = async (req, res) => {
         model: MODEL,
         max_tokens: 800,
         system: systemPrompt(body.member),
-        messages: messages.map((x) => ({ role: x.role === "assistant" ? "assistant" : "user", content: String(x.content || "") })),
+        messages,
       }),
     });
   } catch (e) {

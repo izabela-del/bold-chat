@@ -911,6 +911,7 @@ function go(id){ typing(); setTimeout(()=>{ untype(); addBot(resolve(id)); },460
 /* ===== optional live Claude backend (June). Unset => canned replies, unchanged. ===== */
 (function(){ try{ const p=new URLSearchParams(location.search).get("proxy"); if(p!==null) localStorage.setItem("june_proxy", p); }catch(e){} })();
 const JUNE_DEFAULT_PROXY = "https://bold-chat.vercel.app/api/june";
+const JUNE_CLIENT_TOKEN = "bjk_2f9Qv7Lp2Xr8Ka1Ns6Tz"; // handshake; set the same value as JUNE_CLIENT_TOKEN in Vercel
 let JUNE_PROXY = (()=>{ try{ return localStorage.getItem("june_proxy")||""; }catch(e){ return ""; } })();
 let aiHistory = [];
 function memberContext(){
@@ -927,7 +928,7 @@ function safetyRoute(t){ const s=t.toLowerCase();
 async function askJune(text){
   aiHistory.push({role:"user", content:text}); typing();
   try{
-    const res = await fetch(JUNE_PROXY, { method:"POST", headers:{"content-type":"application/json"},
+    const res = await fetch(JUNE_PROXY, { method:"POST", headers:{"content-type":"application/json","x-june-key":JUNE_CLIENT_TOKEN},
       body: JSON.stringify({ messages: aiHistory.slice(-20), member: memberContext() }) });
     const data = await res.json().catch(()=>null);
     untype();
@@ -1123,7 +1124,7 @@ const micBtn=document.getElementById("mic"); if(micBtn) micBtn.onclick=toggleMic
     if(!/^https?:\/\//i.test(url)){ setStat("That doesn't look like a web address — it should start with https://","err"); return; }
     setStat("Testing the connection…","busy"); connectBtn.disabled=true;
     try{
-      const res=await fetch(url, { method:"POST", headers:{"content-type":"application/json"},
+      const res=await fetch(url, { method:"POST", headers:{"content-type":"application/json","x-june-key":JUNE_CLIENT_TOKEN},
         body: JSON.stringify({ messages:[{role:"user",content:"ping"}], member: memberContext() }) });
       const data=await res.json().catch(()=>null);
       if(res.ok && data && data.text){
