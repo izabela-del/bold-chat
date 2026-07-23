@@ -1049,14 +1049,25 @@ function renderHome(){
     covSub.textContent=(PROFILE.planName==="your plan"?"Coverage":PROFILE.planName)+" · $0 visit — confirmed";
     lockedList.hidden=false; lockedNote.hidden=true;
     const task=document.getElementById("task-intake"), tag=document.getElementById("intake-tag"), count=document.getElementById("todo-count"), taskTitle=task.querySelector(".tc-title");
-    if(intakeComplete){ task.classList.add("done"); doneTag(tag); if(taskTitle) taskTitle.textContent="Weight management intake complete"; count.textContent="1 of 4 done"; }
-    else { task.classList.remove("done"); timeTag(tag,"3 min"); if(taskTitle) taskTitle.textContent="Weight management intake"; count.textContent="0 of 4 done"; }
+    if(intakeComplete){ task.classList.add("done"); doneTag(tag); if(taskTitle) taskTitle.textContent="Weight management intake complete"; }
+    else { task.classList.remove("done"); timeTag(tag,"3 min"); if(taskTitle) taskTitle.textContent="Weight management intake"; }
+    // counter tracks the follow-up tasks in the list
+    const tasks = Array.from(lockedList.querySelectorAll(".tcard"));
+    const doneCount = tasks.filter(c=>c.classList.contains("done")).length;
+    count.textContent = doneCount + " of " + tasks.length + " done";
+    // completed cards sink to the bottom of the list; coverage-confirmed sinks below all tasks
+    const progress = lockedList.querySelector(".todo-progress");
+    tasks.sort((a,b)=> (a.classList.contains("done")?1:0)-(b.classList.contains("done")?1:0))
+         .forEach(t=>lockedList.appendChild(t));
+    if(progress) lockedList.insertBefore(progress, lockedList.firstChild);
+    stepCov.parentNode.insertBefore(stepCov, lockedList.nextSibling);
     ohWhy.textContent = intakeComplete ? "You're all set — your visit is confirmed for Mon, Nov 3." : "Almost there — finish your intake to lock in this time.";
   } else {
     gs.textContent="Welcome to Bold — let's get you ready for your first visit.";
     stepCov.classList.remove("done"); timeTag(covTag,"2 min"); if(covTitle) covTitle.textContent="Confirm your insurance";
     covSub.textContent="No cost surprises — we'll walk you through what's covered.";
     lockedList.hidden=true; lockedNote.hidden=false;
+    lockedNote.parentNode.insertBefore(stepCov, lockedNote); // restore coverage to the top of the To-do list
     ohWhy.textContent="On hold until we confirm your coverage — it only takes a minute.";
   }
 }
