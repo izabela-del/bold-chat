@@ -865,7 +865,36 @@ function untype(){ const t=document.getElementById("typing"); if(t) t.remove(); 
 function scroll(){ requestAnimationFrame(()=>{ thread.scrollTop=thread.scrollHeight; }); }
 function choose(p){ if(p.go==="nav:home"){ showPage("page-home"); return; } addMe(p.label); go(p.go); }
 function go(id){ typing(); setTimeout(()=>{ untype(); addBot(resolve(id)); },460); }
-function sendText(){ const t=ta.value.trim(); if(!t) return; addMe(t); ta.value=""; ta.style.height="auto"; sendBtn.disabled=true; const id=routeText(t); typing(); setTimeout(()=>{ untype(); addBot(resolve(id)); },500); }
+/* ===== optional live Claude backend (June). Unset => canned replies, unchanged. ===== */
+(function(){ try{ const p=new URLSearchParams(location.search).get("proxy"); if(p!==null) localStorage.setItem("june_proxy", p); }catch(e){} })();
+const JUNE_PROXY = (()=>{ try{ return localStorage.getItem("june_proxy")||""; }catch(e){ return ""; } })();
+let aiHistory = [];
+function memberContext(){
+  return { name: PROFILE.name||"there",
+    state: coverageConfirmed ? (intakeComplete?"3 Post-visit/labs":"2 Pre-visit") : "1 Sign-up",
+    coverage_confirmed: coverageConfirmed, plan: PROFILE.planName||"", intake_complete: intakeComplete };
+}
+function splitParas(s){ return String(s).trim().split(/\n{2,}/).map(x=>x.replace(/\s*\n\s*/g," ").trim()).filter(Boolean); }
+function safetyRoute(t){ const s=t.toLowerCase();
+  if(["chest pain","chest pressure","can't breathe","cannot breathe","trouble breathing","face drooping","slurred speech","passed out","fainting","severe allergic","heart attack","stroke"].some(w=>s.includes(w))) return "emergency";
+  if(["suicide","kill myself","end my life","take my life","self-harm","hurt myself","want to die","don't want to live","no reason to live"].some(w=>s.includes(w))) return "crisis";
+  return null;
+}
+async function askJune(text){
+  aiHistory.push({role:"user", content:text}); typing();
+  try{
+    const res = await fetch(JUNE_PROXY, { method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({ messages: aiHistory.slice(-20), member: memberContext() }) });
+    const data = await res.json().catch(()=>null);
+    untype();
+    if(res.ok && data && data.text){ aiHistory.push({role:"assistant", content:data.text}); addBot({ text: splitParas(data.text) }); }
+    else { addBot(resolve("fallback")); }
+  }catch(e){ untype(); addBot(resolve("fallback")); }
+}
+function sendText(){ const t=ta.value.trim(); if(!t) return; addMe(t); ta.value=""; ta.style.height="auto"; sendBtn.disabled=true;
+  const safe=safetyRoute(t); if(safe){ typing(); setTimeout(()=>{ untype(); addBot(resolve(safe)); },400); return; }
+  if(JUNE_PROXY){ askJune(t); return; }
+  const id=routeText(t); typing(); setTimeout(()=>{ untype(); addBot(resolve(id)); },500); }
 
 function knownCardHTML(){
   const planLabel = PROFILE.planName==="your plan" ? "Confirmed" : PROFILE.planName;
