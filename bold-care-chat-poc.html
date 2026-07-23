@@ -522,7 +522,7 @@
         <!-- ============ INBOX ============ -->
         <div class="page" id="page-inbox" hidden>
           <div class="inboxhead">
-            <div class="back" id="inbox-back" title="Back to the member app">
+            <div class="back" id="inbox-back" title="Back to Today">
               <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M7.5 1L1.5 7.5L7.5 14" stroke="#16121f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div><h2>Messages</h2><div class="sub">Your Bold care, in one place</div></div>
@@ -555,7 +555,6 @@ let coverageConfirmed = false;
 let intakeComplete = false;
 let chatStarted = false;
 let chatFromInbox = false;
-const WIREFRAMES_URL = "https://izabela-del.github.io/prototype-test/Bold-Wireframes.html";
 const CHECK = `<svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.2 7.5L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 const READY = { label:"Book my first visit", go:"book" };
@@ -1090,7 +1089,7 @@ function openConv(id){
 function navTo(dest){ if(dest==="home") showPage("page-home"); else if(dest==="messages") showPage("page-inbox"); else toast(dest==="care"?"Care tab — concept screen":"My Health tab — concept screen"); }
 
 /* ===== wiring ===== */
-document.getElementById("inbox-back").onclick = ()=>{ window.location.href = WIREFRAMES_URL; };
+document.getElementById("inbox-back").onclick = ()=>showPage("page-home");
 document.getElementById("chat-back").onclick = ()=>showPage(chatFromInbox ? "page-inbox" : "page-home");
 document.getElementById("simple-back").onclick = ()=>showPage("page-inbox");
 topicsBtn.onclick = ()=>go("menu");
