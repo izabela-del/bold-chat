@@ -307,14 +307,15 @@ async function bot(text,{first=false}={}){
   typing.remove();
   const r=el(`<div class="row bot">${first?'<div class="who">June</div>':''}<div class="bubble"></div></div>`);
   r.querySelector(".bubble").textContent=text; thread.appendChild(r); lastBotText=text; scroll();
+  if(autoRead) speakOne(text);
   await wait(140);
 }
 function control(node){ const wrap=el(`<div class="row bot"></div>`); const ctl=el(`<div class="ctl"></div>`); ctl.appendChild(node); wrap.appendChild(ctl); thread.appendChild(wrap); scroll(); return ctl; }
 function lock(ctl){ ctl.classList.add("done"); }
 
-/* ---------- read aloud (natural voice — same picker as the main mock) ---------- */
+/* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
 const sayBtn=document.getElementById("sayBtn"), sayLbl=document.getElementById("sayLbl");
-let speaking=false, bestVoice=null;
+let autoRead=false, bestVoice=null;
 /* prefer a natural/neural/premium voice over the default robotic one */
 function pickVoice(){
   if(!("speechSynthesis" in window)) return null;
@@ -325,17 +326,24 @@ function pickVoice(){
   return pool.find(v=>/female/i.test(v.name))||pool[0];
 }
 if("speechSynthesis" in window){ bestVoice=pickVoice(); speechSynthesis.onvoiceschanged=()=>{ bestVoice=pickVoice(); }; }
-function speak(){
-  if(!("speechSynthesis" in window)) return;
-  if(speaking){ speechSynthesis.cancel(); return; }
-  const u=new SpeechSynthesisUtterance(lastBotText||"Hi, I'm June. Let's get you set up with Bold.");
+/* speak one message; utterances queue, so successive messages read in order */
+function speakOne(text){
+  if(!("speechSynthesis" in window) || !text) return;
+  const u=new SpeechSynthesisUtterance(text);
   const v=bestVoice||(bestVoice=pickVoice()); if(v){ u.voice=v; u.lang=v.lang; } else { u.lang="en-US"; }
   u.rate=0.97; u.pitch=1.03;
-  u.onend=()=>{ speaking=false; sayBtn.classList.remove("on"); sayLbl.textContent="Read aloud"; };
-  u.onstart=()=>{ speaking=true; sayBtn.classList.add("on"); sayLbl.textContent="Stop"; };
-  speechSynthesis.cancel(); speechSynthesis.speak(u);
+  speechSynthesis.speak(u);
 }
-sayBtn.onclick=speak;
+/* toggle read-along: once on, June keeps reading every new message until Stop */
+function setAutoRead(on){
+  autoRead=on;
+  sayBtn.classList.toggle("on", on);
+  sayLbl.textContent = on ? "Stop" : "Read aloud";
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  if(on) speakOne(lastBotText);
+}
+sayBtn.onclick=()=>setAutoRead(!autoRead);
 
 /* ---------- widgets (each returns a Promise) ---------- */
 function askChips(options,{multi=false,cta="Continue"}={}){
@@ -808,7 +816,7 @@ function toggleMic(){
 }
 if(SR){ micBtn.onclick=toggleMic; } else { micBtn.style.display="none"; }
 
-document.getElementById("restart").onclick=()=>{ if(speaking) speechSynthesis.cancel(); run(); };
+document.getElementById("restart").onclick=()=>{ setAutoRead(false); run(); };
 run();
 </script>
 </body>
