@@ -188,7 +188,7 @@
   /* tap-June easter egg (header avatar) */
   #page-chat .thead .av.ai{cursor:pointer;}
   @keyframes orbbounce{0%{transform:scale(1)}22%{transform:scale(1.14,.88)}45%{transform:scale(.93,1.08)}68%{transform:scale(1.05,.97)}100%{transform:scale(1)}}
-  .av.tapped{animation:orbbounce .55s ease;}
+  .cworb.tapped, .av.tapped{animation:orbbounce .55s ease;}
   .spark{position:absolute; left:50%; top:50%; width:9px; height:9px; margin:-4.5px; border-radius:50%; background:radial-gradient(circle,#fff,#ffe6b0 70%); box-shadow:0 0 7px 1px rgba(255,224,150,.9); pointer-events:none; z-index:20; opacity:0; animation:sparkfly .95s ease-out forwards;}
   @keyframes sparkfly{0%{opacity:0; transform:translate(0,0) scale(.3)} 18%{opacity:1} 100%{opacity:0; transform:translate(var(--dx,0),var(--dy,-30px)) scale(1)}}
   .june-say{position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%); white-space:nowrap; background:#fff; color:var(--brand-press); border:1px solid #e7e0fb; box-shadow:0 8px 20px rgba(28,20,54,.16); font-weight:800; font-size:13.5px; padding:8px 14px; border-radius:16px; z-index:21; pointer-events:none; animation:saypop .28s ease;}
@@ -982,7 +982,7 @@ function chatWelcome(compact){
     ? "I'm your AI health assistant. Your coverage is confirmed and on file, so I can give you straight answers — about your visit, your costs, or your medication. Ask me anything, or I'll connect you with your care team whenever you like."
     : "I'm your AI health assistant. I can help with your coverage, your costs, and how your first visit works — and I'll get you to a real person on your care team whenever you want one. Ask me anything, or tap a topic to start.";
   const wrap=document.createElement("div"); wrap.className="chat-welcome"+(compact?" compact":"");
-  wrap.innerHTML = `<div class="cworb" id="cw-orb" role="button" tabindex="0" title="Tap to talk" aria-label="Tap to talk"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>`+
+  wrap.innerHTML = `<div class="cworb" id="cw-orb" role="button" tabindex="0" title="Tap me!" aria-label="June — tap me"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>`+
     `<div class="cw-title">Hi ${esc(name)} — I'm June</div>`+
     (compact ? "" : `<div class="cw-sub">${esc(sub)}</div>`);
   const say=document.createElement("button"); say.type="button"; say.className="say cw-say"; say.innerHTML=SPEAK_LABEL;
@@ -998,7 +998,7 @@ function chatWelcome(compact){
   }
   thread.appendChild(wrap); scroll();
   const orb=document.getElementById("cw-orb");
-  if(orb){ orb.onclick=toggleMic; orb.onkeydown=(e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggleMic(); } }; }
+  if(orb){ orb.onclick=()=>juneTap(orb,false); orb.onkeydown=(e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); juneTap(orb,false); } }; }
 }
 function greet(){ chatWelcome(); }
 NODES.whyInsurance = function(){
