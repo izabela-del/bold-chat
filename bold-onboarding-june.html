@@ -115,6 +115,19 @@
   .cw-title{font-family:"Source Serif 4",Georgia,serif; font-size:23px; font-weight:600; letter-spacing:-.3px; color:var(--ink); margin:0 0 9px;}
   .cw-sub{font-size:15px; line-height:1.55; color:var(--ink-soft); max-width:300px; margin:0 auto 18px;}
   .cw-go{width:auto; min-width:220px; padding:0 30px; margin:0 auto;}
+  .cw-trust{display:flex; align-items:center; justify-content:center; gap:7px; font-size:13px; font-weight:700; color:var(--teal-ink); max-width:300px; margin:0 auto 16px; line-height:1.4;}
+  .cw-trust svg{flex:0 0 auto;}
+  /* identity-step trust microcopy */
+  .fields .lockline{display:flex; align-items:flex-start; gap:6px; font-size:12px; color:var(--teal-ink); font-weight:600; margin:2px 0 0; line-height:1.45;}
+  .fields .whylink{background:none; border:0; padding:8px 0 0; font:inherit; font-size:13px; font-weight:800; color:var(--brand-press); cursor:pointer; display:inline-flex; align-items:center; gap:4px;}
+  .fields .whylink .car{transition:transform .2s ease;}
+  .fields .whylink.open .car{transform:rotate(180deg);}
+  .fields .whybody{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .fields .whybody.open{max-height:200px;}
+  .fields .whybody p{margin:8px 0 0; font-size:12.5px; line-height:1.5; color:var(--ink); background:#f6f4fc; border:1px solid #ece6f8; border-radius:10px; padding:10px 12px;}
+  .fields .humanout{font-size:12px; color:var(--ink-soft); line-height:1.5; margin:12px 0 0; text-align:center;}
+  .fields .humanout .skiplink{background:none; border:0; padding:0; font:inherit; font-size:12px; font-weight:800; color:var(--brand-press); cursor:pointer; text-decoration:underline;}
+  .fields .humanout b{color:var(--ink); font-weight:800;}
   /* trust cluster on the welcome screen */
   .trust{display:flex; flex-direction:column; align-items:center; gap:11px; width:100%; margin-top:20px;}
   .trust-lock{display:flex; align-items:flex-start; gap:10px; background:#f1f8f5; border:1px solid #d3e8de; border-radius:14px; padding:12px 14px; font-size:12.5px; line-height:1.5; color:#0c7d70; font-weight:600; text-align:left;}
@@ -322,7 +335,7 @@
           <button class="send" id="send" title="Send" disabled>&#8593;</button>
         </div>
       </div>
-      <div class="foot">June is Bold's AI assistant, not a medical provider · a real care coordinator confirms your coverage and cost before anything is prescribed · concept, not medical advice.</div>
+      <div class="foot">June is Bold's AI assistant, not a medical provider · anything she can't answer goes to your <span style="color:var(--brand-press);font-weight:700">care coordinator at (424) 577-5266</span></div>
 
       <!-- consent sheet -->
       <div class="csheet" id="csheet" aria-hidden="true">
@@ -398,7 +411,8 @@ function welcomeHero(){
     const node=el(`<div class="chat-welcome">
       <div class="cworb" id="cw-orb"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
       <div class="cw-title">Hi Carol — I'm June</div>
-      <div class="cw-sub">I'm your AI health assistant. I'll get you set up with Bold in about 2 minutes — your coverage, your cost, and your first visit. A real person on your care team is one tap away anytime.</div>
+      <div class="cw-sub">I'm your AI health assistant. I'll get you set up with Bold in about 2 minutes — your coverage, your cost, and your first visit.</div>
+      <div class="cw-trust"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><span>Private and secure. Backed by a real care team you can call anytime.</span></div>
       <button class="go cw-go">Let's get started</button>
       <div class="trust">
         <div class="trust-lock">
@@ -492,14 +506,20 @@ function askIdentity(){
         <div class="fld" style="max-width:120px"><label>State</label>
           <select id="f-state"><option>CA</option><option>NY</option><option>TX</option><option>FL</option><option>NJ</option></select></div>
       </div>
-      <p class="why">🔒 We use this only to check your Medicare coverage — your data is private and protected.</p>
+      <p class="lockline">🔒 Encrypted and shared only with your care team. We never sell your information.</p>
+      <button type="button" class="whylink" id="why-toggle">Why do you need this?<span class="car">⌄</span></button>
+      <div class="whybody" id="why-body"><p>So we can confirm your visit is covered and you won't get a surprise bill. A care coordinator double-checks everything before anything is charged.</p></div>
       <button class="go">Check my coverage</button>
+      <p class="humanout">Don't have your details handy? <button type="button" class="skiplink">Skip for now</button> — a care coordinator can help, or call <b>(424) 577-5266</b>.</p>
     </div>`);
-    node.querySelector(".go").onclick=()=>{
-      PROFILE.name=(node.querySelector("#f-name").value||"Carol").trim();
-      PROFILE.dob=node.querySelector("#f-dob").value; PROFILE.state=node.querySelector("#f-state").value;
-      lock(node.closest(".ctl")); me(`${PROFILE.name} · ${PROFILE.dob} · ${PROFILE.state}`); resolve();
+    const done=(skipped)=>{
+      if(!skipped){ PROFILE.name=(node.querySelector("#f-name").value||"Carol").trim();
+        PROFILE.dob=node.querySelector("#f-dob").value; PROFILE.state=node.querySelector("#f-state").value; }
+      lock(node.closest(".ctl")); me(skipped?"Skip for now":`${PROFILE.name} · ${PROFILE.dob} · ${PROFILE.state}`); resolve();
     };
+    node.querySelector("#why-toggle").onclick=()=>{ node.querySelector("#why-body").classList.toggle("open"); node.querySelector("#why-toggle").classList.toggle("open"); scroll(); };
+    node.querySelector(".go").onclick=()=>done(false);
+    node.querySelector(".skiplink").onclick=(e)=>{ e.preventDefault(); done(true); };
     control(node);
   });
 }
@@ -789,7 +809,7 @@ async function run(){
 
   await welcomeHero();
   composer.hidden=false; // reveal the "Type your own answer" option once the conversation begins
-  await bot("First, let's make sure your visits are covered — no cost surprises. Can you confirm a few details?", {first:true});
+  await bot("Let's make sure your visit is covered so there are no surprise bills — first, a few quick details.", {first:true});
   await askIdentity();
   setProgress(.15);
   await bot(`Thanks, ${PROFILE.name}. Let me check your Medicare coverage…`);
