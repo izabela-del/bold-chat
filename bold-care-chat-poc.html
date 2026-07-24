@@ -185,6 +185,17 @@
   @keyframes orbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
   @keyframes orbBlink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
   @keyframes orbGlow{0%,100%{opacity:.5}50%{opacity:.82}}
+  /* tap-June easter egg (header avatar) */
+  #page-chat .thead .av.ai{cursor:pointer;}
+  @keyframes orbbounce{0%{transform:scale(1)}22%{transform:scale(1.14,.88)}45%{transform:scale(.93,1.08)}68%{transform:scale(1.05,.97)}100%{transform:scale(1)}}
+  .av.tapped{animation:orbbounce .55s ease;}
+  .spark{position:absolute; left:50%; top:50%; width:9px; height:9px; margin:-4.5px; border-radius:50%; background:radial-gradient(circle,#fff,#ffe6b0 70%); box-shadow:0 0 7px 1px rgba(255,224,150,.9); pointer-events:none; z-index:20; opacity:0; animation:sparkfly .95s ease-out forwards;}
+  @keyframes sparkfly{0%{opacity:0; transform:translate(0,0) scale(.3)} 18%{opacity:1} 100%{opacity:0; transform:translate(var(--dx,0),var(--dy,-30px)) scale(1)}}
+  .june-say{position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%); white-space:nowrap; background:#fff; color:var(--brand-press); border:1px solid #e7e0fb; box-shadow:0 8px 20px rgba(28,20,54,.16); font-weight:800; font-size:13.5px; padding:8px 14px; border-radius:16px; z-index:21; pointer-events:none; animation:saypop .28s ease;}
+  .june-say::after{content:""; position:absolute; left:50%; top:100%; transform:translateX(-50%); border:6px solid transparent; border-top-color:#fff;}
+  .june-say.below{bottom:auto; top:calc(100% + 8px);}
+  .june-say.below::after{top:auto; bottom:100%; border-top-color:transparent; border-bottom-color:#fff;}
+  @keyframes saypop{from{opacity:0; transform:translate(-50%,7px) scale(.92)} to{opacity:1; transform:translate(-50%,0) scale(1)}}
   .cw-title{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-size:20px; font-weight:600; letter-spacing:-.2px; color:var(--ink); margin:0 0 6px;}
   .cw-sub{font-size:14px; line-height:1.5; color:var(--ink-soft); max-width:290px; margin:0 auto 13px;}
   .cw-say{margin:0 auto 14px;}
@@ -1095,6 +1106,25 @@ function launchCoverage(){ chatFromInbox=false; chatStarted=true; chatWelcome(tr
 function launchIntake(){ chatFromInbox=false; chatStarted=true; chatWelcome(true); const c=document.createElement("div"); c.innerHTML=knownCardHTML(); thread.appendChild(c.firstChild); addBot(NODES.intakeStart()); showPage("page-chat"); requestAnimationFrame(()=>{ thread.scrollTop=0; }); }
 function askBold(q, go){ chatFromInbox=false; chatStarted=true; thread.innerHTML=""; showPage("page-chat"); addMe(q); typing(); setTimeout(()=>{ untype(); addBot(resolve(go)); },450); }
 function openJune(){ chatFromInbox=false; chatStarted=true; if(!thread.querySelector(".row")){ chatWelcome(); } showPage("page-chat"); requestAnimationFrame(()=>{ thread.scrollTop=0; }); }
+/* ---- tap-June easter egg: happy bounce + sparkles + a warm little line ---- */
+const JUNE_SAYINGS=["Hi there! 👋","You've got this. 💜","So glad you're here.","One small step at a time.","Proud of you already. 🌟","Feeling good today?","I'm right here for you.","Tap — that tickles! 😄"];
+let juneSayIdx=-1;
+function juneTap(orb, below){
+  if(!orb) return;
+  orb.classList.remove("tapped"); void orb.offsetWidth; orb.classList.add("tapped");
+  orb.addEventListener("animationend", function h(){ orb.classList.remove("tapped"); orb.removeEventListener("animationend",h); });
+  for(let i=0;i<7;i++){ const s=document.createElement("i"); s.className="spark";
+    const a=Math.random()*6.283, d=30+Math.random()*26;
+    s.style.setProperty("--dx",(Math.cos(a)*d).toFixed(0)+"px");
+    s.style.setProperty("--dy",(Math.sin(a)*d-14).toFixed(0)+"px");
+    s.style.animationDelay=(Math.random()*0.12).toFixed(2)+"s";
+    orb.appendChild(s); setTimeout(()=>{ if(s.parentNode) s.remove(); },1150); }
+  let i; do{ i=Math.floor(Math.random()*JUNE_SAYINGS.length); }while(i===juneSayIdx && JUNE_SAYINGS.length>1); juneSayIdx=i;
+  const old=orb.querySelector(".june-say"); if(old) old.remove();
+  const b=document.createElement("div"); b.className="june-say"+(below?" below":""); b.textContent=JUNE_SAYINGS[i]; orb.appendChild(b);
+  clearTimeout(orb._sayT); orb._sayT=setTimeout(()=>{ if(b.parentNode) b.remove(); },2600);
+}
+(function(){ const av=document.querySelector("#page-chat .thead .av.ai"); if(av){ av.setAttribute("title","Tap me!"); av.onclick=()=>juneTap(av,true); } })();
 function openConv(id){
   if(id==="ai"){ chatFromInbox=true; if(!thread.querySelector(".row")){ chatWelcome(); } chatStarted=true; showPage("page-chat"); return; }
   openSimple(id);
