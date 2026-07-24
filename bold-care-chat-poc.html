@@ -525,8 +525,8 @@
               </button>
               <button class="send" id="send" title="Send">&#8593;</button>
             </div>
-            <div class="foot">June is Bold's AI assistant, not a medical provider · prototype, not medical advice · anything I can't answer goes to your
-              <span class="esc">Care Coordinator at 424-577-5266</span>.</div>
+            <div class="foot">June is Bold's AI assistant, not a medical provider · anything she can't answer goes to your
+              <span class="esc">care coordinator at (424) 577-5266</span></div>
           </div>
         </div>
 
@@ -650,7 +650,7 @@ const NODES = {
   },
   covCoordinator(){
     return {
-      text:["Happy to connect you. Your Care Coordinator can sort this out with you in a couple of minutes — call 424-577-5266 whenever works.",
+      text:["Happy to connect you. Your Care Coordinator can sort this out with you in a couple of minutes — call (424) 577-5266 whenever works.",
             "I can get the rest of your setup started in the meantime."],
       sugg:[{label:"Start my setup meanwhile", go:"cov:carrier:", collect:true},{label:"Back to insurance options", go:"coverageStart"}]
     };
@@ -762,7 +762,7 @@ const NODES = {
       sugg:[{label:`Confirm ${PROFILE.apptProposed}`, go:"booked", collect:true},{label:"Thursday, 10:00 AM", go:"booked", collect:true},{label:"A different day", go:"booked", collect:true}] };
   },
   booked(){
-    return { text:["You're all set. You'll get an email with your Zoom link and a reminder before the visit.","You can call or text 424-577-5266 anytime with questions. We're glad you're here."],
+    return { text:["You're all set. You'll get an email with your Zoom link and a reminder before the visit.","You can call or text (424) 577-5266 anytime with questions. We're glad you're here."],
       sugg:[{label:"Back to my checklist", go:"nav:home"},{label:"Ask another question", go:"menu"}] };
   },
   zoomTest(){
@@ -793,11 +793,11 @@ const NODES = {
     return { text:["Of course — what would you like to know? And if you'd rather talk to a person, that's always an option."], sugg:base };
   },
   escalate(){
-    return { text:["Let me get your care team on this — a real person can give you the right answer here.","You can reach them at 424-577-5266, by call or text. Asking for a person is never the wrong move."],
+    return { text:["Let me get your care team on this — a real person can give you the right answer here.","You can reach them at (424) 577-5266, by call or text. Asking for a person is never the wrong move."],
       sugg: NODES.menu().sugg };
   },
   emergency(){
-    return { text:["If this feels like an emergency, please call 911 now, or your local emergency number.","Do that first. When you're safe, your care team is here for you at 424-577-5266."],
+    return { text:["If this feels like an emergency, please call 911 now, or your local emergency number.","Do that first. When you're safe, your care team is here for you at (424) 577-5266."],
       sugg:[{label:"Reach my care team", go:"escalate"}] };
   },
   crisis(){
