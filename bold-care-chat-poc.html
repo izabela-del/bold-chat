@@ -172,11 +172,11 @@
     animation:orbspin 6s linear infinite reverse;}
   .cworb-face{position:absolute; inset:0; z-index:2; border-radius:50%;}
   .cworb-face .eyes{position:absolute; top:47%; left:50%; transform:translate(-50%,-50%); display:flex; gap:13px;}
-  .cworb-face .eye{width:13px; height:15px; border-radius:50%; position:relative; animation:orbBlink 4s infinite; background:radial-gradient(circle at 32% 26%, #8E7BD8 0%, #4A3B72 30%, #1D1630 62%, #0A0614 100%);}
-  .cworb .cworb-face .eye{width:16px; height:19px; box-shadow:0 0 8px rgba(158,134,236,.5);}
-  .cworb-face .eye::after{content:""; position:absolute; left:18%; top:12%; width:42%; height:36%; border-radius:50%; background:#fff; opacity:.92;}
-  .cworb .cworb-face .eye::before{content:""; position:absolute; right:12%; bottom:16%; width:20%; height:18%; border-radius:50%; background:#fff; opacity:.5;}
-  .cworb-face .mouth{position:absolute; top:60%; left:50%; transform:translateX(-50%); width:19px; height:9px; border:3px solid #241a3a; border-top-width:0; border-left-width:0; border-right-width:0; border-radius:0 0 22px 22px;}
+  .cworb-face .eye{width:13px; height:15px; border-radius:50%; position:relative; animation:orbBlink 4s infinite;
+    background:radial-gradient(circle at 70% 82%, rgba(255,150,200,.32), transparent 52%), radial-gradient(circle at 33% 26%, #b7a0f0 0%, #7a5cc0 20%, #4a3475 52%, #33234f 100%);}
+  .cworb .cworb-face .eye{width:17px; height:20px; box-shadow:0 0 8px rgba(158,134,236,.4);}
+  .cworb-face .eye::after{content:""; position:absolute; left:21%; top:15%; width:36%; height:31%; border-radius:50%; background:#fff; opacity:.8; filter:blur(.3px);}
+  .cworb-face .mouth{position:absolute; top:61%; left:50%; transform:translateX(-50%); width:16px; height:6px; border:2.5px solid #3a2857; border-top-width:0; border-left-width:0; border-right-width:0; border-radius:0 0 18px 18px;}
   .cworb:focus-visible{outline:2px solid var(--brand); outline-offset:4px;}
   .cworb.listening{animation:orbpulse 1s ease-in-out infinite;}
   .cworb.speaking{animation:orbpulse 1.7s ease-in-out infinite;}

@@ -47,9 +47,9 @@
     box-shadow:0 3px 10px rgba(42,10,102,.32), 0 0 0 3px rgba(167,139,255,.14), inset 0 -3px 7px rgba(38,7,92,.28);}
   .av .face{position:absolute; inset:0;}
   .av .eyes{position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); display:flex; gap:5px;}
-  .av .eye{width:6px; height:7px; border-radius:50%; position:relative; background:radial-gradient(circle at 32% 26%, #8E7BD8, #2A2140 55%, #0A0614 100%);}
-  .av .eye::after{content:""; position:absolute; left:16%; top:8%; width:46%; height:40%; border-radius:50%; background:#fff; opacity:.9;}
-  .av .mouth{position:absolute; top:58%; left:50%; transform:translateX(-50%); width:7px; height:3px; border:1.7px solid #241a3a; border-top:0; border-left:0; border-right:0; border-radius:0 0 20px 20px;}
+  .av .eye{width:6px; height:7px; border-radius:50%; position:relative; background:radial-gradient(circle at 34% 28%, #a48ee0, #4a3475 55%, #33234f 100%);}
+  .av .eye::after{content:""; position:absolute; left:18%; top:10%; width:42%; height:36%; border-radius:50%; background:#fff; opacity:.8;}
+  .av .mouth{position:absolute; top:58%; left:50%; transform:translateX(-50%); width:7px; height:3px; border:1.7px solid #3a2857; border-top:0; border-left:0; border-right:0; border-radius:0 0 20px 20px;}
   .thead .name{font-size:16px; font-weight:800; line-height:1.1; display:flex; align-items:center; gap:6px;}
   .thead .role{font-size:11.5px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
   .aitag{font-size:10px; font-weight:800; color:#fff; background:var(--brand); padding:1px 6px; border-radius:6px; letter-spacing:.4px;}
@@ -92,10 +92,11 @@
     animation:orbspin 6s linear infinite reverse;}
   .cworb-face{position:absolute; inset:0; z-index:2; border-radius:50%;}
   .cworb-face .eyes{position:absolute; top:47%; left:50%; transform:translate(-50%,-50%); display:flex; gap:13px;}
-  .cworb-face .eye{width:16px; height:19px; border-radius:50%; position:relative; animation:orbBlink 4.2s ease-in-out infinite; background:radial-gradient(circle at 32% 26%, #8E7BD8 0%, #4A3B72 30%, #1D1630 62%, #0A0614 100%); box-shadow:0 0 8px rgba(158,134,236,.5);}
-  .cworb-face .eye::after{content:""; position:absolute; left:18%; top:12%; width:42%; height:36%; border-radius:50%; background:#fff; opacity:.94;}
-  .cworb-face .eye::before{content:""; position:absolute; right:12%; bottom:16%; width:20%; height:18%; border-radius:50%; background:#fff; opacity:.5;}
-  .cworb-face .mouth{position:absolute; top:60%; left:50%; transform:translateX(-50%); width:19px; height:9px; border:3px solid #241a3a; border-top-width:0; border-left-width:0; border-right-width:0; border-radius:0 0 22px 22px;}
+  .cworb-face .eye{width:17px; height:20px; border-radius:50%; position:relative; animation:orbBlink 4.2s ease-in-out infinite;
+    background:radial-gradient(circle at 70% 82%, rgba(255,150,200,.32), transparent 52%), radial-gradient(circle at 33% 26%, #b7a0f0 0%, #7a5cc0 20%, #4a3475 52%, #33234f 100%);
+    box-shadow:0 0 8px rgba(158,134,236,.4);}
+  .cworb-face .eye::after{content:""; position:absolute; left:21%; top:15%; width:36%; height:31%; border-radius:50%; background:#fff; opacity:.8; filter:blur(.3px);}
+  .cworb-face .mouth{position:absolute; top:61%; left:50%; transform:translateX(-50%); width:16px; height:6px; border:2.5px solid #3a2857; border-top-width:0; border-left-width:0; border-right-width:0; border-radius:0 0 18px 18px;}
   @keyframes orbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
   @keyframes orbBlink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
   @keyframes orbGlow{0%,100%{opacity:.5}50%{opacity:.82}}
