@@ -526,23 +526,35 @@ function askIdentity(){
   });
 }
 
-function showInsurance(){
-  return new Promise(resolve=>{
+async function showInsurance(){
+  const ok = await new Promise(resolve=>{
     const node=el(`<div>
       <div class="inscard">
         <div class="seal">✓ Verified</div>
-        <div class="plan">UnitedHealthcare</div>
-        <div class="nm">Carol S.</div>
+        <div class="plan">${esc(PROFILE.insurer)}</div>
+        <div class="nm">${esc(PROFILE.name)} S.</div>
         <div class="mid">MEMBER ID ·······789</div>
         <div class="cov">$0 copay for virtual visits with Bold</div>
       </div>
       <button class="go" style="margin-top:12px">That's me — continue</button>
       <button class="skip">This isn't right</button>
     </div>`);
-    node.querySelector(".go").onclick=()=>{ lock(node.closest(".ctl")); me("That's me"); resolve(); };
-    node.querySelector(".skip").onclick=()=>{ lock(node.closest(".ctl")); me("This isn't right"); resolve(); };
+    node.querySelector(".go").onclick=()=>{ lock(node.closest(".ctl")); me("That's me"); resolve(true); };
+    node.querySelector(".skip").onclick=()=>{ lock(node.closest(".ctl")); me("This isn't right"); resolve(false); };
     control(node);
   });
+  if(ok) return;
+  // June updates the plan herself — this is guided setup, not an account change
+  await bot("No problem — I can update that for you. Which plan are you on?");
+  const chosen = await askChips([
+    {label:"UnitedHealthcare", value:"UnitedHealthcare"},
+    {label:"Aetna", value:"Aetna"},
+    {label:"Humana", value:"Humana"},
+    {label:"Cigna", value:"Cigna"},
+    {label:"Original Medicare", value:"Original Medicare"}
+  ]);
+  PROFILE.insurer = chosen[0];
+  await bot(`Updated to ${PROFILE.insurer} — thanks for the correction. Good news: your Bold visits are still fully covered at $0.`);
 }
 
 function askHeightWeight(){
@@ -678,7 +690,7 @@ function renderEligInto(container,key){
     </div>
     <div class="elig-body">
       <div class="cost">
-        ${o.rows.map(r=>`<div class="crow"><div><div class="ck">${r.k}</div><div class="cnote">${r.note}</div></div><div class="cv ${r.cls}">${r.v}</div></div>`).join("")}
+        ${o.rows.map(r=>`<div class="crow"><div><div class="ck">${r.k}</div><div class="cnote">${r.note.replace("UnitedHealthcare", PROFILE.insurer)}</div></div><div class="cv ${r.cls}">${r.v}</div></div>`).join("")}
       </div>
       <p class="elig-plain">${o.plain}</p>
       <div class="faqs">
@@ -781,7 +793,7 @@ function askPhone(){
 function summary(){
   const o=OUTCOMES[PROFILE.outcome]||OUTCOMES.bridge;
   const covLine = PROFILE.goal!=="weight"
-    ? "Your visits are $0 with UnitedHealthcare. Your coordinator will help you get the most from your Care Plan."
+    ? `Your visits are $0 with ${PROFILE.insurer}. Your coordinator will help you get the most from your Care Plan.`
     : (PROFILE.outcome==="bridge" ? "Visits are $0. If a GLP-1 is prescribed, you'll pay a flat $50/month through the Medicare Bridge — your provider files the claim."
     : PROFILE.outcome==="partd" ? "Visits are $0. If a GLP-1 is prescribed, it's covered under Part D — your coordinator confirms the exact cost, free, before anything is prescribed."
     : "Visits are $0. You're starting with a lifestyle plan; your provider can revisit medication if your needs or coverage change.");
