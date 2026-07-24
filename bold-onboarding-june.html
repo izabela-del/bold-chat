@@ -115,8 +115,10 @@
   .cw-title{font-family:"Source Serif 4",Georgia,serif; font-size:23px; font-weight:600; letter-spacing:-.3px; color:var(--ink); margin:0 0 9px;}
   .cw-sub{font-size:15px; line-height:1.55; color:var(--ink-soft); max-width:300px; margin:0 auto 18px;}
   .cw-go{width:auto; min-width:220px; padding:0 30px; margin:0 auto;}
-  .cw-trust{display:flex; align-items:center; justify-content:center; gap:7px; font-size:13px; font-weight:700; color:var(--teal-ink); max-width:300px; margin:0 auto 16px; line-height:1.4;}
-  .cw-trust svg{flex:0 0 auto;}
+  .hipaa{display:flex; align-items:center; gap:12px; text-align:left; background:#f7f6fb; border:1px solid #ece9f5; border-radius:14px; padding:12px 14px;}
+  .hipaa-seal{flex:0 0 auto; width:42px; height:42px;}
+  .hipaa-txt{font-size:12.5px; line-height:1.45; color:#525252; font-weight:500;}
+  .hipaa-txt b{color:var(--ink); font-weight:800;}
   /* identity-step trust microcopy */
   .fields .lockline{display:flex; align-items:flex-start; gap:6px; font-size:12px; color:var(--teal-ink); font-weight:600; margin:2px 0 0; line-height:1.45;}
   .fields .whylink{background:none; border:0; padding:8px 0 0; font:inherit; font-size:13px; font-weight:800; color:var(--brand-press); cursor:pointer; display:inline-flex; align-items:center; gap:4px;}
@@ -412,12 +414,11 @@ function welcomeHero(){
       <div class="cworb" id="cw-orb"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
       <div class="cw-title">Hi Carol — I'm June</div>
       <div class="cw-sub">I'm your AI health assistant. I'll get you set up with Bold in about 2 minutes — your coverage, your cost, and your first visit.</div>
-      <div class="cw-trust"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><span>Private and secure. Backed by a real care team you can call anytime.</span></div>
       <button class="go cw-go">Let's get started</button>
       <div class="trust">
-        <div class="trust-lock">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-          <span>Private &amp; protected. Your health information is handled under <b>HIPAA</b> — encrypted, never sold, and shared only with your care team.</span>
+        <div class="hipaa">
+          <img class="hipaa-seal" src="hipaa-seal.png" alt="HIPAA compliant seal" width="42" height="42">
+          <div class="hipaa-txt"><b>Bold is HIPAA compliant.</b> Your health information is encrypted, never sold, and shared only with your care team.</div>
         </div>
         <div class="trust-row">
           <span class="trust-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Doctor-supervised</span>
