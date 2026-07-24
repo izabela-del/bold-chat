@@ -193,8 +193,9 @@
   @keyframes sparkfly{0%{opacity:0; transform:translate(0,0) scale(.3)} 18%{opacity:1} 100%{opacity:0; transform:translate(var(--dx,0),var(--dy,-30px)) scale(1)}}
   .june-say{position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%); white-space:nowrap; background:#fff; color:var(--brand-press); border:1px solid #e7e0fb; box-shadow:0 8px 20px rgba(28,20,54,.16); font-weight:800; font-size:13.5px; padding:8px 14px; border-radius:16px; z-index:21; pointer-events:none; animation:saypop .28s ease;}
   .june-say::after{content:""; position:absolute; left:50%; top:100%; transform:translateX(-50%); border:6px solid transparent; border-top-color:#fff;}
-  .june-say.below{bottom:auto; top:calc(100% + 8px);}
-  .june-say.below::after{top:auto; bottom:100%; border-top-color:transparent; border-bottom-color:#fff;}
+  .june-say.below{bottom:auto; top:calc(100% + 8px); left:-4px; transform:none; animation:saypop2 .28s ease;}
+  .june-say.below::after{top:auto; bottom:100%; left:22px; transform:none; border-top-color:transparent; border-bottom-color:#fff;}
+  @keyframes saypop2{from{opacity:0; transform:scale(.92)} to{opacity:1; transform:scale(1)}}
   @keyframes saypop{from{opacity:0; transform:translate(-50%,7px) scale(.92)} to{opacity:1; transform:translate(-50%,0) scale(1)}}
   .cw-title{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-size:20px; font-weight:600; letter-spacing:-.2px; color:var(--ink); margin:0 0 6px;}
   .cw-sub{font-size:14px; line-height:1.5; color:var(--ink-soft); max-width:290px; margin:0 auto 13px;}
