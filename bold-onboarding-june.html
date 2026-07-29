@@ -104,7 +104,9 @@
   .thead .name{font-size:16px; font-weight:800; line-height:1.1; display:flex; align-items:center; gap:6px;}
   .thead .role{font-size:11.5px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
   .aitag{font-size:10px; font-weight:800; color:#fff; background:var(--brand); padding:1px 6px; border-radius:6px; letter-spacing:.4px;}
-  .say-h{margin-left:auto; flex:0 0 auto; display:flex; align-items:center; gap:5px; height:30px; padding:0 11px; border-radius:20px; border:1px solid var(--line); background:#fff; cursor:pointer; font:inherit; font-size:11.5px; font-weight:800; color:var(--brand-press);}
+  .thead-close{flex:0 0 auto; width:34px; height:34px; border-radius:9px; border:1px solid var(--line); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .thead-close:hover{background:#f6f4fb;} .thead-close svg{display:block;}
+  .say-h{margin-left:auto; flex:0 0 auto; width:36px; height:36px; padding:0; border-radius:50%; border:1px solid var(--line); background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--brand-press);}
   .say-h:hover{background:var(--brand-soft);} .say-h svg{display:block;}
   .say-h.on{background:#fde8ee; border-color:#f6c6d4; color:#c2185b;}
 
@@ -416,13 +418,15 @@
       <!-- ============ JUNE CHAT ============ -->
       <div id="view-chat" hidden>
       <div class="thead">
+        <button class="thead-close" id="chatClose" type="button" title="Close" aria-label="Close">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16121f" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
         <div class="id">
           <div class="av"><span class="face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
-          <div><div class="name">June <span class="aitag">AI</span></div><div class="role">Setting you up with Bold</div></div>
+          <div class="name">June <span class="aitag">AI</span></div>
         </div>
-        <button class="say-h" id="sayBtn" type="button" title="Read the last message aloud">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
-          <span id="sayLbl">Read aloud</span>
+        <button class="say-h" id="sayBtn" type="button" title="Read aloud" aria-label="Read aloud">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
         </button>
       </div>
       <div class="prog"><div class="bar" id="pbar"></div></div>
@@ -524,7 +528,9 @@ function welcomeHero(askFirst){
     const node=el(`<div class="chat-welcome">
       <div class="cworb" id="cw-orb"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
       <div class="cw-title">Hi ${esc(PROFILE.name)} — I'm June</div>
-      <div class="cw-sub">I'm your AI health assistant. Thanks for signing up — I'll answer any questions and get you set up in about 2 minutes.</div>
+      <div class="cw-sub">${askFirst
+        ? "I'm your AI health assistant — ask me anything about Bold: your coverage, your costs, or how your first visit works. Ready to sign up? Tap below."
+        : "I'm your AI health assistant. Thanks for signing up — I'll answer any questions and get you set up in about 2 minutes."}</div>
       <button class="go cw-go">Let's get started</button>
       <button class="cw-ask" type="button">Ask a question first</button>
       <div class="trust">
@@ -564,7 +570,7 @@ async function showAskPills(){
 }
 
 /* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
-const sayBtn=document.getElementById("sayBtn"), sayLbl=document.getElementById("sayLbl");
+const sayBtn=document.getElementById("sayBtn");
 let autoRead=false, bestVoice=null;
 /* prefer a natural/neural/premium voice over the default robotic one */
 function pickVoice(){
@@ -588,7 +594,7 @@ function speakOne(text){
 function setAutoRead(on){
   autoRead=on;
   sayBtn.classList.toggle("on", on);
-  sayLbl.textContent = on ? "Stop" : "Read aloud";
+  sayBtn.title = on ? "Stop" : "Read aloud";
   if(!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
   if(on) speakOne(lastBotText);
@@ -1142,6 +1148,7 @@ function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").v
 document.getElementById("lp-check").onclick=startFromLanding;
 document.getElementById("lp-check2").onclick=startFromLanding;
 fab.onclick=()=>enterJune(true);
+document.getElementById("chatClose").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); showView("landing"); viewLanding.scrollTop=0; };
 document.getElementById("lp-why").onclick=function(){
   if(this._h){ this._h.remove(); this._h=null; return; }
   const h=el(`<p class="lp-blurb" style="text-align:left;color:var(--ink-soft);font-weight:500;margin-top:8px">So we can confirm your Medicare coverage and check what you'd pay. A care coordinator double-checks everything before anything is charged — and we never sell your information.</p>`);
