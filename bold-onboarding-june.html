@@ -355,6 +355,20 @@
 
   @media (prefers-reduced-motion: reduce){ *{animation:none !important;} .faq .ans{transition:none;} .prog .bar{transition:none;} }
   @media (max-width:460px){ .phone{max-width:100%; border-radius:40px} .screen{border-radius:32px} }
+
+  /* landing priming + coverage handoff card */
+  .lp-prime{font-size:13px; line-height:1.45; color:var(--ink-soft); text-align:center; margin:10px 4px 0;}
+  .lp-prime b{color:var(--brand-press);}
+  .handoff{position:absolute; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:22px; background:rgba(20,18,40,.42); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);}
+  .handoff[hidden]{display:none;}
+  .handoff-card{background:#fff; border-radius:20px; padding:24px 20px 18px; width:100%; max-width:322px; box-shadow:0 24px 60px rgba(20,18,50,.35); text-align:center; animation:hoff .22s ease;}
+  @keyframes hoff{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+  .handoff-icon{width:56px; height:56px; border-radius:50%; background:var(--brand-soft); display:flex; align-items:center; justify-content:center; margin:0 auto 13px;}
+  .handoff-title{font-family:"Source Serif 4",Georgia,"Times New Roman",serif; font-size:22px; font-weight:600; letter-spacing:-.2px; color:var(--ink); margin:0 0 8px;}
+  .handoff-body{font-size:15px; line-height:1.5; color:var(--ink-soft); margin:0 0 14px;}
+  .handoff-ai{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:800; color:var(--ink-soft); letter-spacing:.2px; margin-bottom:4px;}
+  .handoff-ai .dot{width:14px; height:14px; border-radius:50%; background:linear-gradient(135deg,#a78bfa,#5b16e0);}
+  .handoff-human{background:none; border:0; color:var(--brand-press); font:inherit; font-weight:700; font-size:13.5px; margin-top:12px; cursor:pointer;}
 </style>
 </head>
 <body>
@@ -393,6 +407,7 @@
             <div class="lp-field"><label>Email</label><input id="lp-email" type="email" value="carol.s@email.com" autocomplete="off"></div>
             <button class="lp-why" type="button" id="lp-why"><span class="lp-q">?</span>Why are we asking this?</button>
             <button class="lp-cta" id="lp-check" type="button">Check coverage</button>
+            <p class="lp-prime">Your info is only used to check your coverage. <b>June</b>, Bold's assistant, walks you through it in about a minute — a care coordinator confirms everything.</p>
             <p class="lp-legal">By signing up, you agree to Bold's <u>Terms of Service</u> and <u>Privacy Policy</u>.</p>
           </div>
           <p class="lp-blurb">Covered by Medicare, UnitedHealthcare, Aetna, Cigna, Blue Cross Blue Shield, Humana, and more</p>
@@ -464,6 +479,18 @@
       </div>
       <div class="foot">June is Bold's AI assistant, not a medical provider · anything she can't answer goes to your <span style="color:var(--brand-press);font-weight:700">care coordinator at (424) 577-5266</span></div>
       </div><!-- /view-chat -->
+
+      <!-- Framed coverage handoff — shown before June opens on the coverage path -->
+      <div id="handoff" class="handoff" hidden>
+        <div class="handoff-card">
+          <div class="handoff-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3z" stroke="#5b16e0" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#5b16e0" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="handoff-title">Confirm your coverage</div>
+          <p class="handoff-body">June, Bold's assistant, will ask a couple of quick questions — about a minute. A care coordinator confirms everything before anything's billed.</p>
+          <div class="handoff-ai"><span class="dot"></span>June · AI assistant</div>
+          <button class="go" id="handoff-start">Start</button>
+          <button class="handoff-human" id="handoff-human" type="button">Prefer a person? Call (424) 577-5266</button>
+        </div>
+      </div>
 
       <button class="fab" id="fab" type="button" title="Chat with June">
         <span class="av"><span class="face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></span>
@@ -969,10 +996,17 @@ async function run(askFirst){
   aiHistory=[];
   Object.assign(PROFILE,{ coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
 
-  await welcomeHero(askFirst);          // June intro + "Let's get started" / "Ask a question first"
-  composer.hidden=false;
-  await bot(`Perfect — let me pull up the coverage I found for you, ${PROFILE.name}.`, {first:true});
-  await wait(450);
+  if(skipWelcome){
+    // Came from the framed coverage handoff — open task-first, no persona welcome
+    composer.hidden=false;
+    await bot(`Hi ${PROFILE.name} — I'm June, Bold's assistant. Let's confirm your coverage.`, {first:true});
+    await wait(420);
+  } else {
+    await welcomeHero(askFirst);          // June intro + "Let's get started" / "Ask a question first"
+    composer.hidden=false;
+    await bot(`Perfect — let me pull up the coverage I found for you, ${PROFILE.name}.`, {first:true});
+    await wait(450);
+  }
   await bot("Good news: your Bold visits are fully covered.");
   await showInsurance();
   PROFILE.coverageConfirmed=true;
@@ -1159,10 +1193,12 @@ const screenEl=document.querySelector(".screen");
 const viewLanding=document.getElementById("view-landing"), viewChat=document.getElementById("view-chat"), fab=document.getElementById("fab");
 function showView(name){ viewLanding.hidden=(name!=="landing"); viewChat.hidden=(name!=="chat"); screenEl.classList.toggle("landing", name==="landing"); }
 let juneStarted=false;
-function enterJune(askFirst){ showView("chat"); if(!juneStarted){ juneStarted=true; run(askFirst); } }
-function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"Carol").trim(); PROFILE.insurer="UnitedHealthcare"; enterJune(false); }
-document.getElementById("lp-check").onclick=startFromLanding;
-document.getElementById("lp-check2").onclick=startFromLanding;
+function enterJune(askFirst, skipWelcome){ showView("chat"); if(!juneStarted){ juneStarted=true; run(askFirst, skipWelcome); } }
+function openHandoff(){ PROFILE.name=(document.getElementById("lp-first").value||"Carol").trim(); PROFILE.insurer="UnitedHealthcare"; document.getElementById("handoff").hidden=false; }
+document.getElementById("lp-check").onclick=openHandoff;
+document.getElementById("lp-check2").onclick=openHandoff;
+document.getElementById("handoff-start").onclick=()=>{ document.getElementById("handoff").hidden=true; enterJune(false, true); };
+document.getElementById("handoff-human").onclick=()=>{ document.getElementById("handoff").hidden=true; };
 fab.onclick=()=>enterJune(true);
 document.getElementById("chatClose").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); showView("landing"); viewLanding.scrollTop=0; };
 document.getElementById("lp-why").onclick=function(){
