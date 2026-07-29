@@ -211,6 +211,8 @@
   .chips{display:flex; flex-wrap:wrap; gap:9px;}
   .chip{border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); padding:12px 16px; border-radius:22px; font:inherit; font-size:15px; font-weight:700; cursor:pointer; transition:transform .06s, background .12s, border-color .12s; line-height:1.3; text-align:left;}
   .chip:hover{background:var(--brand-soft); border-color:var(--brand);} .chip:active{transform:scale(.97);}
+  .chip.lead{background:var(--brand); border-color:var(--brand); color:#fff;}
+  .chip.lead:hover{background:var(--brand-press); border-color:var(--brand-press);}
   .chip.sel{background:var(--brand); border-color:var(--brand); color:#fff;}
   .go{margin-top:12px; width:100%; height:50px; border:0; border-radius:15px; background:var(--brand); color:#fff; font:inherit; font-size:15.5px; font-weight:800; cursor:pointer;}
   .go:hover{background:var(--brand-press);} .go:disabled{opacity:.4; cursor:default;}
@@ -567,7 +569,7 @@ function welcomeHero(askFirst){
         </div>
       </div>
     </div>`);
-    node.querySelector(".cw-go").onclick=()=>{ node.querySelectorAll(".cw-go,.cw-ask").forEach(b=>b.remove()); resolve(); };
+    node.querySelector(".cw-go").onclick=()=>{ askMode=false; if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } node.querySelectorAll(".cw-go,.cw-ask").forEach(b=>b.remove()); resolve(); };
     node.querySelector(".cw-ask").onclick=()=>{ const a=node.querySelector(".cw-ask"); if(a) a.remove(); showAskPills(); };
     const heroOrb=node.querySelector("#cw-orb"); if(heroOrb) heroOrb.onclick=()=>juneTap(heroOrb,false);
     thread.appendChild(node);
@@ -579,17 +581,34 @@ function welcomeHero(askFirst){
 }
 /* "Ask a question first" — reveal the composer + quick questions June can answer (does not advance onboarding) */
 async function showAskPills(){
+  askMode=true;
   composer.hidden=false; composer.classList.add("open");
-  await bot("Sure — ask me anything about Bold, or tap a question below. Tap “Let's get started” whenever you're ready.");
-  const node=el(`<div class="chips">
-      <button class="chip" data-q="Tell me more about Bold">Tell me more about Bold</button>
-      <button class="chip" data-q="What will it cost me?">What will it cost?</button>
-      <button class="chip" data-q="Do I need my insurance card?">Do I need my card?</button>
-      <button class="chip" data-q="Is Bold legit and safe?">Is this legit?</button>
-    </div>`);
-  control(node);
-  node.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{ const q=b.dataset.q; me(q); if(JUNE_PROXY) askJune(q); else juneReply(q); });
+  await bot("Sure — ask me anything about Bold, or tap a question below. Whenever you're ready, tap “Let's verify my coverage.”");
+  askPills();
 }
+/* persistent quick-question pills for ask mode — always led by a steer-back-to-onboarding option */
+let askMode=false, askPillsRow=null;
+function askPills(){
+  if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
+  const node=el(`<div class="chips">
+      <button class="chip lead" data-go="onboard">Let's verify my coverage →</button>
+      <button class="chip" data-q="What will it cost me?">What will it cost?</button>
+      <button class="chip" data-q="Am I eligible for medication?">Am I eligible for medication?</button>
+      <button class="chip" data-q="Is Bold safe and private?">Is this safe &amp; private?</button>
+      <button class="chip" data-q="How does the visit work?">How does the visit work?</button>
+    </div>`);
+  const ctl=control(node);
+  askPillsRow=ctl.closest(".row");
+  node.querySelectorAll(".chip").forEach(b=>{
+    b.onclick=()=>{
+      if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
+      if(b.dataset.go==="onboard"){ steerToOnboarding(); return; }
+      const q=b.dataset.q; me(q); if(JUNE_PROXY) askJune(q); else juneReply(q);
+    };
+  });
+}
+/* steer back into onboarding: resolve the welcome so run() continues into the coverage flow */
+function steerToOnboarding(){ const go=document.querySelector(".cw-go"); if(go) go.click(); }
 
 /* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
 const sayBtn=document.getElementById("sayBtn");
@@ -1101,6 +1120,7 @@ async function askJune(text){
       aiHistory.push({role:"assistant", content:data.text});
       splitParas(data.text).forEach(p=>addBotBubble(p));
       lastBotText=data.text; if(autoRead) speakOne(data.text);
+      if(askMode) askPills();
     } else { await juneReply(text); }
   }catch(e){ typing.remove(); await juneReply(text); }
 }
@@ -1126,6 +1146,7 @@ async function juneReply(t){
     ans="Good question. I'll make sure your care team can walk you through that on your call. For now, tap an option above and we'll keep going — and ask me anything along the way.";
   }
   await bot(ans);
+  if(askMode) askPills();
 }
 function sendText(){
   const t=(ta.value||"").trim(); if(!t||replying) return;
