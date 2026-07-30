@@ -1101,12 +1101,20 @@ function summary(){
    The conversation
    ============================================================ */
 /* one conversational question at a time — a single field, never a multi-field form */
-/* types digits into MM/DD/YYYY, inserting the slashes as you go */
+/* MM/DD/YYYY mask: auto-inserts slashes for digit typers, and RESPECTS slashes the
+   user types or pastes (so "1/1/1958" stays 1/1/1958, not 11/19/58). Overflows
+   between fields so a long paste still lands in the right slots. */
 function maskDate(v){
-  const d=(v||"").replace(/\D/g,"").slice(0,8);
-  let out=d.slice(0,2);
-  if(d.length>2) out+="/"+d.slice(2,4);
-  if(d.length>4) out+="/"+d.slice(4,8);
+  v=(v||"").replace(/[^\d/]/g,"");
+  const cap=[2,2,4], seg=["","",""]; let i=0;
+  for(const ch of v){
+    if(ch==="/"){ if(i<2) i++; continue; }
+    if(seg[i].length>=cap[i]){ if(i>=2) continue; i++; }
+    seg[i]+=ch;
+  }
+  let out=seg[0];
+  if(i>=1) out+="/"+seg[1];
+  if(i>=2) out+="/"+seg[2];
   return out;
 }
 async function askField(q, val, type, ph, mask){
@@ -1124,14 +1132,15 @@ async function askField(q, val, type, ph, mask){
         if(atEnd){ const p=inp.value.length; inp.setSelectionRange(p,p); }
       });
     }
-    const submit=()=>{ const v=(inp.value||"").trim();
+    const submit=()=>{ let v=(inp.value||"").trim();
       if(!v){ errEl.textContent="Please fill this in."; errEl.hidden=false; return; }
       if(type==="email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ errEl.textContent="Please enter a valid email address."; errEl.hidden=false; return; }
       if(mask==="date"){
-        const mt=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-        if(!mt){ errEl.textContent="Please enter your date of birth as MM/DD/YYYY."; errEl.hidden=false; return; }
-        const mm=+mt[1], dd=+mt[2], yy=+mt[3];
-        if(mm<1||mm>12||dd<1||dd>31||yy<1900||yy>2026){ errEl.textContent="That date doesn't look right — please check and re-enter."; errEl.hidden=false; return; }
+        const p=v.split("/"), mm=p[0]||"", dd=p[1]||"", yy=p[2]||"";
+        if(!mm||!dd||yy.length!==4){ errEl.textContent="Please enter your date of birth as MM/DD/YYYY."; errEl.hidden=false; return; }
+        const M=+mm, D=+dd, Y=+yy;
+        if(M<1||M>12||D<1||D>31||Y<1900||Y>2026){ errEl.textContent="That date doesn't look right — please check and re-enter."; errEl.hidden=false; return; }
+        v=`${String(M).padStart(2,"0")}/${String(D).padStart(2,"0")}/${yy}`; // normalize 1/1/1958 → 01/01/1958
       }
       lock(node.closest(".ctl")); me(v); resolve(v); };
     node.querySelector(".go").onclick=submit;
