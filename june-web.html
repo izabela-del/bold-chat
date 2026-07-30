@@ -766,6 +766,15 @@ async function showInsurance(){
 }
 
 /* one shared verification step: identity (DOB + state) then insurance — used by the normal flow and the cost on-ramp */
+/* a simple two-option confirm → Promise<boolean> */
+function askYesNo(yes, no){
+  return new Promise(resolve=>{
+    const node=el(`<div class="chips"><button class="chip lead" data-v="1">${esc(yes)}</button><button class="chip" data-v="0">${esc(no)}</button></div>`);
+    const ctl=control(node);
+    node.querySelector('[data-v="1"]').onclick=()=>{ lock(ctl); me(yes); resolve(true); };
+    node.querySelector('[data-v="0"]').onclick=()=>{ lock(ctl); me(no); resolve(false); };
+  });
+}
 async function verifyCoverage(){
   await bot("Your information is safe and secure — we never share or sell it. We only use it to confirm your eligibility and share it with your Bold care team.");
   if(!PROFILE.signedUp){
@@ -773,6 +782,13 @@ async function verifyCoverage(){
     PROFILE.last = await askField("And your last name?", PROFILE.last||"Stevens");
     PROFILE.email = await askField("What's the best email to reach you?", PROFILE.email||"carol.s@email.com", "email");
     PROFILE.signedUp = true;
+  } else {
+    // came from the landing form — read the name back and confirm it matches the ID/insurance card exactly
+    await bot(`I have your name as ${PROFILE.name} ${PROFILE.last}. For your insurance, this needs to match your insurance or ID card exactly.`);
+    if(!(await askYesNo("Yes, that's exactly right", "No, let me fix it"))){
+      PROFILE.name = await askField("First name — exactly as it appears on your card", PROFILE.name||"");
+      PROFILE.last = await askField("Last name — exactly as it appears on your card", PROFILE.last||"");
+    }
   }
   PROFILE.dob = await askField("Last one — what's your date of birth?", PROFILE.dob||"04 / 12 / 1958");
   await bot("Thanks — pulling up your coverage now.");
