@@ -68,7 +68,7 @@ program/what is bold → program.
 | 45-min virtual visit | **$0 for ~78–86% of members** ⚠; else **~$5–$55** ⚠ | Bold in-network with Medicare, usually with Medicare Advantage |
 | Medigap / secondary / spouse / employer | often covers remaining balance | coordinator confirms |
 | GLP-1 via **Medicare Bridge** | **flat $50/month** ⚠ | see §5 |
-| GLP-1 via **Medicare Part D** | **varies** | see §6 |
+| GLP-1 if the Bridge isn't a fit | **not automatic — depends on conditions/plan** | see §6 |
 
 The visit is billed to the member's plan **directly** by the coordinator.
 
@@ -85,13 +85,15 @@ The visit is billed to the member's plan **directly** by the coordinator.
 
 ---
 
-## 6. Medicare Part D (the other route)
+## 6. If the Bridge isn't a fit
 
-- The **standard drug-benefit route** used when a member **isn't Bridge-eligible.**
-- **Cost varies** by the member's Part D plan (formulary / tier / deductible) —
-  **do not quote it in chat.** The **Care Coordinator confirms the cost, free,
-  before anything is prescribed.**
-- Contrast to remember: Bridge = flat/predictable $50; Part D = plan-dependent.
+- **Do NOT claim Part D (or any plan) automatically covers a GLP-1** — that isn't true.
+- Instead, keep it open and honest: a member **may still qualify through other health
+  conditions**, and there can be **other discounts depending on their plan**. Some
+  plans do cover GLP-1s under Part D, but it **varies** and is never guaranteed.
+- Always route specifics to a **care coordinator, who explores every option for free
+  before anything is prescribed.** Never quote a personal cost in chat.
+- Contrast: Bridge = flat, predictable $50/month; anything else = coordinator checks.
 
 ---
 

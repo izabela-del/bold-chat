@@ -822,16 +822,16 @@ const OUTCOMES = {
     ]
   },
   partd:{
-    key:"partd", badge:"Medicare Part D", cls:"partd",
-    title:"You're likely covered for a GLP-1 through your standard Medicare Part D benefits.",
+    key:"partd", badge:"More options", cls:"partd",
+    title:"You're not on the $50 Bridge — but you may still qualify for help with GLP-1 costs.",
     rows:[
       {k:"Your Bold visits", v:"$0", cls:"free", note:"Covered by UnitedHealthcare"},
-      {k:"GLP-1 medication, if prescribed", v:"Cost varies", cls:"vary", note:"A care coordinator confirms your exact cost — free — before anything is prescribed"}
+      {k:"GLP-1 medication, if prescribed", v:"Let's check", cls:"vary", note:"You may qualify through other health conditions or plan discounts — a care coordinator checks every option, free, before anything is prescribed"}
     ],
-    plain:"A GLP-1 may be covered under your standard Part D plan, but the price depends on your specific plan. You're not on the $50 Bridge copay — so a care coordinator will confirm exactly what you'd pay, for free, before your provider prescribes anything.",
+    plain:"You're not on the flat $50 Bridge copay — but that doesn't mean you're out of options. Depending on your health conditions and your plan, you may still qualify for coverage or other discounts. A care coordinator looks into everything with you, for free, before your provider prescribes anything — so there are no surprises.",
     faqs:[
-      {q:"Why does the cost vary?", a:"Standard Part D plans each set their own price for GLP-1s. Your medication is still covered — we just need to check your plan's exact cost first, so there are no surprises."},
-      {q:"When will I know the price?", a:"Your care coordinator confirms the cost with you, for free, on your intake call — before your provider prescribes anything."},
+      {q:"How might I still qualify?", a:"Other health conditions can open up coverage, and some plans or programs offer discounts. Your care coordinator checks every path for you — for free — before anything is prescribed."},
+      {q:"When will I know the cost?", a:"Your care coordinator confirms any cost with you, for free, on your intake call — before your provider prescribes anything."},
       {q:"Are GLP-1s required?", a:"No. If a GLP-1 isn't right for you, your provider will support you with a personalized lifestyle plan instead."}
     ]
   },
@@ -868,7 +868,7 @@ function renderEligInto(container,key){
     <div class="demoseg">Demo · preview scenario
       <div class="segs">
         <button data-o="bridge" class="${key==='bridge'?'on':''}">Bridge</button>
-        <button data-o="partd" class="${key==='partd'?'on':''}">Part D</button>
+        <button data-o="partd" class="${key==='partd'?'on':''}">Other</button>
         <button data-o="lifestyle" class="${key==='lifestyle'?'on':''}">Lifestyle</button>
       </div>
     </div>
@@ -983,7 +983,7 @@ function summary(){
   const covLine = PROFILE.goal!=="weight"
     ? `Your visits are $0 with ${PROFILE.insurer}. Your coordinator will help you get the most from your Care Plan.`
     : (PROFILE.outcome==="bridge" ? "Visits are $0. If a GLP-1 is prescribed, you'll pay a flat $50/month through the Medicare Bridge — your provider files the claim."
-    : PROFILE.outcome==="partd" ? "Visits are $0. If a GLP-1 is prescribed, it's covered under Part D — your coordinator confirms the exact cost, free, before anything is prescribed."
+    : PROFILE.outcome==="partd" ? "Visits are $0. You're not on the $50 Bridge, but you may still qualify through other conditions or discounts — your coordinator checks every option, free, before anything is prescribed."
     : "Visits are $0. You're starting with a lifestyle plan; your provider can revisit medication if your needs or coverage change.");
   const node=el(`<div class="allset">
     <div class="big">You're all set, ${esc(PROFILE.name)}! 🎉</div>
