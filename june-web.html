@@ -391,9 +391,14 @@
     .lp-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
     .lp-bottom{padding:0 max(40px,calc((100% - 1080px)/2)) 60px;}
     .lp-bottom .lp-cta{max-width:340px; margin:0 auto; display:block;}
-    /* June chat: a centered conversation column on a branded backdrop */
+    /* June chat on desktop: a floating panel over a frosted-glass view of the page */
     .screen:not(.landing){background:radial-gradient(1200px 700px at 50% -10%, #efe9fe 0%, #f6f4fb 45%, #eef0f5 100%);}
-    .screen:not(.landing) #view-chat{width:100%; max-width:520px; align-self:center; background:#fff; box-shadow:0 24px 70px rgba(28,20,54,.16);}
+    .screen:not(.landing) #view-landing[hidden]{display:block !important; position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+    .screen:not(.landing)::after{content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+      background:rgba(240,238,250,.5); -webkit-backdrop-filter:blur(15px) saturate(1.1); backdrop-filter:blur(15px) saturate(1.1);}
+    .screen:not(.landing) #view-chat{position:relative; z-index:2; width:100%; max-width:520px; align-self:center;
+      margin:22px auto; max-height:calc(100dvh - 44px); background:#fff; border-radius:22px; overflow:hidden;
+      box-shadow:0 30px 80px rgba(28,20,54,.28);}
   }
 
   /* ============================================================
