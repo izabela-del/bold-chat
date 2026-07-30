@@ -606,7 +606,7 @@ async function showAskPills(){
   askPills();
 }
 /* persistent quick-question pills for ask mode — always led by a steer-back-to-onboarding option; already-asked questions drop off */
-let askMode=false, askPillsRow=null, wantCoverageOffer=false;
+let askMode=false, askPillsRow=null, wantCoverageOffer=false, onboarding=false;
 const ASK_POOL=[
   {q:"What will it cost me?", label:"What will it cost?"},
   {q:"Am I eligible for medication?", label:"Am I eligible for medication?"},
@@ -649,6 +649,17 @@ async function offerCoverageCheck(){
   const ctl=control(node); askPillsRow=ctl.closest(".row");
   node.querySelector('[data-a="yes"]').onclick=()=>{ if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } me("Yes, let's do it"); steerToOnboarding(); };
   node.querySelector('[data-a="no"]').onclick=async ()=>{ if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } me("No, I have more questions"); await bot("Sure — what else can I help you with?"); askPills(); };
+}
+/* the member interjected with a free-text question mid-onboarding — answer it, then
+   return to the goal: re-anchor on confirming coverage and move the pending step to the bottom */
+async function resumeOnboarding(){
+  const pending=[...thread.querySelectorAll(".ctl:not(.done)")].pop();
+  if(pending){
+    await bot(`No problem — let's pick up right where we left off and finish confirming your coverage${PROFILE.name?`, ${PROFILE.name}`:""}.`);
+    const row=pending.closest(".row"); if(row){ thread.appendChild(row); scroll(); }
+  } else {
+    await bot("Let's keep going and finish confirming your coverage — I'll take it from here.");
+  }
 }
 
 /* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
@@ -1168,7 +1179,7 @@ async function runAsk(){
   composer.hidden=false; composer.classList.add("open");
   aiHistory=[];
   Object.assign(PROFILE,{ signedUp:false, coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
-  askMode=true;
+  askMode=true; onboarding=false;
   await bot("Hi, I'm June — Bold's AI health assistant.", {first:true});
   await bot("Ask me anything about Bold — your coverage, your costs, or how visits work. It's private and secure, and whenever you're ready I can check your coverage for you.");
   askPills();
@@ -1186,6 +1197,7 @@ async function run(){
 /* the guided onboarding continuation — reused by the Check-coverage entry and the ask-mode "verify my coverage" hand-off */
 async function runOnboarding(){
   composer.hidden=false;
+  askMode=false; onboarding=true;   // guided flow is active — free-text asides steer back here
   await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name} — then I can give you a better estimate.` : "Let's confirm your coverage — then I can give you a better estimate.", {first:true});
   await verifyCoverage();
   await bot("Good news — with your plan, your Bold visits are $0.");
@@ -1267,6 +1279,7 @@ async function runOnboarding(){
   await bot("And the best number to reach you?");
   await askPhone();
 
+  onboarding=false;   // flow complete
   await bot(`That's everything, ${PROFILE.name}. You're all set. 💜`);
   summary();
 }
@@ -1287,6 +1300,7 @@ function memberContext(){
   return { name:PROFILE.name||"there",
     state: PROFILE.goal==="weight" ? "weight-management onboarding" : (PROFILE.goal ? "onboarding" : "new sign-up"),
     coverage_confirmed: !!PROFILE.coverageConfirmed,
+    onboarding: !!onboarding,
     plan: PROFILE.insurer||"" };
 }
 function splitParas(s){ return String(s).trim().split(/\n{2,}/).map(x=>x.replace(/\s*\n\s*/g," ").trim()).filter(Boolean); }
@@ -1310,6 +1324,7 @@ async function askJune(text){
       splitParas(data.text).forEach(p=>addBotBubble(p));
       lastBotText=data.text; if(autoRead) speakOne(data.text);
       if(askMode){ if(wantCoverageOffer){ wantCoverageOffer=false; await offerCoverageCheck(); } else askPills(); }
+      else if(onboarding){ await resumeOnboarding(); }
     } else { await juneReply(text); }
   }catch(e){ typing.remove(); await juneReply(text); }
 }
@@ -1336,6 +1351,7 @@ async function juneReply(t){
   }
   await bot(ans);
   if(askMode){ if(wantCoverageOffer){ wantCoverageOffer=false; await offerCoverageCheck(); } else askPills(); }
+  else if(onboarding){ await resumeOnboarding(); }
 }
 function sendText(){
   const t=(ta.value||"").trim(); if(!t||replying) return;
@@ -1405,7 +1421,7 @@ document.getElementById("lp-why").onclick=function(){
   const h=el(`<p class="lp-blurb" style="text-align:left;color:var(--ink-soft);font-weight:500;margin-top:8px">So we can confirm your Medicare coverage and check what you'd pay. A care coordinator double-checks everything before anything is charged — and we never sell your information.</p>`);
   this.after(h); this._h=h;
 };
-function resetToLanding(){ juneStarted=false; juneMode=null; askMode=false; askPillsRow=null; wantCoverageOffer=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
+function resetToLanding(){ juneStarted=false; juneMode=null; askMode=false; onboarding=false; askPillsRow=null; wantCoverageOffer=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
 { const rb=document.getElementById("restart"); if(rb) rb.onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); resetToLanding(); }; }
 showView("landing");
 </script>
