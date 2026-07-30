@@ -93,10 +93,16 @@
   .lp-quote cite{display:block; margin-top:8px; font-style:normal; font-weight:800; font-size:13px; color:var(--ink-soft);}
   .lp-bottom{padding:2px 16px 30px;}
   /* persistent Chat-with-June FAB */
-  .fab{position:absolute; right:14px; bottom:16px; z-index:15; display:none; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); box-shadow:0 10px 26px rgba(28,20,54,.24); border-radius:32px; padding:5px 16px 5px 5px; cursor:pointer; font:inherit; font-size:13.5px; font-weight:800; color:var(--brand-press);}
+  @property --fab-a{ syntax:"<angle>"; initial-value:0deg; inherits:false; }
+  .fab{position:absolute; right:14px; bottom:16px; z-index:15; display:none; align-items:center; gap:0; background:#fff; border:0; box-shadow:0 10px 26px rgba(28,20,54,.24); border-radius:32px; padding:5px; cursor:pointer; font:inherit; font-size:13.5px; font-weight:800; color:var(--brand-press); transition:padding .45s cubic-bezier(.5,.15,.2,1);}
+  .fab::before{content:""; position:absolute; inset:0; border-radius:inherit; padding:2px; pointer-events:none; background:conic-gradient(from var(--fab-a), #7b3af0, #2f8bff, #12c2c2, #ff5fa2, #7b3af0); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite:exclude; animation:fabspin 3.5s linear infinite;}
+  @keyframes fabspin{ to{ --fab-a:360deg; } }
   .screen.landing .fab{display:flex; animation:pop .2s ease;}
-  .fab .av{width:40px; height:40px;}
-  .fab .fab-label{white-space:nowrap;}
+  .fab.open, .fab:hover{padding-right:15px;}
+  .fab .av{width:40px; height:40px; flex:0 0 auto;}
+  .fab .fab-label{white-space:nowrap; max-width:0; opacity:0; overflow:hidden; margin:0; transition:max-width .45s cubic-bezier(.5,.15,.2,1), opacity .3s ease, margin .45s ease;}
+  .fab.open .fab-label, .fab:hover .fab-label{max-width:190px; opacity:1; margin:0 6px 0 7px;}
+  @media (prefers-reduced-motion: reduce){ .fab::before{animation:none;} .fab, .fab .fab-label{transition:none;} }
   .statusbar{height:46px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 30px; font-size:15px; font-weight:700; color:#000; z-index:6; background:#fff;}
   .statusbar .r{display:flex; align-items:center; gap:7px;}
 
@@ -1210,6 +1216,12 @@ document.getElementById("lp-june").onclick=function(){
   this.closest(".lp-prime").after(j); this._j=j;
 };
 fab.onclick=()=>enterJune(true);
+/* FAB intro: on load, briefly open to "Ask me anything", then collapse to the orb */
+(function(){ var lbl=fab.querySelector(".fab-label"); if(!lbl) return;
+  setTimeout(function(){ lbl.textContent="Ask me anything"; fab.classList.add("open"); }, 900);
+  setTimeout(function(){ fab.classList.remove("open"); }, 4200);
+  setTimeout(function(){ lbl.textContent="Chat with June"; }, 4750);
+})();
 document.getElementById("chatClose").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); showView("landing"); viewLanding.scrollTop=0; };
 document.getElementById("lp-why").onclick=function(){
   if(this._h){ this._h.remove(); this._h=null; return; }
