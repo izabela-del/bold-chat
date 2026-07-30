@@ -558,6 +558,13 @@
   @keyframes fabBlink{0%,91%,100%{transform:scaleY(1);} 95.5%{transform:scaleY(.1);}}
   @media (prefers-reduced-motion: reduce){ .fab .av .eye{animation:none;} }
 
+  /* --- reveal shimmer: a light sweep across the whole button --- */
+  .fab::after{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:3;
+    background:linear-gradient(105deg, transparent 35%, rgba(255,255,255,.6) 50%, transparent 65%);
+    background-size:250% 100%; background-position:200% 0; opacity:0;}
+  .fab.shimmer::after{animation:fabShine 1.05s ease-out;}
+  @keyframes fabShine{0%{opacity:0; background-position:200% 0;} 12%{opacity:1;} 100%{opacity:0; background-position:-80% 0;}}
+
   /* --- mobile: June peeks in the corner while the hero form is on screen,
          then slides fully out once you scroll past the form --- */
   @media (max-width:859px){
@@ -1699,21 +1706,36 @@ document.getElementById("lp-check2").onclick=startFromLanding;
 fab.onclick=()=>enterJune("ask");
 /* FAB intro: on load, briefly open to "Ask me anything", then collapse to the orb */
 (function(){ var lbl=fab.querySelector(".fab-label"); if(!lbl) return;
+  if(window.matchMedia && window.matchMedia("(max-width:859px)").matches) return; // mobile: reveal drives the label/box
   setTimeout(function(){ lbl.textContent="Ask me anything"; fab.classList.add("open"); }, 900);
   setTimeout(function(){ fab.classList.remove("open"); }, 4200);
   setTimeout(function(){ lbl.textContent="Chat with June"; }, 4750);
 })();
-/* mobile only: June peeks in the corner while the hero form is visible, then
-   slides fully out once you scroll past the form (desktop: always fully shown) */
+/* mobile only: June peeks in the corner while the hero form is visible, then slides
+   fully out — as the whole "Ask me anything" box with a shimmer sweep — once you
+   scroll past the form (desktop: unchanged, always fully shown) */
 (function(){
   var form=document.querySelector(".lp-form");
   if(!fab || !form || !viewLanding || !("IntersectionObserver" in window)) return;
   var mq=window.matchMedia("(max-width:859px)");
-  function setPeek(on){ fab.classList.toggle("peek", !!on && mq.matches); }
-  if(mq.matches) fab.classList.add("peek");            // start tucked on mobile (page opens at the top)
-  var io=new IntersectionObserver(function(es){ setPeek(es[0].isIntersecting); }, {root:viewLanding, threshold:0});
+  var lbl=fab.querySelector(".fab-label");
+  var shimT;
+  function tuck(){ fab.classList.add("peek"); fab.classList.remove("open","shimmer"); }
+  function reveal(){
+    fab.classList.remove("peek");
+    if(lbl) lbl.textContent="Ask me anything";
+    fab.classList.add("open");                          // expand to the full box
+    fab.classList.remove("shimmer"); void fab.offsetWidth; fab.classList.add("shimmer"); // (re)play the shimmer
+    clearTimeout(shimT); shimT=setTimeout(function(){ fab.classList.remove("shimmer"); }, 1200);
+  }
+  function apply(formVisible){
+    if(!mq.matches){ fab.classList.remove("peek"); return; }   // desktop: never tuck
+    if(formVisible) tuck(); else reveal();
+  }
+  if(mq.matches) tuck();                                // start tucked on mobile (page opens at the top)
+  var io=new IntersectionObserver(function(es){ apply(es[0].isIntersecting); }, {root:viewLanding, threshold:0});
   io.observe(form);
-  var onMq=function(){ if(!mq.matches) fab.classList.remove("peek"); };
+  var onMq=function(){ if(!mq.matches){ fab.classList.remove("peek","open","shimmer"); } };
   if(mq.addEventListener) mq.addEventListener("change", onMq); else if(mq.addListener) mq.addListener(onMq);
 })();
 document.getElementById("chatClose").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); showView("landing"); viewLanding.scrollTop=0; };
