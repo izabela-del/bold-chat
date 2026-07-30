@@ -557,6 +557,16 @@
   .fab.open .fab-label, .fab:hover .fab-label{max-width:210px;}
   @keyframes fabBlink{0%,91%,100%{transform:scaleY(1);} 95.5%{transform:scaleY(.1);}}
   @media (prefers-reduced-motion: reduce){ .fab .av .eye{animation:none;} }
+
+  /* --- mobile: June peeks in the corner while the hero form is on screen,
+         then slides fully out once you scroll past the form --- */
+  @media (max-width:859px){
+    .fab{transition:padding .45s cubic-bezier(.5,.15,.2,1),
+                    transform .5s cubic-bezier(.5,.15,.2,1), opacity .4s ease;}
+    .fab.peek{transform:translateX(46px); opacity:.92;}
+    .fab.peek::before{opacity:1;}          /* keep the colorful ring as a hint while tucked */
+    .fab.peek .fab-label{max-width:0; opacity:0; margin:0;}  /* stay a clean orb while tucked */
+  }
 </style>
 </head>
 <body>
@@ -1692,6 +1702,19 @@ fab.onclick=()=>enterJune("ask");
   setTimeout(function(){ lbl.textContent="Ask me anything"; fab.classList.add("open"); }, 900);
   setTimeout(function(){ fab.classList.remove("open"); }, 4200);
   setTimeout(function(){ lbl.textContent="Chat with June"; }, 4750);
+})();
+/* mobile only: June peeks in the corner while the hero form is visible, then
+   slides fully out once you scroll past the form (desktop: always fully shown) */
+(function(){
+  var form=document.querySelector(".lp-form");
+  if(!fab || !form || !viewLanding || !("IntersectionObserver" in window)) return;
+  var mq=window.matchMedia("(max-width:859px)");
+  function setPeek(on){ fab.classList.toggle("peek", !!on && mq.matches); }
+  if(mq.matches) fab.classList.add("peek");            // start tucked on mobile (page opens at the top)
+  var io=new IntersectionObserver(function(es){ setPeek(es[0].isIntersecting); }, {root:viewLanding, threshold:0});
+  io.observe(form);
+  var onMq=function(){ if(!mq.matches) fab.classList.remove("peek"); };
+  if(mq.addEventListener) mq.addEventListener("change", onMq); else if(mq.addListener) mq.addListener(onMq);
 })();
 document.getElementById("chatClose").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); showView("landing"); viewLanding.scrollTop=0; };
 document.getElementById("lp-why").onclick=function(){
