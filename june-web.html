@@ -799,7 +799,7 @@ async function verifyCoverage(){
       PROFILE.email = await askField("And the best email to reach you", PROFILE.email||"");
     }
   }
-  PROFILE.dob = await askField("Last one — what's your date of birth?", "", "text", "MM / DD / YYYY");
+  PROFILE.dob = await askField("Last one — what's your date of birth?", "", "text", "MM/DD/YYYY", "date");
   await bot("Thanks — pulling up your coverage now.");
   await wait(400);
   await showInsurance();
@@ -1101,19 +1101,43 @@ function summary(){
    The conversation
    ============================================================ */
 /* one conversational question at a time — a single field, never a multi-field form */
-async function askField(q, val, type, ph){
+/* types digits into MM/DD/YYYY, inserting the slashes as you go */
+function maskDate(v){
+  const d=(v||"").replace(/\D/g,"").slice(0,8);
+  let out=d.slice(0,2);
+  if(d.length>2) out+="/"+d.slice(2,4);
+  if(d.length>4) out+="/"+d.slice(4,8);
+  return out;
+}
+async function askField(q, val, type, ph, mask){
   await bot(q);
   return new Promise(resolve=>{
-    const node=el(`<div class="fields"><div class="fld"><input id="af-in" type="${type||"text"}" value="${esc(val||"")}" placeholder="${esc(ph||"")}" autocomplete="off"></div><p class="fld-err" hidden></p><button class="go">Continue</button></div>`);
+    const im = mask==="date" ? "numeric" : (type==="email" ? "email" : "text");
+    const mx = mask==="date" ? ` maxlength="10"` : "";
+    const node=el(`<div class="fields"><div class="fld"><input id="af-in" type="${type||"text"}" inputmode="${im}"${mx} value="${esc(val||"")}" placeholder="${esc(ph||"")}" autocomplete="off"></div><p class="fld-err" hidden></p><button class="go">Continue</button></div>`);
     const errEl=node.querySelector(".fld-err");
-    const submit=()=>{ const v=(node.querySelector("#af-in").value||"").trim();
+    const inp=node.querySelector("#af-in");
+    if(mask==="date"){
+      inp.addEventListener("input",()=>{
+        const atEnd = inp.selectionStart===inp.value.length;
+        inp.value=maskDate(inp.value);
+        if(atEnd){ const p=inp.value.length; inp.setSelectionRange(p,p); }
+      });
+    }
+    const submit=()=>{ const v=(inp.value||"").trim();
       if(!v){ errEl.textContent="Please fill this in."; errEl.hidden=false; return; }
       if(type==="email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ errEl.textContent="Please enter a valid email address."; errEl.hidden=false; return; }
+      if(mask==="date"){
+        const mt=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if(!mt){ errEl.textContent="Please enter your date of birth as MM/DD/YYYY."; errEl.hidden=false; return; }
+        const mm=+mt[1], dd=+mt[2], yy=+mt[3];
+        if(mm<1||mm>12||dd<1||dd>31||yy<1900||yy>2026){ errEl.textContent="That date doesn't look right — please check and re-enter."; errEl.hidden=false; return; }
+      }
       lock(node.closest(".ctl")); me(v); resolve(v); };
     node.querySelector(".go").onclick=submit;
-    node.querySelector("#af-in").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); submit(); } });
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); submit(); } });
     control(node);
-    const inp=node.querySelector("#af-in"); if(inp) inp.focus();
+    if(inp) inp.focus();
   });
 }
 /* gentle name check — offer a correction when a name looks like a typo of a common one */
