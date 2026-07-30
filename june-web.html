@@ -600,7 +600,7 @@ async function showAskPills(){
   askPills();
 }
 /* persistent quick-question pills for ask mode — always led by a steer-back-to-onboarding option; already-asked questions drop off */
-let askMode=false, askPillsRow=null, costAsked=false;
+let askMode=false, askPillsRow=null, wantCoverageOffer=false;
 const ASK_POOL=[
   {q:"What will it cost me?", label:"What will it cost?"},
   {q:"Am I eligible for medication?", label:"Am I eligible for medication?"},
@@ -614,7 +614,7 @@ function askPills(){
   if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
   const remaining=ASK_POOL.filter(x=>!askedQs.has(x.q)).slice(0,4);
   const qHtml=remaining.map(x=>`<button class="chip" data-q="${x.q}">${x.label}</button>`).join("");
-  const leadLabel=costAsked ? "Confirm coverage for a better estimate →" : "Let's verify my coverage →";
+  const leadLabel="Let's verify my coverage →";
   const node=el(`<div class="chips"><button class="chip lead" data-go="onboard">${leadLabel}</button>${qHtml}</div>`);
   const ctl=control(node);
   askPillsRow=ctl.closest(".row");
@@ -622,7 +622,7 @@ function askPills(){
     b.onclick=()=>{
       if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
       if(b.dataset.go==="onboard"){ steerToOnboarding(); return; }
-      const q=b.dataset.q; askedQs.add(q); if(/cost|pay|afford|how much|\$/i.test(q)) costAsked=true; me(q); if(JUNE_PROXY) askJune(q); else juneReply(q);
+      const q=b.dataset.q; askedQs.add(q); if(/cost|pay|afford|how much|\$/i.test(q)) wantCoverageOffer=true; me(q); if(JUNE_PROXY) askJune(q); else juneReply(q);
     };
   });
 }
@@ -634,6 +634,15 @@ function steerToOnboarding(){
   if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
   juneMode="onboard";
   runOnboarding();
+}
+/* after a cost answer, explicitly offer to check coverage (Yes / No, more questions) */
+async function offerCoverageCheck(){
+  if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
+  await bot("Do you want me to confirm your coverage to get a better estimate?");
+  const node=el(`<div class="chips"><button class="chip lead" data-a="yes">Yes, let's do it</button><button class="chip" data-a="no">No, I have more questions</button></div>`);
+  const ctl=control(node); askPillsRow=ctl.closest(".row");
+  node.querySelector('[data-a="yes"]').onclick=()=>{ if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } me("Yes, let's do it"); steerToOnboarding(); };
+  node.querySelector('[data-a="no"]').onclick=async ()=>{ if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } me("No, I have more questions"); await bot("Sure — what else can I help you with?"); askPills(); };
 }
 
 /* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
@@ -1188,7 +1197,7 @@ async function askJune(text){
       aiHistory.push({role:"assistant", content:data.text});
       splitParas(data.text).forEach(p=>addBotBubble(p));
       lastBotText=data.text; if(autoRead) speakOne(data.text);
-      if(askMode) askPills();
+      if(askMode){ if(wantCoverageOffer){ wantCoverageOffer=false; await offerCoverageCheck(); } else askPills(); }
     } else { await juneReply(text); }
   }catch(e){ typing.remove(); await juneReply(text); }
 }
@@ -1214,12 +1223,12 @@ async function juneReply(t){
     ans="Good question. I'll make sure your care team can walk you through that on your call. For now, tap an option above and we'll keep going — and ask me anything along the way.";
   }
   await bot(ans);
-  if(askMode) askPills();
+  if(askMode){ if(wantCoverageOffer){ wantCoverageOffer=false; await offerCoverageCheck(); } else askPills(); }
 }
 function sendText(){
   const t=(ta.value||"").trim(); if(!t||replying) return;
   me(t); ta.value=""; sendBtn.disabled=true; replying=true;
-  if(/cost|price|pay|afford|copay|how much|\$/i.test(t)) costAsked=true;
+  if(/cost|price|pay|afford|copay|how much|\$/i.test(t)) wantCoverageOffer=true;
   const safe=safetyText(t);
   if(safe){ bot(safe).finally(()=>{ replying=false; }); return; }        // emergencies: no network
   if(JUNE_PROXY){ askJune(t).finally(()=>{ replying=false; }); return; } // real Claude
@@ -1277,7 +1286,7 @@ document.getElementById("lp-why").onclick=function(){
   const h=el(`<p class="lp-blurb" style="text-align:left;color:var(--ink-soft);font-weight:500;margin-top:8px">So we can confirm your Medicare coverage and check what you'd pay. A care coordinator double-checks everything before anything is charged — and we never sell your information.</p>`);
   this.after(h); this._h=h;
 };
-function resetToLanding(){ juneStarted=false; juneMode=null; askMode=false; askPillsRow=null; costAsked=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
+function resetToLanding(){ juneStarted=false; juneMode=null; askMode=false; askPillsRow=null; wantCoverageOffer=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
 { const rb=document.getElementById("restart"); if(rb) rb.onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); resetToLanding(); }; }
 showView("landing");
 </script>
