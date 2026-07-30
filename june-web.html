@@ -368,6 +368,8 @@
   /* landing priming + June explainer */
   .lp-prime{font-size:12.5px; line-height:1.45; color:var(--ink-soft); text-align:center; margin:9px 4px 0;}
   .lp-june{background:none; border:0; font:inherit; font-size:12.5px; font-weight:700; color:var(--brand-press); cursor:pointer; padding:0; text-decoration:underline; text-underline-offset:2px;}
+  .lp-eyebrow{display:flex; align-items:center; gap:9px; font-size:13px; font-weight:700; color:var(--brand-press); background:var(--brand-soft); border-radius:12px; padding:9px 12px; margin:0 0 14px; line-height:1.35;}
+  .lp-eyeorb{width:22px; height:22px; border-radius:50%; flex:0 0 auto; background:radial-gradient(circle at 34% 30%, #eef4ff 0%, #a78bfa 55%, #5b16e0 100%); box-shadow:0 1px 4px rgba(91,22,224,.35);}
   .lp-june-info{font-size:12.5px; line-height:1.5; color:var(--ink-soft); background:var(--brand-soft); border-radius:12px; padding:10px 12px; margin:8px 2px 0; text-align:left;}
   /* ============ DESKTOP WEB (>=860px) ============ */
   @media (min-width:860px){
@@ -408,12 +410,13 @@
             <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>78% of Bold patients pay $0 out of pocket to meet a Bold provider</span></li>
           </ul>
           <div class="lp-form">
+            <div class="lp-eyebrow"><span class="lp-eyeorb"></span><span>June, your AI assistant, will help you check your coverage.</span></div>
             <div class="lp-field"><label>First name</label><input id="lp-first" type="text" value="" placeholder="First name" autocomplete="off"></div>
             <div class="lp-field"><label>Last name</label><input id="lp-last" type="text" value="" placeholder="Last name" autocomplete="off"></div>
             <div class="lp-field"><label>Email</label><input id="lp-email" type="email" value="" placeholder="you@email.com" autocomplete="off"></div>
             <button class="lp-why" type="button" id="lp-why"><span class="lp-q">?</span>Why are we asking this?</button>
             <button class="lp-cta" id="lp-check" type="button">Check coverage</button>
-            <p class="lp-prime">Our AI assistant June will help verify your coverage — private &amp; secure. <button type="button" class="lp-june" id="lp-june">Who's June?</button></p>
+            <p class="lp-prime">Private &amp; secure. <button type="button" class="lp-june" id="lp-june">Who's June?</button></p>
             <p class="lp-legal">By signing up, you agree to Bold's <u>Terms of Service</u> and <u>Privacy Policy</u>.</p>
           </div>
           <p class="lp-blurb">Covered by Medicare, UnitedHealthcare, Aetna, Cigna, Blue Cross Blue Shield, Humana, and more</p>
