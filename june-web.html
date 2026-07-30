@@ -1023,15 +1023,37 @@ function summary(){
 /* ============================================================
    The conversation
    ============================================================ */
-/* FAB entry — a focused "ask June" instance: short intro + questions, no onboarding hero */
+/* signup basics — FAB users skip the landing form, so collect these first */
+function askSignup(){
+  return new Promise(resolve=>{
+    const node=el(`<div class="fields">
+      <div class="fld"><label>First name</label><input id="s-first" value="Carol" autocomplete="off"></div>
+      <div class="fld"><label>Last name</label><input id="s-last" value="Stevens" autocomplete="off"></div>
+      <div class="fld"><label>Email</label><input id="s-email" type="email" value="carol.s@email.com" autocomplete="off"></div>
+      <p class="lockline">🔒 Your information is safe and secure. We never share or sell your data — we only use it to confirm your eligibility and share with your Bold care team.</p>
+      <button class="go">Continue</button>
+    </div>`);
+    node.querySelector(".go").onclick=()=>{
+      PROFILE.name=(node.querySelector("#s-first").value||"there").trim();
+      PROFILE.last=(node.querySelector("#s-last").value||"").trim();
+      PROFILE.email=(node.querySelector("#s-email").value||"").trim();
+      lock(node.closest(".ctl")); me(`${PROFILE.name} ${PROFILE.last}`.trim()); resolve();
+    };
+    control(node);
+  });
+}
+/* FAB entry — a focused "ask June" instance: get their details (w/ safety note), then questions */
 async function runAsk(){
   thread.innerHTML=""; setProgress(0);
-  composer.hidden=false; composer.classList.add("open");
+  composer.hidden=true; composer.classList.remove("open");
   aiHistory=[];
   Object.assign(PROFILE,{ coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
-  askMode=true;
   await bot("Hi, I'm June — Bold's AI health assistant.", {first:true});
-  await bot("Ask me anything about Bold — your coverage, your costs, or how visits work. It's private and secure, and whenever you're ready I can check your coverage for you.");
+  await bot("First, a couple of quick details so I can help you — and see what Bold covers for you.");
+  await askSignup();
+  composer.hidden=false; composer.classList.add("open");
+  await bot(`Thanks, ${PROFILE.name}. Now ask me anything about Bold — your coverage, your costs, or how visits work. Whenever you're ready, I can check your coverage for you.`);
+  askMode=true;
   askPills();
 }
 /* Onboarding entry (Check coverage) — full-page welcome, then the guided flow */
