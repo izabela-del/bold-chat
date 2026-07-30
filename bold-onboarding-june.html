@@ -95,7 +95,8 @@
   /* persistent Chat-with-June FAB */
   @property --fab-a{ syntax:"<angle>"; initial-value:0deg; inherits:false; }
   .fab{position:absolute; right:14px; bottom:16px; z-index:15; display:none; align-items:center; gap:0; background:#fff; border:0; box-shadow:0 10px 26px rgba(28,20,54,.24); border-radius:32px; padding:5px; cursor:pointer; font:inherit; font-size:13.5px; font-weight:800; color:var(--brand-press); transition:padding .45s cubic-bezier(.5,.15,.2,1);}
-  .fab::before{content:""; position:absolute; inset:0; border-radius:inherit; padding:2px; pointer-events:none; background:conic-gradient(from var(--fab-a), #7b3af0, #2f8bff, #12c2c2, #ff5fa2, #7b3af0); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite:exclude; animation:fabspin 3.5s linear infinite;}
+  .fab::before{content:""; position:absolute; inset:0; border-radius:inherit; padding:2px; pointer-events:none; opacity:0; transition:opacity .5s ease; background:conic-gradient(from var(--fab-a), #7b3af0, #2f8bff, #12c2c2, #ff5fa2, #7b3af0); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite:exclude; animation:fabspin 3.5s linear infinite;}
+  .fab.open::before, .fab:hover::before{opacity:1;}
   @keyframes fabspin{ to{ --fab-a:360deg; } }
   .screen.landing .fab{display:flex; animation:pop .2s ease;}
   .fab.open, .fab:hover{padding-right:15px;}
