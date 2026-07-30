@@ -661,6 +661,61 @@ async function resumeOnboarding(){
     await bot("Let's keep going and finish confirming your coverage — I'll take it from here.");
   }
 }
+/* --- correct info the member gave earlier (name / email / DOB) — June owns this data, so just overwrite it --- */
+const STOP=new Set("correct corrected correcting my mine name named names is are it its it's to too as the a an i i'm im am first last full surname family spell spelled spelling spelt change changed update updated fix fixed call me and or please you your yours actually should be been this that of do does did can could would will now not no yes ok okay so just we get got make sure".split(" "));
+function cap(s){ s=(s||"").trim().replace(/[;:,.]+$/,""); return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+/* the corrected value is almost always the trailing word(s) — grab up to two, skipping filler */
+function tailNames(t){
+  const toks=(t.match(/[A-Za-z][A-Za-z'’\-]+/g)||[]);
+  let i=toks.length-1;
+  while(i>=0 && STOP.has(toks[i].toLowerCase())) i--;
+  const out=[];
+  while(i>=0 && !STOP.has(toks[i].toLowerCase()) && out.length<2){ out.unshift(toks[i]); i--; }
+  return out;
+}
+function detectCorrection(text){
+  const t=(text||"").trim(), low=t.toLowerCase(), out={};
+  const cue=/\b(my|i'?m|i am|call me|it'?s|its|correct|change|update|fix|actually|spell|spelled|spelling)\b/.test(low);
+  if(!cue) return out;                              // must sound like the member restating their own info
+  const hasName=/\bmy (?:first |last |sur)?name\b/.test(low)
+    || /\b(first name|last name|surname|family name)\b/.test(low)
+    || /\b(name'?s|name is|named|name should be)\b/.test(low)
+    || /\bcall me\b/.test(low)
+    || (/\b(spelled|spelling)\b/.test(low) && /\b(is|as|:)\b/.test(low));
+  const hasEmail=/@/.test(t) || /\b(e-?mail|email address)\b/.test(low);
+  const hasDob=/\b(birth|dob|born|birthday)\b/.test(low);
+  if(hasEmail){ const em=t.match(/[^\s@]+@[^\s@]+\.[^\s@]+/); if(em) out.email=em[0]; else out.askEmail=true; }
+  if(hasDob){ const d=t.match(/\b(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})\b/);
+    if(d){ const mm=+d[1],dd=+d[2]; let yy=d[3]; if(yy.length===2) yy=(+yy>30?"19":"20")+yy;
+      if(mm>=1&&mm<=12&&dd>=1&&dd<=31) out.dob=`${String(mm).padStart(2,"0")}/${String(dd).padStart(2,"0")}/${yy}`; else out.askDob=true; }
+    else out.askDob=true; }
+  if(hasName){
+    const names=tailNames(t);
+    const isLast=/\b(last name|surname|family name)\b/.test(low);
+    const isFull=/\bfull name\b/.test(low) || /\bfirst and last\b/.test(low);
+    if((isFull||!isLast) && names.length>=2){ out.first=cap(names[0]); out.last=cap(names[1]); }
+    else if(isLast && names.length){ out.last=cap(names[names.length-1]); }
+    else if(names.length){ out.first=cap(names[0]); }
+    else out.askName=true;
+  }
+  return out;
+}
+function hasCorrection(c){ return !!(c && (c.first||c.last||c.email||c.dob||c.askName||c.askEmail||c.askDob)); }
+async function applyCorrection(c){
+  const parts=[];
+  if(c.first){ PROFILE.name=c.first; parts.push(`first name to ${c.first}`); }
+  if(c.last){ PROFILE.last=c.last; parts.push(`last name to ${c.last}`); }
+  if(c.email){ PROFILE.email=c.email; parts.push(`email to ${c.email}`); }
+  if(c.dob){ PROFILE.dob=c.dob; parts.push(`date of birth to ${c.dob}`); }
+  if(parts.length){
+    const nice = parts.length===1 ? parts[0] : parts.slice(0,-1).join(", ")+" and "+parts[parts.length-1];
+    await bot(`Done — I've updated your ${nice}. Thanks for catching that.`);
+  }
+  if(c.askName && !c.first){ PROFILE.name=await askField("Sure — what's the correct spelling of your first name?", PROFILE.name||"", "text", "First name"); await bot(`Got it — ${PROFILE.name} it is.`); }
+  if(c.askEmail && !c.email){ PROFILE.email=await askField("No problem — what's the correct email?", PROFILE.email||"", "email", "you@email.com"); await bot("Thanks — updated."); }
+  if(c.askDob && !c.dob){ PROFILE.dob=await askField("Sure — what's your correct date of birth?", "", "text", "MM/DD/YYYY", "date"); await bot("Thanks — updated."); }
+  if(onboarding) await resumeOnboarding();
+}
 
 /* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
 const sayBtn=document.getElementById("sayBtn");
@@ -1359,6 +1414,7 @@ function sendText(){
   if(/cost|price|pay|afford|copay|how much|\$/i.test(t)) wantCoverageOffer=true;
   const safe=safetyText(t);
   if(safe){ bot(safe).finally(()=>{ replying=false; }); return; }        // emergencies: no network
+  if(onboarding){ const corr=detectCorrection(t); if(hasCorrection(corr)){ applyCorrection(corr).finally(()=>{ replying=false; }); return; } } // "fix my name" → overwrite it, don't defer
   if(JUNE_PROXY){ askJune(t).finally(()=>{ replying=false; }); return; } // real Claude
   juneReply(t).finally(()=>{ replying=false; });                        // canned fallback
 }
