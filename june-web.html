@@ -758,8 +758,15 @@ async function showInsurance(){
 
 /* one shared verification step: identity (DOB + state) then insurance — used by the normal flow and the cost on-ramp */
 async function verifyCoverage(){
-  await askIdentity();
-  await bot("Thanks — pulling that up now.");
+  await bot("Your information is safe and secure — we never share or sell it. We only use it to confirm your eligibility and share it with your Bold care team.");
+  if(!PROFILE.signedUp){
+    PROFILE.name = await askField("First — what's your first name?", PROFILE.name||"Carol");
+    PROFILE.last = await askField("And your last name?", PROFILE.last||"Stevens");
+    PROFILE.email = await askField("What's the best email to reach you?", PROFILE.email||"carol.s@email.com", "email");
+    PROFILE.signedUp = true;
+  }
+  PROFILE.dob = await askField("Last one — what's your date of birth?", PROFILE.dob||"04 / 12 / 1958");
+  await bot("Thanks — pulling up your coverage now.");
   await wait(400);
   await showInsurance();
   PROFILE.coverageConfirmed=true;
@@ -1023,37 +1030,27 @@ function summary(){
 /* ============================================================
    The conversation
    ============================================================ */
-/* signup basics — FAB users skip the landing form, so collect these first */
-function askSignup(){
+/* one conversational question at a time — a single field, never a multi-field form */
+async function askField(q, val, type){
+  await bot(q);
   return new Promise(resolve=>{
-    const node=el(`<div class="fields">
-      <div class="fld"><label>First name</label><input id="s-first" value="Carol" autocomplete="off"></div>
-      <div class="fld"><label>Last name</label><input id="s-last" value="Stevens" autocomplete="off"></div>
-      <div class="fld"><label>Email</label><input id="s-email" type="email" value="carol.s@email.com" autocomplete="off"></div>
-      <p class="lockline">🔒 Your information is safe and secure. We never share or sell your data — we only use it to confirm your eligibility and share with your Bold care team.</p>
-      <button class="go">Continue</button>
-    </div>`);
-    node.querySelector(".go").onclick=()=>{
-      PROFILE.name=(node.querySelector("#s-first").value||"there").trim();
-      PROFILE.last=(node.querySelector("#s-last").value||"").trim();
-      PROFILE.email=(node.querySelector("#s-email").value||"").trim();
-      lock(node.closest(".ctl")); me(`${PROFILE.name} ${PROFILE.last}`.trim()); resolve();
-    };
+    const node=el(`<div class="fields"><div class="fld"><input id="af-in" type="${type||"text"}" value="${esc(val||"")}" autocomplete="off"></div><button class="go">Continue</button></div>`);
+    const submit=()=>{ const v=(node.querySelector("#af-in").value||"").trim(); lock(node.closest(".ctl")); me(v||"—"); resolve(v); };
+    node.querySelector(".go").onclick=submit;
+    node.querySelector("#af-in").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); submit(); } });
     control(node);
+    const inp=node.querySelector("#af-in"); if(inp) inp.focus();
   });
 }
-/* FAB entry — a focused "ask June" instance: get their details (w/ safety note), then questions */
+/* FAB entry — a focused "ask June" instance: intro + questions (details are collected only when they verify) */
 async function runAsk(){
   thread.innerHTML=""; setProgress(0);
-  composer.hidden=true; composer.classList.remove("open");
-  aiHistory=[];
-  Object.assign(PROFILE,{ coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
-  await bot("Hi, I'm June — Bold's AI health assistant.", {first:true});
-  await bot("First, a couple of quick details so I can help you — and see what Bold covers for you.");
-  await askSignup();
   composer.hidden=false; composer.classList.add("open");
-  await bot(`Thanks, ${PROFILE.name}. Now ask me anything about Bold — your coverage, your costs, or how visits work. Whenever you're ready, I can check your coverage for you.`);
+  aiHistory=[];
+  Object.assign(PROFILE,{ signedUp:false, coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
   askMode=true;
+  await bot("Hi, I'm June — Bold's AI health assistant.", {first:true});
+  await bot("Ask me anything about Bold — your coverage, your costs, or how visits work. It's private and secure, and whenever you're ready I can check your coverage for you.");
   askPills();
 }
 /* Onboarding entry (Check coverage) — full-page welcome, then the guided flow */
@@ -1069,7 +1066,7 @@ async function run(){
 /* the guided onboarding continuation — reused by the Check-coverage entry and the ask-mode "verify my coverage" hand-off */
 async function runOnboarding(){
   composer.hidden=false;
-  await bot(`Let's confirm your coverage, ${PROFILE.name} — then I can show your exact cost.`, {first:true});
+  await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name} — then I can show your exact cost.` : "Let's confirm your coverage — then I can show your exact cost.", {first:true});
   await verifyCoverage();
   await bot("Good news — with your plan, your Bold visits are $0.");
   setProgress(.22);
@@ -1259,7 +1256,7 @@ const viewLanding=document.getElementById("view-landing"), viewChat=document.get
 function showView(name){ viewLanding.hidden=(name!=="landing"); viewChat.hidden=(name!=="chat"); screenEl.classList.toggle("landing", name==="landing"); }
 let juneStarted=false, juneMode=null;
 function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){ juneStarted=true; juneMode=mode; if(mode==="ask") runAsk(); else run(); } }
-function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"Carol").trim(); PROFILE.insurer="UnitedHealthcare"; enterJune("onboard"); }
+function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"Carol").trim(); PROFILE.last=(document.getElementById("lp-last").value||"").trim(); PROFILE.email=(document.getElementById("lp-email").value||"").trim(); PROFILE.signedUp=true; PROFILE.insurer="UnitedHealthcare"; enterJune("onboard"); }
 document.getElementById("lp-check").onclick=startFromLanding;
 document.getElementById("lp-check2").onclick=startFromLanding;
 document.getElementById("lp-june").onclick=function(){
