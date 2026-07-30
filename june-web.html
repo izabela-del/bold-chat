@@ -64,6 +64,9 @@
   .lp-cta{width:100%; height:48px; border:0; border-radius:12px; background:#5200d4; color:#fff; font:inherit; font-size:16px; font-weight:700; cursor:pointer;}
   .lp-cta:hover{background:#45009c;}
   .lp-legal{font-size:14px; line-height:1.5; color:#4d4d4d; margin:16px 0 0;}
+  .lp-err{color:#c0392b; font-size:13px; font-weight:600; margin:8px 0 0;}
+  .lp-field input.invalid{border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.14);}
+  .fld-err{color:#c0392b; font-size:13px; font-weight:600; margin:5px 0 0;}
   .lp-legal u{text-decoration:underline;}
   .lp-blurb{font-size:16px; line-height:1.5; color:#29006a; font-weight:400; margin:16px 0 0;}
   .lp-heroimg{margin:16px 0 0; border:1px solid #d8ddeb; border-radius:16px; overflow:hidden; aspect-ratio:361/215; background:#dfe3e6;}
@@ -415,6 +418,7 @@
             <div class="lp-field"><label>Email</label><input id="lp-email" type="email" value="" placeholder="you@email.com" autocomplete="off"></div>
             <button class="lp-why" type="button" id="lp-why"><span class="lp-q">?</span>Why are we asking this?</button>
             <button class="lp-cta" id="lp-check" type="button">Check coverage</button>
+            <p class="lp-err" id="lp-err" hidden></p>
             <p class="lp-legal">June, Bold's AI assistant, helps you check your coverage — private &amp; secure. By signing up, you agree to Bold's <u>Terms of Service</u> and <u>Privacy Policy</u>.</p>
           </div>
           <p class="lp-blurb">Covered by Medicare, UnitedHealthcare, Aetna, Cigna, Blue Cross Blue Shield, Humana, and more</p>
@@ -780,11 +784,13 @@ async function verifyCoverage(){
   await bot("Your information is safe and secure — we never share or sell it. We only use it to confirm your eligibility and share it with your Bold care team.");
   if(!PROFILE.signedUp){
     PROFILE.name = await askField("First — what's your first name?", PROFILE.name||"Carol");
+    await checkName();
     PROFILE.last = await askField("And your last name?", PROFILE.last||"Stevens");
     PROFILE.email = await askField("What's the best email to reach you?", PROFILE.email||"carol.s@email.com", "email");
     PROFILE.signedUp = true;
   } else {
     // came from the landing form — read the name back and confirm it matches the ID/insurance card exactly
+    await checkName();
     await bot(`Here's what I have — name: ${PROFILE.name} ${PROFILE.last}, email: ${PROFILE.email}. Your name needs to match your insurance or ID card exactly. Does this all look right?`);
     if(!(await askYesNo("Yes, that's correct", "No, let me fix it"))){
       PROFILE.name = await askField("First name — exactly as it appears on your card", PROFILE.name||"");
@@ -1092,13 +1098,30 @@ function summary(){
 async function askField(q, val, type){
   await bot(q);
   return new Promise(resolve=>{
-    const node=el(`<div class="fields"><div class="fld"><input id="af-in" type="${type||"text"}" value="${esc(val||"")}" autocomplete="off"></div><button class="go">Continue</button></div>`);
-    const submit=()=>{ const v=(node.querySelector("#af-in").value||"").trim(); lock(node.closest(".ctl")); me(v||"—"); resolve(v); };
+    const node=el(`<div class="fields"><div class="fld"><input id="af-in" type="${type||"text"}" value="${esc(val||"")}" autocomplete="off"></div><p class="fld-err" hidden></p><button class="go">Continue</button></div>`);
+    const errEl=node.querySelector(".fld-err");
+    const submit=()=>{ const v=(node.querySelector("#af-in").value||"").trim();
+      if(!v){ errEl.textContent="Please fill this in."; errEl.hidden=false; return; }
+      if(type==="email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ errEl.textContent="Please enter a valid email address."; errEl.hidden=false; return; }
+      lock(node.closest(".ctl")); me(v); resolve(v); };
     node.querySelector(".go").onclick=submit;
     node.querySelector("#af-in").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); submit(); } });
     control(node);
     const inp=node.querySelector("#af-in"); if(inp) inp.focus();
   });
+}
+/* gentle name check — offer a correction when a name looks like a typo of a common one */
+const COMMON_NAMES=new Set("james robert john michael david william richard joseph thomas charles christopher daniel matthew anthony mark donald steven paul andrew joshua kenneth kevin brian george edward ronald timothy jason jeffrey gary ryan jacob frank scott eric stephen raymond gregory larry jose henry carl arthur albert peter harold mary patricia jennifer linda elizabeth barbara susan jessica sarah karen nancy lisa margaret betty sandra dorothy carol carolyn ashley kimberly donna emily michelle helen laura ruth sharon cynthia kathleen katherine catherine katie katy kate amanda stephanie rebecca virginia deborah gloria teresa doris judith judy joan joyce frances martha janet jane anne ann diane alice julie heather grace rose".split(" "));
+function lev(a,b){ a=a.toLowerCase(); b=b.toLowerCase(); const m=a.length,n=b.length,d=[]; for(let i=0;i<=m;i++){ d[i]=[i]; } for(let j=0;j<=n;j++){ d[0][j]=j; } for(let i=1;i<=m;i++){ for(let j=1;j<=n;j++){ d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); } } return d[m][n]; }
+function isCommonName(name){ return COMMON_NAMES.has((name||"").toLowerCase()); }
+function suggestName(name){ const n=(name||"").toLowerCase(); if(n.length<3||isCommonName(n)) return null; for(const c of COMMON_NAMES){ if(Math.abs(c.length-n.length)<=1 && lev(n,c)===1) return c.charAt(0).toUpperCase()+c.slice(1); } return null; }
+async function checkName(){
+  const first=(PROFILE.name||"").trim();
+  const sug=suggestName(first);
+  if(!sug) return;
+  await bot(`Just so I get the spelling right — is it '${first}', or did you mean '${sug}'?`);
+  if(await askYesNo(`It's ${first}`, `Change to ${sug}`)){ await bot(`Love it — ${first} it is.`); }
+  else { PROFILE.name=sug; }
 }
 /* FAB entry — a focused "ask June" instance: intro + questions (details are collected only when they verify) */
 async function runAsk(){
@@ -1315,7 +1338,19 @@ const viewLanding=document.getElementById("view-landing"), viewChat=document.get
 function showView(name){ viewLanding.hidden=(name!=="landing"); viewChat.hidden=(name!=="chat"); screenEl.classList.toggle("landing", name==="landing"); }
 let juneStarted=false, juneMode=null;
 function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){ juneStarted=true; juneMode=mode; if(mode==="ask") runAsk(); else run(); } }
-function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"there").trim(); PROFILE.last=(document.getElementById("lp-last").value||"").trim(); PROFILE.email=(document.getElementById("lp-email").value||"").trim(); PROFILE.signedUp=true; PROFILE.insurer="UnitedHealthcare"; enterJune("onboard"); }
+function startFromLanding(){
+  const f=document.getElementById("lp-first"), l=document.getElementById("lp-last"), eaddr=document.getElementById("lp-email"), errEl=document.getElementById("lp-err");
+  [f,l,eaddr].forEach(x=>x.classList.remove("invalid"));
+  const first=f.value.trim(), last=l.value.trim(), email=eaddr.value.trim();
+  let bad=null, msg="";
+  if(!first){ bad=f; msg="Please enter your first name."; }
+  else if(!last){ bad=l; msg="Please enter your last name."; }
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ bad=eaddr; msg="Please enter a valid email address."; }
+  if(bad){ bad.classList.add("invalid"); if(errEl){ errEl.textContent=msg; errEl.hidden=false; } bad.scrollIntoView({block:"center",behavior:"smooth"}); bad.focus(); return; }
+  if(errEl) errEl.hidden=true;
+  PROFILE.name=first; PROFILE.last=last; PROFILE.email=email; PROFILE.signedUp=true; PROFILE.insurer="UnitedHealthcare";
+  enterJune("onboard");
+}
 document.getElementById("lp-check").onclick=startFromLanding;
 document.getElementById("lp-check2").onclick=startFromLanding;
 fab.onclick=()=>enterJune("ask");
