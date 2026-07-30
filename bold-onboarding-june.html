@@ -587,7 +587,7 @@ async function showAskPills(){
   askPills();
 }
 /* persistent quick-question pills for ask mode — always led by a steer-back-to-onboarding option; already-asked questions drop off */
-let askMode=false, askPillsRow=null;
+let askMode=false, askPillsRow=null, costAsked=false;
 const ASK_POOL=[
   {q:"What will it cost me?", label:"What will it cost?"},
   {q:"Am I eligible for medication?", label:"Am I eligible for medication?"},
@@ -601,14 +601,15 @@ function askPills(){
   if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
   const remaining=ASK_POOL.filter(x=>!askedQs.has(x.q)).slice(0,4);
   const qHtml=remaining.map(x=>`<button class="chip" data-q="${x.q}">${x.label}</button>`).join("");
-  const node=el(`<div class="chips"><button class="chip lead" data-go="onboard">Let's verify my coverage →</button>${qHtml}</div>`);
+  const leadLabel=costAsked ? "Confirm my exact cost →" : "Let's verify my coverage →";
+  const node=el(`<div class="chips"><button class="chip lead" data-go="onboard">${leadLabel}</button>${qHtml}</div>`);
   const ctl=control(node);
   askPillsRow=ctl.closest(".row");
   node.querySelectorAll(".chip").forEach(b=>{
     b.onclick=()=>{
       if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
       if(b.dataset.go==="onboard"){ steerToOnboarding(); return; }
-      const q=b.dataset.q; askedQs.add(q); me(q); if(JUNE_PROXY) askJune(q); else juneReply(q);
+      const q=b.dataset.q; askedQs.add(q); if(/cost|pay|afford|how much|\$/i.test(q)) costAsked=true; me(q); if(JUNE_PROXY) askJune(q); else juneReply(q);
     };
   });
 }
@@ -733,6 +734,15 @@ async function showInsurance(){
   ]);
   PROFILE.insurer = chosen[0];
   await bot(`Updated to ${PROFILE.insurer} — thanks for the correction. Good news: your Bold visits are still fully covered at $0.`);
+}
+
+/* one shared verification step: identity (DOB + state) then insurance — used by the normal flow and the cost on-ramp */
+async function verifyCoverage(){
+  await askIdentity();
+  await bot("Thanks — pulling that up now.");
+  await wait(400);
+  await showInsurance();
+  PROFILE.coverageConfirmed=true;
 }
 
 function askHeightWeight(){
@@ -1001,11 +1011,9 @@ async function run(askFirst){
 
   await welcomeHero(askFirst);          // June intro + "Verify my coverage" / "Ask a question first"
   composer.hidden=false;
-  await bot(`Perfect — let me pull up the coverage I found for you, ${PROFILE.name}.`, {first:true});
-  await wait(450);
-  await bot("Good news: your Bold visits are fully covered.");
-  await showInsurance();
-  PROFILE.coverageConfirmed=true;
+  await bot(`Let's confirm your coverage, ${PROFILE.name} — then I can show your exact cost.`, {first:true});
+  await verifyCoverage();
+  await bot("Good news — with your plan, your Bold visits are $0.");
   setProgress(.22);
   await bot("Now a few quick questions so I can tailor your care.");
 
@@ -1140,7 +1148,7 @@ async function juneReply(t){
   } else if(/glp|wegovy|ozempic|zepbound|semaglutide|mounjaro|medication|medicine|\bdrug/.test(s)){
     ans="GLP-1s are FDA-approved medications that help with weight by gently curbing appetite. Whether one's right for you is a decision you and your Bold provider make together — and I'll show you exactly what it would cost before anything is prescribed.";
   } else if(/cost|price|pay|how much|afford|copay|expensive|money|insurance|cover|\$/.test(s)){
-    ans="Your Bold visits are $0 with your plan. If a GLP-1 is ever prescribed, you'll see the exact cost first — a care coordinator confirms it for free before anything happens. No surprises.";
+    ans="Your Bold visits are $0 with your plan. If a GLP-1 is ever the right fit, eligible members pay a flat $50/month through the Medicare Bridge. I can confirm your exact cost right now — it just takes a couple quick things: your insurance and date of birth.";
   } else if(/safe|side effect|risk|dangerous|worried|scared|nervous|afraid/.test(s)){
     ans="That's a really good thing to ask. Your provider reviews your full health picture and stays in the loop to keep you safe, adjusting the plan as you go. Anything specific on your mind? I can make sure your provider sees it.";
   } else if(/how long|time|minutes|quick|fast/.test(s)){
@@ -1156,6 +1164,7 @@ async function juneReply(t){
 function sendText(){
   const t=(ta.value||"").trim(); if(!t||replying) return;
   me(t); ta.value=""; sendBtn.disabled=true; replying=true;
+  if(/cost|price|pay|afford|copay|how much|\$/i.test(t)) costAsked=true;
   const safe=safetyText(t);
   if(safe){ bot(safe).finally(()=>{ replying=false; }); return; }        // emergencies: no network
   if(JUNE_PROXY){ askJune(t).finally(()=>{ replying=false; }); return; } // real Claude
@@ -1207,7 +1216,7 @@ document.getElementById("lp-why").onclick=function(){
   const h=el(`<p class="lp-blurb" style="text-align:left;color:var(--ink-soft);font-weight:500;margin-top:8px">So we can confirm your Medicare coverage and check what you'd pay. A care coordinator double-checks everything before anything is charged — and we never sell your information.</p>`);
   this.after(h); this._h=h;
 };
-function resetToLanding(){ juneStarted=false; askMode=false; askPillsRow=null; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
+function resetToLanding(){ juneStarted=false; askMode=false; askPillsRow=null; costAsked=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
 document.getElementById("restart").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); resetToLanding(); };
 showView("landing");
 </script>
