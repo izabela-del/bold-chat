@@ -521,12 +521,13 @@
     .lp-login{display:inline-block;}
     /* desktop hero image fills the text-column height (portrait hero-dweb.jpg) without
        inflating the hero grid rows — spanning container + absolutely-filled <img> */
+    /* image top-aligns with the headline and stretches to the content block's
+       height (title+checks+form+blurb); trust row moves full-width below */
     .lp-heroimg{aspect-ratio:auto;}
-    .lp-hero{position:relative;}
-    .lp-hero > .lp-heroimg{position:absolute; margin:0; top:88px;
-      right:max(40px,calc((100% - 1080px)/2));
-      width:calc((min(1080px, 100% - 80px) - 56px) / 2); height:660px;}
+    .lp-hero > .lp-heroimg{grid-column:2; grid-row:1 / span 4; align-self:stretch;
+      position:relative; margin:0; min-height:0;}
     .lp-heroimg img{position:absolute; inset:0;}
+    .lp-hero > .lp-trust{grid-column:1 / -1; justify-content:center; margin-top:30px;}
 
     .lp-built{display:grid; grid-template-columns:minmax(0,440px) minmax(0,1fr); column-gap:64px; align-items:center;}
     .lp-built-media{margin:0; min-height:360px;}
