@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bold — AI onboarding with June (concept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16121f; --ink-soft:#5a5566; --line:#e9e6f0; --page:#ffffff;
+    --brand:#5b16e0; --brand-press:#4a10bd; --brand-soft:#efe9fe;
+    --blue:#2563eb; --teal:#12a594; --teal-soft:#e4f4f0; --teal-ink:#0c7d70;
+    --amber-soft:#fbf1dc; --amber-ink:#8a6a25;
+    --user:#5b16e0; --user-ink:#ffffff;
+    --shadow:0 6px 22px rgba(28,20,54,.10); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%}
+  body{
+    font-family:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:#fff;
+    color:var(--ink); -webkit-font-smoothing:antialiased;
+    min-height:100%;
+  }
+  .stage-head{max-width:460px; text-align:center; margin:0 0 14px;}
+  .stage-head h1{font-size:19px; font-weight:800; margin:0 0 4px; letter-spacing:-.2px;}
+  .stage-head p{font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.45;}
+  .demo{display:flex; align-items:center; gap:10px; margin:0 0 16px;}
+  .demo .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--ink-soft); font-weight:800;}
+  .restart{border:1px solid var(--line); background:#fff; color:var(--brand-press); font:inherit; font-size:13px; font-weight:800; padding:8px 14px; border-radius:10px; cursor:pointer; box-shadow:0 2px 8px rgba(28,20,54,.06);}
+  .restart:hover{background:var(--brand-soft);}
+
+  /* real-web shell: fill the viewport (no phone frame) */
+  .phone{position:relative; width:100%; height:100dvh; background:transparent; border-radius:0; padding:0; box-shadow:none;}
+  .screen{position:relative; width:100%; height:100%; background:var(--page); border-radius:0; overflow:hidden; display:flex; flex-direction:column;}
+  /* two views: marketing landing + June chat */
+  #view-landing{flex:1 1 auto; min-height:0; overflow-y:auto; background:#fff; -webkit-overflow-scrolling:touch;}
+  #view-chat{flex:1 1 auto; min-height:0; display:flex; flex-direction:column;}
+  #view-landing[hidden], #view-chat[hidden]{display:none;}
+  /* landing: nav */
+  .lp-nav{position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; padding:11px 16px; background:rgba(255,255,255,.92); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); border-bottom:1px solid var(--line);}
+  .lp-logo{height:24px; width:auto; display:block;}
+  .lp-login{border:1px solid var(--line); background:#fff; color:var(--brand-press); font:inherit; font-size:13px; font-weight:800; padding:7px 14px; border-radius:20px; cursor:pointer;}
+  /* landing: hero */
+  .lp-hero{background:#ebf0ff; padding:24px 16px;}
+  .lp-title{font-size:30px; line-height:1.2; font-weight:800; letter-spacing:-.8px; color:#29006a; margin:0 0 18px;}
+  .lp-title span{color:#3366ff;}
+  .lp-checks{list-style:none; margin:0 0 18px; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .lp-checks li{display:flex; gap:10px; align-items:flex-start; font-size:16px; line-height:1.35; font-weight:500; color:#29006a;}
+  .lp-checks li b{font-weight:800;}
+  .lp-seal{flex:0 0 26px; width:26px; height:26px; border-radius:50%; background:#29006a; display:flex; align-items:center; justify-content:center; margin-top:1px;}
+  .lp-seal svg{width:16px; height:16px; display:block;}
+  .lp-form{background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.1);}
+  .lp-field{margin-bottom:12px;}
+  .lp-field label{display:block; font-size:16px; font-weight:600; color:#171717; margin:0 0 5px;}
+  .lp-field input{width:100%; box-sizing:border-box; height:44px; padding:0 16px; border:1px solid #e5e5e5; border-radius:8px; font:inherit; font-size:16px; color:#171717; background:#fff; box-shadow:0 1px 2px rgba(16,24,40,.05);}
+  .lp-field input::placeholder{color:#acacac;}
+  .lp-field input:focus{outline:none; border-color:#5200d4; box-shadow:0 0 0 3px rgba(82,0,212,.14);}
+  .lp-why{display:flex; align-items:center; gap:7px; background:none; border:0; padding:0; font:inherit; font-size:16px; font-weight:600; color:#5200d4; cursor:pointer; margin:2px 0 16px; text-decoration:underline;}
+  .lp-q{flex:0 0 20px; width:20px; height:20px; border-radius:50%; border:1.6px solid #5200d4; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; text-decoration:none;}
+  .lp-cta{width:100%; height:48px; border:0; border-radius:12px; background:#5200d4; color:#fff; font:inherit; font-size:16px; font-weight:700; cursor:pointer;}
+  .lp-cta:hover{background:#45009c;}
+  .lp-legal{font-size:14px; line-height:1.5; color:#a3a3a3; margin:16px 0 0;}
+  .lp-legal u{text-decoration:underline;}
+  .lp-blurb{font-size:16px; line-height:1.5; color:#29006a; font-weight:400; margin:16px 0 0;}
+  .lp-heroimg{margin:16px 0 0; border:1px solid #d8ddeb; border-radius:16px; overflow:hidden; aspect-ratio:361/215; background:#dfe3e6;}
+  .lp-heroimg img{width:100%; height:100%; object-fit:cover; object-position:50% 35%; display:block;}
+  .lp-trust{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 10px; margin:18px 0 0; color:#29006a; font-size:15px; font-weight:500;}
+  .lp-avs{display:inline-flex; align-items:center;}
+  .lp-avs img{width:32px; height:32px; border-radius:50%; border:2px solid #fff; object-fit:cover; margin-right:-10px;}
+  .lp-avs img:last-child{margin-right:0;}
+  .lp-tt{white-space:nowrap;}
+  .lp-div{width:1px; height:20px; background:#c9c2e6;}
+  .lp-stars{color:#f5a623; letter-spacing:2px; font-size:16px;}
+  .lp-rating{display:flex; align-items:center; justify-content:center; gap:9px; margin:14px 0 0; font-size:14px; color:#29006a; font-weight:500;}
+  .lp-rating b{color:#29006a; font-weight:800;}
+  /* landing: sections */
+  .lp-sec{padding:26px 16px;}
+  .lp-sec + .lp-sec{border-top:1px solid var(--line);}
+  .lp-h2{font-size:24px; font-weight:800; letter-spacing:-.5px; margin:0 0 16px; color:#29006a;}
+  .lp-big li{font-size:15px;}
+  .lp-note{font-size:11.5px; color:var(--ink-soft); line-height:1.5; margin:14px 0 0;}
+  .lp-steps{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:16px;}
+  .lp-steps li{display:flex; gap:13px; align-items:flex-start;}
+  .lp-num{flex:0 0 32px; width:32px; height:32px; border-radius:50%; background:var(--brand-soft); color:var(--brand-press); font-weight:900; display:flex; align-items:center; justify-content:center; font-size:15px;}
+  .lp-steps b{font-size:15.5px; color:var(--ink);}
+  .lp-steps p{margin:3px 0 0; font-size:13.5px; line-height:1.45; color:var(--ink-soft);}
+  .lp-testi{background:#faf8ff;}
+  .lp-quote{margin:14px 0 0; background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-size:14.5px; line-height:1.5; color:var(--ink); font-style:italic;}
+  .lp-quote cite{display:block; margin-top:8px; font-style:normal; font-weight:800; font-size:13px; color:var(--ink-soft);}
+  .lp-bottom{padding:2px 16px 30px;}
+  /* persistent Chat-with-June FAB */
+  @property --fab-a{ syntax:"<angle>"; initial-value:0deg; inherits:false; }
+  .fab{position:absolute; right:14px; bottom:16px; z-index:15; display:none; align-items:center; gap:0; background:#fff; border:0; box-shadow:0 10px 26px rgba(28,20,54,.24); border-radius:32px; padding:5px; cursor:pointer; font:inherit; font-size:13.5px; font-weight:800; color:var(--brand-press); transition:padding .45s cubic-bezier(.5,.15,.2,1);}
+  .fab::before{content:""; position:absolute; inset:0; border-radius:inherit; padding:2px; pointer-events:none; opacity:0; transition:opacity .5s ease; background:conic-gradient(from var(--fab-a), #7b3af0, #2f8bff, #12c2c2, #ff5fa2, #7b3af0); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite:exclude; animation:fabspin 3.5s linear infinite;}
+  .fab.open::before, .fab:hover::before{opacity:1;}
+  @keyframes fabspin{ to{ --fab-a:360deg; } }
+  .screen.landing .fab{display:flex; animation:pop .2s ease;}
+  .fab.open, .fab:hover{padding-right:15px;}
+  .fab .av{width:40px; height:40px; flex:0 0 auto;}
+  .fab .fab-label{white-space:nowrap; max-width:0; opacity:0; overflow:hidden; margin:0; transition:max-width .45s cubic-bezier(.5,.15,.2,1), opacity .3s ease, margin .45s ease;}
+  .fab.open .fab-label, .fab:hover .fab-label{max-width:190px; opacity:1; margin:0 6px 0 7px;}
+  @media (prefers-reduced-motion: reduce){ .fab::before{animation:none;} .fab, .fab .fab-label{transition:none;} }
+  .statusbar{height:46px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 30px; font-size:15px; font-weight:700; color:#000; z-index:6; background:#fff;}
+  .statusbar .r{display:flex; align-items:center; gap:7px;}
+
+  /* header */
+  .thead{flex:0 0 auto; display:flex; align-items:center; gap:11px; padding:8px 14px 10px; border-bottom:1px solid var(--line);}
+  .thead .id{display:flex; align-items:center; gap:10px; min-width:0;}
+  .av{flex:0 0 auto; width:40px; height:40px; border-radius:50%; position:relative;
+    background:radial-gradient(ellipse 42% 30% at 31% 20%, rgba(255,255,255,.95), rgba(255,255,255,0) 62%), radial-gradient(circle at 35% 26%, #ffffff 0%, #eaf4ff 14%, #b9d6fa 39%, #9e86ec 66%, #5b31b8 88%, #38116e 100%);
+    box-shadow:0 3px 10px rgba(42,10,102,.32), 0 0 0 3px rgba(167,139,255,.14), inset 0 -3px 7px rgba(38,7,92,.28);}
+  .av .face{position:absolute; inset:0;}
+  .av .eyes{position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); display:flex; gap:5px;}
+  .av .eye{width:6px; height:7px; border-radius:50%; position:relative; background:radial-gradient(circle at 34% 28%, #a48ee0, #4a3475 55%, #33234f 100%);}
+  .av .eye::after{content:""; position:absolute; left:18%; top:10%; width:42%; height:36%; border-radius:50%; background:#fff; opacity:.8;}
+  .av .mouth{position:absolute; top:57%; left:50%; transform:translateX(-50%); width:11px; height:6px; background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 22'%3E%3Cpath d='M5 8 C10 18 30 18 35 8' fill='none' stroke='%233a2857' stroke-width='4.4' stroke-linecap='round'/%3E%3C/svg%3E");}
+  .thead .name{font-size:16px; font-weight:800; line-height:1.1; display:flex; align-items:center; gap:6px;}
+  .thead .role{font-size:11.5px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
+  .aitag{font-size:10px; font-weight:800; color:#fff; background:var(--brand); padding:1px 6px; border-radius:6px; letter-spacing:.4px;}
+  .thead-close{flex:0 0 auto; width:34px; height:34px; border-radius:9px; border:1px solid var(--line); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .thead-close:hover{background:#f6f4fb;} .thead-close svg{display:block;}
+  .say-h{margin-left:auto; flex:0 0 auto; width:36px; height:36px; padding:0; border-radius:50%; border:1px solid var(--line); background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--brand-press);}
+  .say-h:hover{background:var(--brand-soft);} .say-h svg{display:block;}
+  .say-h.on{background:#fde8ee; border-color:#f6c6d4; color:#c2185b;}
+
+  /* progress */
+  .prog{flex:0 0 auto; height:3px; background:#eee7fb;}
+  .prog .bar{height:100%; width:0; background:linear-gradient(90deg,#7c4dff,#5b16e0); border-radius:0 3px 3px 0; transition:width .5s ease;}
+
+  .thread{flex:1 1 auto; min-height:0; overflow-y:auto; padding:16px 15px 22px; display:flex; flex-direction:column; gap:12px; scroll-behavior:smooth;}
+  .row{display:flex; flex-direction:column; max-width:100%;}
+  .row.me{align-items:flex-end;}
+  .who{font-size:12px; color:var(--ink-soft); font-weight:700; margin:0 0 5px 4px;}
+  .bubble{max-width:90%; padding:13px 16px; border-radius:var(--radius); font-size:16px; line-height:1.55; animation:pop .18s ease;}
+  @keyframes pop{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+  .bot .bubble{background:#f6f4fc; border:1px solid #ece6f8; border-top-left-radius:7px; color:var(--ink);}
+  .me .bubble{background:var(--user); color:var(--user-ink); border-top-right-radius:7px; font-weight:600;}
+  .typing{display:inline-flex; gap:4px; padding:4px 2px;}
+  .typing i{width:8px;height:8px;border-radius:50%;background:#c3bdd6;animation:blink 1.1s infinite;}
+  .typing i:nth-child(2){animation-delay:.18s} .typing i:nth-child(3){animation-delay:.36s}
+  @keyframes blink{0%,60%,100%{opacity:.3} 30%{opacity:1}}
+
+  /* big June orb welcome hero (matches the main prototype) */
+  .chat-welcome{display:flex; flex-direction:column; align-items:center; text-align:center; padding:34px 6px 6px;}
+  .cworb{position:relative; width:122px; height:122px; margin:6px auto 24px; border-radius:50%;
+    background:radial-gradient(ellipse 42% 30% at 31% 20%, rgba(255,255,255,.97), rgba(255,255,255,0) 58%),
+               radial-gradient(circle at 35% 26%, #ffffff 0%, #eaf4ff 13%, #b9d6fa 37%, #9e86ec 60%, rgba(91,49,184,.95) 82%, rgba(70,26,140,.45) 94%, rgba(56,17,110,0) 100%);
+    box-shadow:inset 0 -9px 17px rgba(38,7,92,.3); animation:orbfloat 5.5s ease-in-out infinite;}
+  /* moving iridescent halo — soft diffuse edge + color motion */
+  .cworb::before{content:""; position:absolute; inset:-26px; border-radius:50%; z-index:-1;
+    background:conic-gradient(from 0deg, #b88cff, #7cc4ff, #8bf0d0, #ffd6a6, #ff9ec4, #c8a6ff, #b88cff);
+    filter:blur(20px); opacity:.6; animation:orbspin 9s linear infinite, orbGlow 3.4s ease-in-out infinite;}
+  /* rotating rim rings — the wow */
+  .cworb::after{content:""; position:absolute; inset:-3px; border-radius:50%; pointer-events:none; mix-blend-mode:screen;
+    background:conic-gradient(from 90deg, rgba(255,255,255,0), rgba(255,214,166,.7), rgba(255,158,196,.6), rgba(124,196,255,.65), rgba(184,140,255,.6), rgba(255,255,255,0));
+    -webkit-mask:radial-gradient(circle, transparent 58%, #000 72%, #000 84%, transparent 97%);
+    mask:radial-gradient(circle, transparent 58%, #000 72%, #000 84%, transparent 97%);
+    animation:orbspin 6s linear infinite reverse;}
+  .cworb-face{position:absolute; inset:0; z-index:2; border-radius:50%;}
+  .cworb-face .eyes{position:absolute; top:47%; left:50%; transform:translate(-50%,-50%); display:flex; gap:13px;}
+  .cworb-face .eye{width:17px; height:20px; border-radius:50%; position:relative; animation:orbBlink 4.2s ease-in-out infinite;
+    background:radial-gradient(circle at 70% 82%, rgba(255,150,200,.32), transparent 52%), radial-gradient(circle at 33% 26%, #b7a0f0 0%, #7a5cc0 20%, #4a3475 52%, #33234f 100%);
+    box-shadow:0 0 8px rgba(158,134,236,.4);}
+  .cworb-face .eye::after{content:""; position:absolute; left:21%; top:15%; width:36%; height:31%; border-radius:50%; background:#fff; opacity:.8; filter:blur(.3px);}
+  .cworb-face .mouth{position:absolute; top:60%; left:50%; transform:translateX(-50%); width:26px; height:14px; background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 22'%3E%3Cpath d='M5 8 C10 18 30 18 35 8' fill='none' stroke='%233a2857' stroke-width='3.6' stroke-linecap='round'/%3E%3C/svg%3E");}
+  @keyframes orbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes orbBlink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
+  @keyframes orbGlow{0%,100%{opacity:.5}50%{opacity:.82}}
+  @keyframes orbspin{to{transform:rotate(360deg)}}
+  /* tap-June easter egg */
+  #cw-orb{cursor:pointer;} .thead .av{cursor:pointer;}
+  @keyframes orbbounce{0%{transform:scale(1)}22%{transform:scale(1.14,.88)}45%{transform:scale(.93,1.08)}68%{transform:scale(1.05,.97)}100%{transform:scale(1)}}
+  .cworb.tapped, .av.tapped{animation:orbbounce .55s ease;}
+  .spark{position:absolute; left:50%; top:50%; width:9px; height:9px; margin:-4.5px; border-radius:50%; background:radial-gradient(circle,#fff,#ffe6b0 70%); box-shadow:0 0 7px 1px rgba(255,224,150,.9); pointer-events:none; z-index:5; opacity:0; animation:sparkfly .95s ease-out forwards;}
+  @keyframes sparkfly{0%{opacity:0; transform:translate(0,0) scale(.3)} 18%{opacity:1} 100%{opacity:0; transform:translate(var(--dx,0),var(--dy,-30px)) scale(1)}}
+  .june-say{position:absolute; left:50%; bottom:calc(100% + 8px); transform:translateX(-50%); white-space:nowrap; background:#fff; color:var(--brand-press); border:1px solid #e7e0fb; box-shadow:0 8px 20px rgba(28,20,54,.16); font-weight:800; font-size:13.5px; padding:8px 14px; border-radius:16px; z-index:6; pointer-events:none; animation:saypop .28s ease;}
+  .june-say::after{content:""; position:absolute; left:50%; top:100%; transform:translateX(-50%); border:6px solid transparent; border-top-color:#fff;}
+  .june-say.below{bottom:auto; top:calc(100% + 8px); left:-4px; transform:none; animation:saypop2 .28s ease;}
+  .june-say.below::after{top:auto; bottom:100%; left:22px; transform:none; border-top-color:transparent; border-bottom-color:#fff;}
+  @keyframes saypop2{from{opacity:0; transform:scale(.92)} to{opacity:1; transform:scale(1)}}
+  @keyframes saypop{from{opacity:0; transform:translate(-50%,7px) scale(.92)} to{opacity:1; transform:translate(-50%,0) scale(1)}}
+  .cw-title{font-family:"Source Serif 4",Georgia,serif; font-size:23px; font-weight:600; letter-spacing:-.3px; color:var(--ink); margin:0 0 9px;}
+  .cw-sub{font-size:15px; line-height:1.55; color:var(--ink-soft); max-width:300px; margin:0 auto 18px;}
+  .cw-go{width:auto; min-width:220px; padding:0 30px; margin:0 auto;}
+  .cw-ask{display:block; margin:12px auto 0; background:none; border:0; font:inherit; font-size:14px; font-weight:800; color:var(--brand-press); cursor:pointer; text-decoration:underline;}
+  .hipaa{display:flex; align-items:center; gap:12px; text-align:left; background:#f7f6fb; border:1px solid #ece9f5; border-radius:14px; padding:12px 14px;}
+  .hipaa-seal{flex:0 0 auto; width:42px; height:42px;}
+  .hipaa-txt{font-size:12.5px; line-height:1.45; color:#525252; font-weight:500;}
+  .hipaa-txt b{color:var(--ink); font-weight:800;}
+  /* identity-step trust microcopy */
+  .fields .lockline{display:flex; align-items:flex-start; gap:6px; font-size:12px; color:var(--teal-ink); font-weight:600; margin:2px 0 0; line-height:1.45;}
+  .fields .whylink{background:none; border:0; padding:8px 0 0; font:inherit; font-size:13px; font-weight:800; color:var(--brand-press); cursor:pointer; display:inline-flex; align-items:center; gap:4px;}
+  .fields .whylink .car{transition:transform .2s ease;}
+  .fields .whylink.open .car{transform:rotate(180deg);}
+  .fields .whybody{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .fields .whybody.open{max-height:200px;}
+  .fields .whybody p{margin:8px 0 0; font-size:12.5px; line-height:1.5; color:var(--ink); background:#f6f4fc; border:1px solid #ece6f8; border-radius:10px; padding:10px 12px;}
+  .fields .humanout{font-size:12px; color:var(--ink-soft); line-height:1.5; margin:12px 0 0; text-align:center;}
+  .fields .humanout .skiplink{background:none; border:0; padding:0; font:inherit; font-size:12px; font-weight:800; color:var(--brand-press); cursor:pointer; text-decoration:underline;}
+  .fields .humanout b{color:var(--ink); font-weight:800;}
+  /* trust cluster on the welcome screen */
+  .trust{display:flex; flex-direction:column; align-items:center; gap:11px; width:100%; margin-top:20px;}
+  .trust-lock{display:flex; align-items:flex-start; gap:10px; background:#f1f8f5; border:1px solid #d3e8de; border-radius:14px; padding:12px 14px; font-size:12.5px; line-height:1.5; color:#0c7d70; font-weight:600; text-align:left;}
+  .trust-lock svg{flex:0 0 auto; margin-top:1px;} .trust-lock b{font-weight:800;}
+  .trust-row{display:flex; flex-wrap:wrap; justify-content:center; gap:7px;}
+  .trust-chip{display:inline-flex; align-items:center; gap:5px; background:#f6f4fc; border:1px solid #ece6f8; border-radius:20px; padding:6px 11px; font-size:11.5px; font-weight:700; color:var(--ink-soft);}
+  .trust-chip svg{color:var(--brand); flex:0 0 auto;}
+
+  /* a control block (widgets rendered on the bot side) */
+  .ctl{width:100%; animation:pop .2s ease;}
+  .ctl.done{opacity:.55; pointer-events:none;}
+
+  /* chips */
+  .chips{display:flex; flex-wrap:wrap; gap:9px;}
+  .chip{border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); padding:12px 16px; border-radius:22px; font:inherit; font-size:15px; font-weight:700; cursor:pointer; transition:transform .06s, background .12s, border-color .12s; line-height:1.3; text-align:left;}
+  .chip:hover{background:var(--brand-soft); border-color:var(--brand);} .chip:active{transform:scale(.97);}
+  .chip.lead{background:var(--brand); border-color:var(--brand); color:#fff;}
+  .chip.lead:hover{background:var(--brand-press); border-color:var(--brand-press);}
+  .chip.sel{background:var(--brand); border-color:var(--brand); color:#fff;}
+  .go{margin-top:12px; width:100%; height:50px; border:0; border-radius:15px; background:var(--brand); color:#fff; font:inherit; font-size:15.5px; font-weight:800; cursor:pointer;}
+  .go:hover{background:var(--brand-press);} .go:disabled{opacity:.4; cursor:default;}
+  .skip{display:block; margin:10px auto 0; background:none; border:0; color:var(--ink-soft); font:inherit; font-size:13.5px; font-weight:700; cursor:pointer; text-decoration:underline;}
+
+  /* inline fields */
+  .fields{display:flex; flex-direction:column; gap:12px; background:#fff; border:1px solid var(--line); border-radius:16px; padding:15px; box-shadow:var(--shadow);}
+  .fld label{display:block; font-size:11.5px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.4px; margin:0 0 5px;}
+  .fld input, .fld select{width:100%; height:46px; padding:0 13px; border:1px solid var(--line); border-radius:12px; font:inherit; font-size:15px; color:var(--ink); background:#fff;}
+  .fld input:focus, .fld select:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(91,22,224,.14);}
+  .two{display:flex; gap:10px;} .two .fld{flex:1;}
+  .why{font-size:12px; color:var(--ink-soft); margin:2px 0 0;}
+
+  /* height / weight stepper */
+  .hw{display:flex; flex-direction:column; gap:14px; background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:var(--shadow);}
+  .stp{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .stp .lab{font-size:14px; font-weight:700;}
+  .stepper{display:flex; align-items:center; gap:12px;}
+  .stepper button{width:40px; height:40px; border-radius:50%; border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); font-size:22px; font-weight:800; cursor:pointer; line-height:1; display:flex; align-items:center; justify-content:center;}
+  .stepper button:hover{background:var(--brand-soft);}
+  .stepper .val{min-width:74px; text-align:center; font-size:17px; font-weight:800;}
+  .bmi{font-size:12.5px; color:var(--ink-soft); text-align:center; margin-top:2px;}
+
+  /* insurance card */
+  .inscard{background:linear-gradient(135deg,#1b2a4a,#25407a); color:#fff; border-radius:16px; padding:15px 16px; box-shadow:var(--shadow); position:relative; overflow:hidden;}
+  .inscard .plan{font-size:15px; font-weight:800; letter-spacing:.2px;}
+  .inscard .nm{font-size:16px; font-weight:700; margin-top:14px;}
+  .inscard .mid{font-size:12.5px; opacity:.85; margin-top:2px; letter-spacing:.06em;}
+  .inscard .seal{position:absolute; top:13px; right:14px; display:flex; align-items:center; gap:5px; font-size:11px; font-weight:800; background:rgba(255,255,255,.16); padding:4px 9px; border-radius:20px;}
+  .inscard .cov{margin-top:12px; font-size:13px; font-weight:700; color:#c8f5e6;}
+
+  /* provider card */
+  .prov{display:flex; gap:13px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:var(--shadow);}
+  .prov .ph{flex:0 0 60px; width:60px; height:60px; border-radius:50%; background:#dfe3e6 center/cover; }
+  .prov .pn{font-size:16px; font-weight:800;}
+  .prov .pr{font-size:13px; color:var(--ink-soft); font-weight:600; margin-top:2px;}
+  .prov .pt{font-size:12.5px; color:var(--teal-ink); font-weight:700; margin-top:5px;}
+
+  /* ELIGIBILITY / COST — the centerpiece */
+  .elig{border:1px solid var(--line); border-radius:20px; overflow:hidden; background:#fff; box-shadow:0 10px 30px rgba(28,20,54,.14); }
+  .elig .demoseg{display:flex; align-items:center; gap:6px; background:#f3f0fb; padding:7px 10px; font-size:10.5px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.4px;}
+  .elig .demoseg .segs{display:flex; gap:5px; margin-left:auto;}
+  .elig .demoseg button{border:1px solid #ddd6f0; background:#fff; color:var(--ink-soft); font:inherit; font-size:11px; font-weight:800; padding:4px 9px; border-radius:20px; cursor:pointer; letter-spacing:.02em; text-transform:none;}
+  .elig .demoseg button.on{background:var(--brand); color:#fff; border-color:var(--brand);}
+  .elig-band{padding:17px 18px 18px; color:#fff;}
+  .elig.bridge .elig-band{background:linear-gradient(135deg,#0e9a89,#12a594);}
+  .elig.partd .elig-band{background:linear-gradient(135deg,#2f6df0,#6b34e6);}
+  .elig.lifestyle .elig-band{background:linear-gradient(135deg,#7b3af0,#5b16e0);}
+  .elig-badge{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:800; background:rgba(255,255,255,.18); padding:4px 10px; border-radius:20px; letter-spacing:.03em; margin-bottom:10px;}
+  .elig-title{font-family:"Source Serif 4",Georgia,serif; font-size:20px; line-height:1.28; font-weight:600; margin:0;}
+  .elig-body{padding:16px 18px 18px;}
+  .cost{border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:15px;}
+  .crow{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:13px 14px;}
+  .crow + .crow{border-top:1px solid var(--line);}
+  .crow .ck{font-size:14px; color:var(--ink); font-weight:700;}
+  .crow .cnote{font-size:11.5px; color:var(--ink-soft); margin-top:3px; font-weight:500; line-height:1.35;}
+  .crow .cv{font-size:21px; font-weight:900; color:var(--ink); white-space:nowrap; text-align:right;}
+  .crow .cv.free{color:var(--teal-ink);}
+  .crow .cv.vary{font-size:16px; color:var(--blue);}
+  .elig-plain{font-size:15px; line-height:1.6; color:var(--ink); margin:0 0 15px;}
+  .faqs{display:flex; flex-direction:column; gap:8px; margin-bottom:16px;}
+  .faq{border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff;}
+  .faq > button{width:100%; text-align:left; background:#fff; border:0; font:inherit; font-size:14px; font-weight:700; color:var(--brand-press); padding:13px 14px; cursor:pointer; display:flex; justify-content:space-between; gap:10px; align-items:center;}
+  .faq > button .car{transition:transform .2s ease; color:var(--brand); flex:0 0 auto;}
+  .faq.open > button .car{transform:rotate(180deg);}
+  .faq .ans{max-height:0; overflow:hidden; transition:max-height .25s ease; }
+  .faq .ans p{margin:0; padding:0 14px 13px; font-size:14px; line-height:1.6; color:var(--ink);}
+  .faq.open .ans{max-height:320px;}
+  .elig-cta{width:100%; height:52px; border:0; border-radius:15px; background:var(--brand); color:#fff; font:inherit; font-size:16px; font-weight:800; cursor:pointer;}
+  .elig-cta:hover{background:var(--brand-press);}
+  .elig-fine{font-size:11.5px; color:var(--ink-soft); text-align:center; margin:11px 2px 0; line-height:1.45;}
+
+  /* scheduler */
+  .sched{background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:var(--shadow);}
+  .sched .evt{display:flex; align-items:center; gap:10px; padding:0 0 12px; border-bottom:1px solid var(--line); margin-bottom:12px;}
+  .sched .evt .ic{flex:0 0 38px; width:38px; height:38px; border-radius:11px; background:var(--brand-soft); color:var(--brand-press); display:flex; align-items:center; justify-content:center;}
+  .sched .evt .et{font-size:14.5px; font-weight:800;}
+  .sched .evt .es{font-size:12px; color:var(--ink-soft); font-weight:600;}
+  .days{display:flex; gap:7px; margin-bottom:12px;}
+  .day{flex:1; border:1.5px solid var(--line); border-radius:12px; padding:8px 4px; text-align:center; cursor:pointer; background:#fff;}
+  .day.sel{border-color:var(--brand); background:var(--brand-soft);}
+  .day .dw{font-size:11px; color:var(--ink-soft); font-weight:700; text-transform:uppercase;}
+  .day .dn{font-size:17px; font-weight:900; margin-top:1px;}
+  .slots{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;}
+  .slot{border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); border-radius:11px; padding:11px 4px; font:inherit; font-size:14px; font-weight:800; cursor:pointer;}
+  .slot:hover{background:var(--brand-soft);} .slot.sel{background:var(--brand); color:#fff; border-color:var(--brand);}
+
+  /* consent sheet */
+  .csheet{position:absolute; inset:0; z-index:40; display:none;}
+  .csheet.open{display:block;}
+  .csheet .dim{position:absolute; inset:0; background:rgba(20,16,30,.45); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);}
+  .csheet .card{position:absolute; left:0; right:0; bottom:0; max-height:86%; display:flex; flex-direction:column; background:#fff; border-radius:22px 22px 0 0; box-shadow:0 -12px 40px rgba(20,16,30,.3);}
+  .csheet .grip{width:38px; height:4px; border-radius:4px; background:#e3e0ea; margin:12px auto 6px;}
+  .csheet h3{margin:4px 18px 6px; font-size:18px; font-weight:800;}
+  .csheet .doc{flex:1 1 auto; overflow-y:auto; padding:4px 18px 12px; font-size:13px; line-height:1.55; color:#413c50;}
+  .csheet .doc h4{font-size:13px; margin:12px 0 4px; color:var(--ink);}
+  .csheet .foot{flex:0 0 auto; border-top:1px solid var(--line); padding:13px 18px 18px;}
+  .agree{display:flex; align-items:flex-start; gap:10px; font-size:13.5px; line-height:1.4; color:var(--ink); cursor:pointer; margin-bottom:12px;}
+  .agree input{width:22px; height:22px; flex:0 0 auto; accent-color:var(--brand); margin:1px 0 0;}
+  .csheet .ok{width:100%; height:50px; border:0; border-radius:14px; background:var(--brand); color:#fff; font:inherit; font-size:15.5px; font-weight:800; cursor:pointer;}
+  .csheet .ok:disabled{opacity:.4; cursor:default;}
+
+  /* consent progress list */
+  .clist{display:flex; flex-direction:column; gap:9px; background:#fff; border:1px solid var(--line); border-radius:16px; padding:13px; box-shadow:var(--shadow);}
+  .citem{display:flex; align-items:center; gap:11px; border:1px solid var(--line); border-radius:12px; padding:12px 13px; cursor:pointer; background:#fff;}
+  .citem .cc{flex:0 0 24px; width:24px; height:24px; border-radius:50%; border:2px solid #d0c9e6; display:flex; align-items:center; justify-content:center;}
+  .citem.done{background:#f5f5f5; cursor:default;}
+  .citem.done .cc{background:var(--teal); border-color:var(--teal);}
+  .citem .ct{font-size:14.5px; font-weight:700;}
+  .citem .cs{font-size:12px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
+  .citem .go-r{margin-left:auto; color:var(--brand); font-weight:800; font-size:13px;}
+  .citem.done .go-r{display:none;}
+
+  /* summary */
+  .allset{text-align:center; padding:4px 2px;}
+  .allset .big{font-family:"Source Serif 4",Georgia,serif; font-size:26px; font-weight:700; margin:6px 0 6px;}
+  .allset .lead{font-size:15px; color:var(--ink-soft); line-height:1.5; margin:0 auto 16px; max-width:300px;}
+  .callcard{text-align:left; background:#fff; border:1px solid var(--line); border-radius:16px; padding:15px; box-shadow:var(--shadow); margin-bottom:12px;}
+  .callcard .ch{font-size:11px; font-weight:800; color:var(--brand-press); text-transform:uppercase; letter-spacing:.5px;}
+  .callcard .cn{font-size:17px; font-weight:800; margin:6px 0 2px;}
+  .callcard .cd{font-size:14px; color:var(--ink); font-weight:600;}
+  .callcard .cf{font-size:12.5px; color:var(--teal-ink); font-weight:700; margin-top:4px;}
+  .sumcov{text-align:left; background:var(--teal-soft); border:1px solid #cfe9e2; border-radius:14px; padding:13px 14px; font-size:13.5px; color:var(--teal-ink); font-weight:600; line-height:1.5;}
+
+  /* open-text composer — ask June anything, anytime */
+  .composer{flex:0 0 auto; background:#fff; border-top:1px solid var(--line); padding:9px 12px 6px;}
+  .type-toggle{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:46px; border:1.5px dashed #cdc4ec; background:#faf8ff; color:var(--brand-press); font:inherit; font-size:14.5px; font-weight:800; border-radius:23px; cursor:pointer;}
+  .type-toggle:hover{background:var(--brand-soft); border-color:var(--brand);} .type-toggle svg{display:block;}
+  .composer .input-shell{display:none;}
+  .composer.open .type-toggle{display:none;}
+  .composer.open .input-shell{display:flex;}
+  .input-shell{display:flex; gap:7px; align-items:center; background:#fff; border:1.5px solid #d9d2f2; border-radius:24px; padding:4px 5px 4px 15px;}
+  .input-shell:focus-within{border-color:var(--brand);}
+  .input-shell input{flex:1; min-width:0; border:0; outline:0; font:inherit; font-size:15px; color:var(--ink); background:transparent; padding:9px 0;}
+  .send{border:0; background:var(--brand); color:#fff; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:18px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
+  .send:hover{background:var(--brand-press);} .send:disabled{opacity:.35; cursor:default;}
+  .mic{flex:0 0 auto; width:40px; height:40px; border-radius:50%; border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .12s, border-color .12s;}
+  .mic:hover{background:var(--brand-soft); border-color:var(--brand);} .mic svg{display:block;}
+  .mic.on{background:#fde8ee; border-color:#f3b6c8; color:#c2185b; animation:micpulse 1.2s ease-in-out infinite;}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(194,24,91,.30)}50%{box-shadow:0 0 0 7px rgba(194,24,91,0)}}
+  .foot{flex:0 0 auto; text-align:center; font-size:10.5px; color:#6b6678; padding:6px 16px 10px; line-height:1.4; background:#fff;}
+
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important;} .faq .ans{transition:none;} .prog .bar{transition:none;} }
+  @media (max-width:460px){ .phone{max-width:100%; border-radius:40px} .screen{border-radius:32px} }
+
+  /* landing priming + June explainer */
+  .lp-prime{font-size:12.5px; line-height:1.45; color:var(--ink-soft); text-align:center; margin:9px 4px 0;}
+  .lp-june{background:none; border:0; font:inherit; font-size:12.5px; font-weight:700; color:var(--brand-press); cursor:pointer; padding:0; text-decoration:underline; text-underline-offset:2px;}
+  .lp-june-info{font-size:12.5px; line-height:1.5; color:var(--ink-soft); background:var(--brand-soft); border-radius:12px; padding:10px 12px; margin:8px 2px 0; text-align:left;}
+  /* ============ DESKTOP WEB (>=860px) ============ */
+  @media (min-width:860px){
+    /* full-bleed bands, content centered to ~1080px */
+    .lp-nav{padding-left:max(40px,calc((100% - 1080px)/2)); padding-right:max(40px,calc((100% - 1080px)/2));}
+    .lp-hero{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:56px; align-items:center; padding:60px max(40px,calc((100% - 1080px)/2)) 64px;}
+    .lp-hero > *{grid-column:1;}
+    .lp-hero > .lp-heroimg{grid-column:2; grid-row:1 / -1; align-self:center; margin:0;}
+    .lp-title{font-size:46px; letter-spacing:-1.4px; margin-bottom:20px;}
+    .lp-checks li{font-size:17px;}
+    .lp-sec{padding:48px max(40px,calc((100% - 1080px)/2));}
+    .lp-sec .lp-h2{font-size:28px;}
+    .lp-checks.lp-big{flex-direction:row; gap:22px;}
+    .lp-checks.lp-big li{flex:1;}
+    .lp-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
+    .lp-bottom{padding:0 max(40px,calc((100% - 1080px)/2)) 60px;}
+    .lp-bottom .lp-cta{max-width:340px; margin:0 auto; display:block;}
+    /* June chat: a centered conversation column on a branded backdrop */
+    .screen:not(.landing){background:radial-gradient(1200px 700px at 50% -10%, #efe9fe 0%, #f6f4fb 45%, #eef0f5 100%);}
+    .screen:not(.landing) #view-chat{width:100%; max-width:520px; align-self:center; background:#fff; box-shadow:0 24px 70px rgba(28,20,54,.16);}
+  }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+
+      <!-- ============ LANDING (marketing) ============ -->
+      <div id="view-landing">
+        <div class="lp-nav">
+          <img class="lp-logo" src="BoldLogo.png" alt="Bold">
+          <button class="lp-login" type="button">Log in</button>
+        </div>
+        <div class="lp-hero">
+          <h1 class="lp-title">Lose weight. Reduce pain. Get your energy back. <span>Covered by Medicare.</span></h1>
+          <ul class="lp-checks">
+            <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>FDA-approved GLP-1 pills for weight loss, <b>now</b> available through Medicare</span></li>
+            <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>78% of Bold patients pay $0 out of pocket to meet a Bold provider</span></li>
+          </ul>
+          <div class="lp-form">
+            <div class="lp-field"><label>First name</label><input id="lp-first" type="text" value="Carol" autocomplete="off"></div>
+            <div class="lp-field"><label>Last name</label><input id="lp-last" type="text" value="Stevens" autocomplete="off"></div>
+            <div class="lp-field"><label>Email</label><input id="lp-email" type="email" value="carol.s@email.com" autocomplete="off"></div>
+            <button class="lp-why" type="button" id="lp-why"><span class="lp-q">?</span>Why are we asking this?</button>
+            <button class="lp-cta" id="lp-check" type="button">Check coverage</button>
+            <p class="lp-prime">Our AI assistant June will help verify your coverage — private &amp; secure. <button type="button" class="lp-june" id="lp-june">Who's June?</button></p>
+            <p class="lp-legal">By signing up, you agree to Bold's <u>Terms of Service</u> and <u>Privacy Policy</u>.</p>
+          </div>
+          <p class="lp-blurb">Covered by Medicare, UnitedHealthcare, Aetna, Cigna, Blue Cross Blue Shield, Humana, and more</p>
+          <div class="lp-heroimg"><img src="lp-hero.jpg" alt="Older adult on a telehealth video visit with a Bold doctor"></div>
+          <div class="lp-trust">
+            <span class="lp-avs"><img src="lp-av1.jpg" alt=""><img src="lp-av2.jpg" alt=""><img src="lp-av3.jpg" alt=""></span>
+            <span class="lp-tt">Beloved by members</span>
+            <span class="lp-div"></span>
+            <span class="lp-stars">★★★★★</span>
+            <span class="lp-tt">based on 10k+ reviews</span>
+          </div>
+        </div>
+        <div class="lp-sec">
+          <h2 class="lp-h2">What you get</h2>
+          <ul class="lp-checks lp-big">
+            <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>45-minute appointments — take the time you need.</span></li>
+            <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>FDA-approved GLP-1s (like Wegovy®) for a $50/month copay.*</span></li>
+            <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>A personalized Care Plan for results that last.</span></li>
+          </ul>
+          <p class="lp-note">*Medicare GLP-1 Bridge lets eligible members get FDA-approved GLP-1s for a flat $50/month copay.</p>
+        </div>
+        <div class="lp-sec">
+          <h2 class="lp-h2">How it works</h2>
+          <ol class="lp-steps">
+            <li><span class="lp-num">1</span><div><b>Check your coverage</b><p>Answer a few questions — about 2 minutes.</p></div></li>
+            <li><span class="lp-num">2</span><div><b>Meet your Bold provider, virtually</b><p>They build your plan and prescribe GLP-1s if appropriate, keeping your primary doctor informed.</p></div></li>
+            <li><span class="lp-num">3</span><div><b>Start losing weight safely</b><p>Regular check-ins on side effects, dosage, and progress.</p></div></li>
+          </ol>
+        </div>
+        <div class="lp-sec lp-testi">
+          <h2 class="lp-h2">Real people, real results</h2>
+          <div class="lp-rating"><span class="lp-stars">★★★★★</span><span><b>10k+</b> reviews from adults 65+</span></div>
+          <blockquote class="lp-quote">"My Bold Care doctor is very friendly, not pushy, and seems to accept shortcomings on my part."<cite>— Tammy, 66</cite></blockquote>
+          <blockquote class="lp-quote">"She asks all the right questions. She listens as well — a lost art. I don't feel rushed, and she always has good info for me."<cite>— Cal, 72</cite></blockquote>
+        </div>
+        <div class="lp-bottom"><button class="lp-cta" id="lp-check2" type="button">Check my coverage</button></div>
+      </div>
+
+      <!-- ============ JUNE CHAT ============ -->
+      <div id="view-chat" hidden>
+      <div class="thead">
+        <button class="thead-close" id="chatClose" type="button" title="Close" aria-label="Close">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16121f" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <div class="id">
+          <div class="av"><span class="face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
+          <div class="name">June <span class="aitag">AI</span></div>
+        </div>
+        <button class="say-h" id="sayBtn" type="button" title="Read aloud" aria-label="Read aloud">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>
+        </button>
+      </div>
+      <div class="prog"><div class="bar" id="pbar"></div></div>
+
+      <div class="thread" id="thread"></div>
+
+      <div class="composer" id="composer" hidden>
+        <button class="type-toggle" id="typeToggle" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7.5 14h9"/></svg>
+          Type your own answer
+        </button>
+        <div class="input-shell">
+          <input id="ta" type="text" placeholder="Type or ask June anything…" autocomplete="off">
+          <button class="mic" id="mic" type="button" title="Talk">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+          </button>
+          <button class="send" id="send" title="Send" disabled>&#8593;</button>
+        </div>
+      </div>
+      <div class="foot">June is Bold's AI assistant, not a medical provider · anything she can't answer goes to your <span style="color:var(--brand-press);font-weight:700">care coordinator at (424) 577-5266</span></div>
+      </div><!-- /view-chat -->
+
+      <button class="fab" id="fab" type="button" title="Chat with June">
+        <span class="av"><span class="face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></span>
+        <span class="fab-label">Chat with June</span>
+      </button>
+
+      <!-- consent sheet -->
+      <div class="csheet" id="csheet" aria-hidden="true">
+        <div class="dim" id="cdim"></div>
+        <div class="card" role="dialog" aria-label="Consent">
+          <div class="grip"></div>
+          <h3 id="ctitle">Consent</h3>
+          <div class="doc" id="cdoc"></div>
+          <div class="foot" style="border-top:1px solid var(--line); background:#fff;">
+            <label class="agree"><input type="checkbox" id="cchk"><span id="clabel">I have read and agree.</span></label>
+            <button class="ok" id="cok" disabled>Agree &amp; continue</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+/* ============================================================
+   Bold — June-led AI onboarding (concept prototype)
+   A single adaptive conversation replaces the ~15-screen funnel.
+   Deterministic where it matters (eligibility, consents, schedule);
+   June narrates, she doesn't decide clinical/legal outcomes.
+   ============================================================ */
+const thread = document.getElementById("thread");
+const pbar = document.getElementById("pbar");
+
+const PROFILE = { name:"Carol", dob:"", state:"", insurer:"UnitedHealthcare", coverageConfirmed:false, goal:"", conditions:[], contra:[], height:{ft:5,in:4}, weight:190, bmi:0, glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge" };
+
+/* ---------- helpers ---------- */
+function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstElementChild; }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function scroll(){ requestAnimationFrame(()=>{ thread.scrollTop=thread.scrollHeight; }); }
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function setProgress(p){ pbar.style.width=Math.min(100,Math.round(p*100))+"%"; }
+
+let lastBotText="";
+function me(text){ const r=el(`<div class="row me"><div class="bubble"></div></div>`); r.querySelector(".bubble").textContent=text; thread.appendChild(r); scroll(); }
+async function bot(text,{first=false}={}){
+  const typing=el(`<div class="row bot"><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
+  thread.appendChild(typing); scroll();
+  await wait(text.length>90?800:520);
+  typing.remove();
+  const r=el(`<div class="row bot">${first?'<div class="who">June</div>':''}<div class="bubble"></div></div>`);
+  r.querySelector(".bubble").textContent=text; thread.appendChild(r); lastBotText=text; scroll();
+  if(autoRead) speakOne(text);
+  await wait(140);
+}
+function control(node){ const wrap=el(`<div class="row bot"></div>`); const ctl=el(`<div class="ctl"></div>`); ctl.appendChild(node); wrap.appendChild(ctl); thread.appendChild(wrap); scroll(); return ctl; }
+function lock(ctl){ ctl.classList.add("done"); }
+/* ---- tap-June easter egg: happy bounce + sparkles + a warm little line ---- */
+const JUNE_SAYINGS=["Hi there! 👋","You've got this. 💜","So glad you're here.","One small step at a time.","Proud of you already. 🌟","Feeling good today?","I'm right here for you.","Tap — that tickles! 😄"];
+let juneSayIdx=-1;
+function juneTap(orb, below){
+  if(!orb) return;
+  orb.classList.remove("tapped"); void orb.offsetWidth; orb.classList.add("tapped");
+  orb.addEventListener("animationend", function h(){ orb.classList.remove("tapped"); orb.removeEventListener("animationend",h); });
+  for(let i=0;i<7;i++){ const s=document.createElement("i"); s.className="spark";
+    const a=Math.random()*6.283, d=32+Math.random()*30;
+    s.style.setProperty("--dx",(Math.cos(a)*d).toFixed(0)+"px");
+    s.style.setProperty("--dy",(Math.sin(a)*d-18).toFixed(0)+"px");
+    s.style.animationDelay=(Math.random()*0.12).toFixed(2)+"s";
+    orb.appendChild(s); setTimeout(()=>{ if(s.parentNode) s.remove(); },1150); }
+  let i; do{ i=Math.floor(Math.random()*JUNE_SAYINGS.length); }while(i===juneSayIdx && JUNE_SAYINGS.length>1); juneSayIdx=i;
+  const old=orb.querySelector(".june-say"); if(old) old.remove();
+  const b=document.createElement("div"); b.className="june-say"+(below?" below":""); b.textContent=JUNE_SAYINGS[i]; orb.appendChild(b);
+  clearTimeout(orb._sayT); orb._sayT=setTimeout(()=>{ if(b.parentNode) b.remove(); },2600);
+}
+/* big June orb welcome hero (like the main prototype) */
+function welcomeHero(askFirst){
+  return new Promise(resolve=>{
+    const node=el(`<div class="chat-welcome">
+      <div class="cworb" id="cw-orb"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
+      <div class="cw-title">Hi ${esc(PROFILE.name)} — I'm June</div>
+      <div class="cw-sub">${askFirst
+        ? "I'm your AI health assistant — ask me anything about Bold: your coverage, your costs, or how your first visit works. Ready to sign up? Tap below."
+        : "I'm your AI health assistant. I'll help you verify your coverage and answer any questions along the way. This chat is private and secure."}</div>
+      <button class="go cw-go">${askFirst ? "Let's get started" : "Verify my coverage"}</button>
+      <button class="cw-ask" type="button">Ask a question first</button>
+      <div class="trust">
+        <div class="hipaa">
+          <img class="hipaa-seal" src="hipaa-seal.png" alt="HIPAA compliant seal" width="42" height="42">
+          <div class="hipaa-txt"><b>Bold is HIPAA compliant.</b> Your health information is encrypted, never sold, and shared only with your care team.</div>
+        </div>
+        <div class="trust-row">
+          <span class="trust-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Doctor-supervised</span>
+          <span class="trust-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Medicare-covered</span>
+          <span class="trust-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Built for adults 65+</span>
+        </div>
+      </div>
+    </div>`);
+    node.querySelector(".cw-go").onclick=()=>{ askMode=false; if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } node.querySelectorAll(".cw-go,.cw-ask").forEach(b=>b.remove()); resolve(); };
+    node.querySelector(".cw-ask").onclick=()=>{ const a=node.querySelector(".cw-ask"); if(a) a.remove(); showAskPills(); };
+    const heroOrb=node.querySelector("#cw-orb"); if(heroOrb) heroOrb.onclick=()=>juneTap(heroOrb,false);
+    thread.appendChild(node);
+    lastBotText="Hi "+PROFILE.name+", I'm June, your AI health assistant. Thanks for signing up — I'll answer any questions and get you set up in about two minutes.";
+    if(autoRead) speakOne(lastBotText);
+    scroll();
+    if(askFirst){ requestAnimationFrame(()=>{ const a=node.querySelector(".cw-ask"); if(a) a.click(); }); }
+  });
+}
+/* "Ask a question first" — reveal the composer + quick questions June can answer (does not advance onboarding) */
+async function showAskPills(){
+  askMode=true;
+  composer.hidden=false; composer.classList.add("open");
+  await bot("You can ask me anything about Bold — tap a question below or type your own. Whenever you're ready, tap “Let's verify my coverage.”");
+  askPills();
+}
+/* persistent quick-question pills for ask mode — always led by a steer-back-to-onboarding option; already-asked questions drop off */
+let askMode=false, askPillsRow=null, costAsked=false;
+const ASK_POOL=[
+  {q:"What will it cost me?", label:"What will it cost?"},
+  {q:"Am I eligible for medication?", label:"Am I eligible for medication?"},
+  {q:"Is Bold safe and private?", label:"Is this safe &amp; private?"},
+  {q:"How does the visit work?", label:"How does the visit work?"},
+  {q:"What is Bold?", label:"What is Bold?"},
+  {q:"Do I need my insurance card?", label:"Do I need my card?"}
+];
+const askedQs=new Set();
+function askPills(){
+  if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
+  const remaining=ASK_POOL.filter(x=>!askedQs.has(x.q)).slice(0,4);
+  const qHtml=remaining.map(x=>`<button class="chip" data-q="${x.q}">${x.label}</button>`).join("");
+  const leadLabel=costAsked ? "Confirm my exact cost →" : "Let's verify my coverage →";
+  const node=el(`<div class="chips"><button class="chip lead" data-go="onboard">${leadLabel}</button>${qHtml}</div>`);
+  const ctl=control(node);
+  askPillsRow=ctl.closest(".row");
+  node.querySelectorAll(".chip").forEach(b=>{
+    b.onclick=()=>{
+      if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
+      if(b.dataset.go==="onboard"){ steerToOnboarding(); return; }
+      const q=b.dataset.q; askedQs.add(q); if(/cost|pay|afford|how much|\$/i.test(q)) costAsked=true; me(q); if(JUNE_PROXY) askJune(q); else juneReply(q);
+    };
+  });
+}
+/* steer back into onboarding: resolve the welcome so run() continues into the coverage flow */
+function steerToOnboarding(){ const go=document.querySelector(".cw-go"); if(go) go.click(); }
+
+/* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
+const sayBtn=document.getElementById("sayBtn");
+let autoRead=false, bestVoice=null;
+/* prefer a natural/neural/premium voice over the default robotic one */
+function pickVoice(){
+  if(!("speechSynthesis" in window)) return null;
+  const vs=speechSynthesis.getVoices(); if(!vs.length) return null;
+  const en=vs.filter(v=>/^en(-|_|$)/i.test(v.lang)); const pool=en.length?en:vs;
+  const prefs=[/natural/i,/neural/i,/premium/i,/enhanced/i,/google us english/i,/google uk english female/i,/\bava\b/i,/\bzoe\b/i,/\bjenny\b/i,/\baria\b/i,/\bserena\b/i,/\ballison\b/i,/\bnicky\b/i,/samantha/i];
+  for(const re of prefs){ const m=pool.find(v=>re.test(v.name)); if(m) return m; }
+  return pool.find(v=>/female/i.test(v.name))||pool[0];
+}
+if("speechSynthesis" in window){ bestVoice=pickVoice(); speechSynthesis.onvoiceschanged=()=>{ bestVoice=pickVoice(); }; }
+/* speak one message; utterances queue, so successive messages read in order */
+function speakOne(text){
+  if(!("speechSynthesis" in window) || !text) return;
+  const u=new SpeechSynthesisUtterance(text);
+  const v=bestVoice||(bestVoice=pickVoice()); if(v){ u.voice=v; u.lang=v.lang; } else { u.lang="en-US"; }
+  u.rate=0.97; u.pitch=1.03;
+  speechSynthesis.speak(u);
+}
+/* toggle read-along: once on, June keeps reading every new message until Stop */
+function setAutoRead(on){
+  autoRead=on;
+  sayBtn.classList.toggle("on", on);
+  sayBtn.title = on ? "Stop" : "Read aloud";
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  if(on) speakOne(lastBotText);
+}
+sayBtn.onclick=()=>setAutoRead(!autoRead);
+
+/* ---------- widgets (each returns a Promise) ---------- */
+function askChips(options,{multi=false,cta="Continue"}={}){
+  return new Promise(resolve=>{
+    const node=el(`<div><div class="chips"></div></div>`);
+    const chips=node.querySelector(".chips");
+    const chosen=new Set();
+    options.forEach(o=>{
+      const b=el(`<button class="chip" type="button"></button>`); b.textContent=o.label;
+      b.onclick=()=>{
+        if(multi){
+          if(o.exclusive){ chosen.clear(); chips.querySelectorAll(".chip").forEach(c=>c.classList.remove("sel")); }
+          else { const ex=options.find(x=>x.exclusive); if(ex){ const exBtn=[...chips.children].find(c=>c.textContent===ex.label); if(exBtn){exBtn.classList.remove("sel"); chosen.delete(ex.value);} } }
+          if(chosen.has(o.value)){ chosen.delete(o.value); b.classList.remove("sel"); } else { chosen.add(o.value); b.classList.add("sel"); }
+          goBtn.disabled=chosen.size===0;
+        } else {
+          const ctl=node.closest(".ctl"); lock(ctl); me(o.label); resolve([o.value]);
+        }
+      };
+      chips.appendChild(b);
+    });
+    let goBtn;
+    if(multi){
+      goBtn=el(`<button class="go" disabled>${cta}</button>`);
+      goBtn.onclick=()=>{ const ctl=node.closest(".ctl"); lock(ctl); const labels=options.filter(o=>chosen.has(o.value)).map(o=>o.label); me(labels.join(", ")); resolve([...chosen]); };
+      node.appendChild(goBtn);
+    }
+    control(node);
+  });
+}
+
+function askIdentity(){
+  return new Promise(resolve=>{
+    const node=el(`<div class="fields">
+      <div class="fld"><label>First name</label><input id="f-name" value="Carol" autocomplete="off"></div>
+      <div class="two">
+        <div class="fld"><label>Date of birth</label><input id="f-dob" placeholder="MM / DD / YYYY" value="04 / 12 / 1958" inputmode="numeric"></div>
+        <div class="fld" style="max-width:120px"><label>State</label>
+          <select id="f-state"><option>CA</option><option>NY</option><option>TX</option><option>FL</option><option>NJ</option></select></div>
+      </div>
+      <p class="lockline">🔒 Encrypted and shared only with your care team. We never sell your information.</p>
+      <button type="button" class="whylink" id="why-toggle">Why do you need this?<span class="car">⌄</span></button>
+      <div class="whybody" id="why-body"><p>So we can confirm your visit is covered and you won't get a surprise bill. A care coordinator double-checks everything before anything is charged.</p></div>
+      <button class="go">Check my coverage</button>
+      <p class="humanout">Don't have your details handy? <button type="button" class="skiplink">Skip for now</button> — a care coordinator can help, or call <b>(424) 577-5266</b>.</p>
+    </div>`);
+    const done=(skipped)=>{
+      if(!skipped){ PROFILE.name=(node.querySelector("#f-name").value||"Carol").trim();
+        PROFILE.dob=node.querySelector("#f-dob").value; PROFILE.state=node.querySelector("#f-state").value; }
+      lock(node.closest(".ctl")); me(skipped?"Skip for now":`${PROFILE.name} · ${PROFILE.dob} · ${PROFILE.state}`); resolve();
+    };
+    node.querySelector("#why-toggle").onclick=()=>{ node.querySelector("#why-body").classList.toggle("open"); node.querySelector("#why-toggle").classList.toggle("open"); scroll(); };
+    node.querySelector(".go").onclick=()=>done(false);
+    node.querySelector(".skiplink").onclick=(e)=>{ e.preventDefault(); done(true); };
+    control(node);
+  });
+}
+
+async function showInsurance(){
+  const ok = await new Promise(resolve=>{
+    const node=el(`<div>
+      <div class="inscard">
+        <div class="seal">✓ Verified</div>
+        <div class="plan">${esc(PROFILE.insurer)}</div>
+        <div class="nm">${esc(PROFILE.name)} S.</div>
+        <div class="mid">MEMBER ID ·······789</div>
+        <div class="cov">$0 copay for virtual visits with Bold</div>
+      </div>
+      <button class="go" style="margin-top:12px">That's me — continue</button>
+      <button class="skip">This isn't right</button>
+    </div>`);
+    node.querySelector(".go").onclick=()=>{ lock(node.closest(".ctl")); me("That's me"); resolve(true); };
+    node.querySelector(".skip").onclick=()=>{ lock(node.closest(".ctl")); me("This isn't right"); resolve(false); };
+    control(node);
+  });
+  if(ok) return;
+  // June updates the plan herself — this is guided setup, not an account change
+  await bot("No problem — I can update that for you. Which plan are you on?");
+  const chosen = await askChips([
+    {label:"UnitedHealthcare", value:"UnitedHealthcare"},
+    {label:"Aetna", value:"Aetna"},
+    {label:"Humana", value:"Humana"},
+    {label:"Cigna", value:"Cigna"},
+    {label:"Original Medicare", value:"Original Medicare"}
+  ]);
+  PROFILE.insurer = chosen[0];
+  await bot(`Updated to ${PROFILE.insurer} — thanks for the correction. Good news: your Bold visits are still fully covered at $0.`);
+}
+
+/* one shared verification step: identity (DOB + state) then insurance — used by the normal flow and the cost on-ramp */
+async function verifyCoverage(){
+  await askIdentity();
+  await bot("Thanks — pulling that up now.");
+  await wait(400);
+  await showInsurance();
+  PROFILE.coverageConfirmed=true;
+}
+
+function askHeightWeight(){
+  return new Promise(resolve=>{
+    let ft=PROFILE.height.ft, inch=PROFILE.height.in, lbs=PROFILE.weight;
+    const node=el(`<div class="hw">
+      <div class="stp"><span class="lab">Height</span>
+        <div class="stepper"><button data-a="ft-">–</button><span class="val" id="v-h">5' 4"</span><button data-a="ft+">+</button></div></div>
+      <div class="stp"><span class="lab">Weight</span>
+        <div class="stepper"><button data-a="w-">–</button><span class="val" id="v-w">190 lb</span><button data-a="w+">+</button></div></div>
+      <div class="bmi" id="bmi"></div>
+      <button class="go">Continue</button>
+    </div>`);
+    const vH=node.querySelector("#v-h"), vW=node.querySelector("#v-w"), bmiEl=node.querySelector("#bmi");
+    function totIn(){ return ft*12+inch; }
+    function render(){
+      vH.textContent=`${ft}' ${inch}"`; vW.textContent=`${lbs} lb`;
+      const bmi=703*lbs/(totIn()*totIn()); PROFILE.bmi=Math.round(bmi*10)/10;
+      bmiEl.textContent=`BMI ≈ ${PROFILE.bmi}`;
+    }
+    node.querySelectorAll("button[data-a]").forEach(b=>b.onclick=()=>{
+      const a=b.dataset.a;
+      if(a==="ft+"){ inch++; if(inch>11){inch=0;ft++;} }
+      if(a==="ft-"){ inch--; if(inch<0){inch=11;ft=Math.max(4,ft-1);} }
+      if(a==="w+") lbs+=1; if(a==="w-") lbs=Math.max(90,lbs-1);
+      render();
+    });
+    render();
+    node.querySelector(".go").onclick=()=>{ PROFILE.height={ft,in:inch}; PROFILE.weight=lbs; lock(node.closest(".ctl")); me(`${ft}'${inch}", ${lbs} lb  ·  BMI ${PROFILE.bmi}`); resolve(); };
+    control(node);
+  });
+}
+
+function askIntake(){
+  return new Promise(resolve=>{
+    const node=el(`<div class="fields">
+      <div class="fld"><label>Anything you'd like your provider to focus on? (optional)</label>
+        <input id="f-focus" placeholder="e.g. I want more energy for my grandkids" autocomplete="off"></div>
+      <button class="go">Continue</button>
+      <button class="skip">Skip for now</button>
+    </div>`);
+    const done=(v)=>{ PROFILE.focus=v; lock(node.closest(".ctl")); me(v||"Skipped"); resolve(); };
+    node.querySelector(".go").onclick=()=>done((node.querySelector("#f-focus").value||"").trim());
+    node.querySelector(".skip").onclick=()=>done("");
+    control(node);
+  });
+}
+
+function providerCard(){
+  return new Promise(resolve=>{
+    const node=el(`<div>
+      <div class="prov">
+        <div class="ph" style="background-image:url('profile-avatar.png')"></div>
+        <div><div class="pn">Dr. Mitul S. Desai, MD</div><div class="pr">Internal medicine · older-adult care</div><div class="pt">✓ In-network · ready to book</div></div>
+      </div>
+      <button class="go" style="margin-top:12px">Book my free call</button>
+    </div>`);
+    node.querySelector(".go").onclick=()=>{ lock(node.closest(".ctl")); resolve(); };
+    control(node);
+  });
+}
+
+/* ---------- ELIGIBILITY / COST — centerpiece ---------- */
+const OUTCOMES = {
+  bridge:{
+    key:"bridge", badge:"Medicare Bridge", cls:"bridge",
+    title:"Good news, Carol — you're likely eligible for a GLP-1 through the Medicare Bridge.",
+    rows:[
+      {k:"Your Bold visits", v:"$0", cls:"free", note:"Covered by UnitedHealthcare"},
+      {k:"GLP-1 medication, if prescribed", v:"$50/mo", cls:"", note:"Flat copay through the Bridge — your provider files the claim"}
+    ],
+    plain:"If you and your provider decide a GLP-1 is right for you, your provider works with Medicare to get it covered. When it's approved, you pay a flat $50 a month. No hidden costs.",
+    faqs:[
+      {q:"Why $50 a month?", a:"The Medicare Bridge covers GLP-1s like Wegovy and Zepbound at a flat $50 monthly copay for eligible members. Your provider handles the Medicare paperwork — you just pay the copay if it's approved."},
+      {q:"Are GLP-1s required?", a:"Not at all. If a GLP-1 isn't the right fit, your provider will still support you with a personalized lifestyle plan — meals, movement, sleep — to reach your goals."},
+      {q:"What if I'm not approved?", a:"If Medicare doesn't approve it, your provider focuses on lifestyle support to help you lose weight without medication. You're never charged for a medication you don't receive."}
+    ]
+  },
+  partd:{
+    key:"partd", badge:"More options", cls:"partd",
+    title:"You're not on the $50 Bridge — but you may still qualify for help with GLP-1 costs.",
+    rows:[
+      {k:"Your Bold visits", v:"$0", cls:"free", note:"Covered by UnitedHealthcare"},
+      {k:"GLP-1 medication, if prescribed", v:"Let's check", cls:"vary", note:"You may qualify through other health conditions or plan discounts — a care coordinator checks every option, free, before anything is prescribed"}
+    ],
+    plain:"You're not on the flat $50 Bridge copay — but that doesn't mean you're out of options. Depending on your health conditions and your plan, you may still qualify for coverage or other discounts. A care coordinator looks into everything with you, for free, before your provider prescribes anything — so there are no surprises.",
+    faqs:[
+      {q:"How might I still qualify?", a:"Other health conditions can open up coverage, and some plans or programs offer discounts. Your care coordinator checks every path for you — for free — before anything is prescribed."},
+      {q:"When will I know the cost?", a:"Your care coordinator confirms any cost with you, for free, on your intake call — before your provider prescribes anything."},
+      {q:"Are GLP-1s required?", a:"No. If a GLP-1 isn't right for you, your provider will support you with a personalized lifestyle plan instead."}
+    ]
+  },
+  lifestyle:{
+    key:"lifestyle", badge:"Lifestyle plan", cls:"lifestyle",
+    title:"Here's the good news — you don't need medication to start losing weight.",
+    rows:[
+      {k:"Your Bold visits", v:"$0", cls:"free", note:"Covered by UnitedHealthcare"},
+      {k:"Your personalized care plan", v:"Included", cls:"free", note:"Meals, movement, sleep — no calorie counting"}
+    ],
+    plain:"Based on Medicare's eligibility criteria, your plan doesn't include a GLP-1 right now — and that's okay. Lifestyle change is the foundation of safe, lasting weight loss, and it's what makes results stick. You're starting with the part that matters most.",
+    faqs:[
+      {q:"Could I get a GLP-1 later?", a:"Maybe. If your health needs or your insurance coverage change, your Bold provider can revisit the conversation. Starting with lifestyle lays a strong foundation either way."},
+      {q:"What's in the plan?", a:"Practical support for meals, movement, and sleep — no calorie counting. Your provider stays in the loop and adjusts the plan as you go."}
+    ]
+  }
+};
+
+function computeOutcome(){
+  // Deterministic — June narrates this, she does not decide it.
+  if(PROFILE.goal!=="weight") return null;
+  if(PROFILE.contra.length && !PROFILE.contra.includes("none")) return "lifestyle";
+  const bmi=PROFILE.bmi||0;
+  const qualifies = bmi>=30 || (bmi>=27 && PROFILE.comorbid.some(c=>c!=="none"));
+  if(!qualifies) return "lifestyle";
+  // Medicare Bridge vs standard Part D (demo heuristic)
+  return "bridge";
+}
+
+function renderEligInto(container,key){
+  const o=OUTCOMES[key];
+  container.className="elig "+o.cls;
+  container.innerHTML=`
+    <div class="demoseg">Demo · preview scenario
+      <div class="segs">
+        <button data-o="bridge" class="${key==='bridge'?'on':''}">Bridge</button>
+        <button data-o="partd" class="${key==='partd'?'on':''}">Other</button>
+        <button data-o="lifestyle" class="${key==='lifestyle'?'on':''}">Lifestyle</button>
+      </div>
+    </div>
+    <div class="elig-band">
+      <span class="elig-badge">✓ ${o.badge}</span>
+      <h3 class="elig-title">${o.title}</h3>
+    </div>
+    <div class="elig-body">
+      <div class="cost">
+        ${o.rows.map(r=>`<div class="crow"><div><div class="ck">${r.k}</div><div class="cnote">${r.note.replace("UnitedHealthcare", PROFILE.insurer)}</div></div><div class="cv ${r.cls}">${r.v}</div></div>`).join("")}
+      </div>
+      <p class="elig-plain">${o.plain}</p>
+      <div class="faqs">
+        ${o.faqs.map(f=>`<div class="faq"><button type="button"><span>${f.q}</span><span class="car">⌄</span></button><div class="ans"><p>${f.a}</p></div></div>`).join("")}
+      </div>
+      <button class="elig-cta">Book my free 15-min call</button>
+      <p class="elig-fine">A real care coordinator reviews this with you — for free — before anything is prescribed. Nothing here is a prescription or a guarantee.</p>
+    </div>`;
+  container.querySelectorAll(".demoseg button").forEach(b=>b.onclick=()=>{ PROFILE.outcome=b.dataset.o; renderEligInto(container,b.dataset.o); });
+  container.querySelectorAll(".faq > button").forEach(b=>b.onclick=()=>{ b.parentElement.classList.toggle("open"); scroll(); });
+  container._ctaHook && container.querySelector(".elig-cta").addEventListener("click", container._ctaHook);
+}
+
+function showEligibility(){
+  return new Promise(resolve=>{
+    const key=PROFILE.outcome=computeOutcome()||"bridge";
+    const node=el(`<div class="elig"></div>`);
+    node._ctaHook=()=>{ const ctl=node.closest(".ctl"); lock(ctl); me("Book my free call"); resolve(); };
+    control(node);
+    renderEligInto(node,key);
+    requestAnimationFrame(()=>{ const row=node.closest(".row"); if(row) thread.scrollTop=Math.max(0,row.offsetTop-8); });
+  });
+}
+
+/* ---------- scheduler ---------- */
+function scheduler(){
+  return new Promise(resolve=>{
+    const days=[["MON","Nov 3"],["TUE","Nov 4"],["WED","Nov 5"]];
+    const slots=["7:00 am","9:00 am","10:45 am","12:00 pm","1:30 pm","3:00 pm"];
+    const node=el(`<div class="sched">
+      <div class="evt"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></div>
+        <div><div class="et">Bold Care Coordinator call · 15 min</div><div class="es">No cost · confirms coverage &amp; books your provider visit</div></div></div>
+      <div class="days"></div><div class="slots"></div>
+      <button class="go" disabled style="margin-top:13px">Confirm my call</button>
+    </div>`);
+    const daysEl=node.querySelector(".days"), slotsEl=node.querySelector(".slots"), go=node.querySelector(".go");
+    let day=0, slot=null;
+    days.forEach((d,i)=>{ const b=el(`<div class="day ${i===0?'sel':''}"><div class="dw">${d[0]}</div><div class="dn">${d[1].split(' ')[1]}</div></div>`); b.onclick=()=>{ day=i; daysEl.querySelectorAll(".day").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); }; daysEl.appendChild(b); });
+    slots.forEach(s=>{ const b=el(`<button class="slot" type="button">${s}</button>`); b.onclick=()=>{ slot=s; slotsEl.querySelectorAll(".slot").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); go.disabled=false; }; slotsEl.appendChild(b); });
+    go.onclick=()=>{ PROFILE.slot=`${days[day][1]}, ${slot} PT`; lock(node.closest(".ctl")); me(`${days[day][0]} ${days[day][1]}, ${slot}`); resolve(); };
+    control(node);
+  });
+}
+
+/* ---------- consents ---------- */
+const CONSENTS={
+  hipaa:{ title:"HIPAA — Notice of Privacy Practices", label:"I acknowledge Bold's Notice of Privacy Practices.",
+    doc:`<p>This notice describes how your medical information may be used and disclosed and how you can get access to it. Please review it carefully.</p>
+      <h4>Your protected health information (PHI)</h4><p>Bold and its provider group use your PHI to provide and coordinate your care, for payment, and for limited healthcare operations. We do not sell your information.</p>
+      <h4>Your rights</h4><p>You may request access to your records, ask for corrections, and request restrictions on certain uses and disclosures. State-specific notices apply in CA, FL, and TX.</p>
+      <p style="color:#8a8698">Privacy Officer · privacy@agebold.com · (833) 701-1545 · Effective Aug 4, 2025.</p>` },
+  care:{ title:"New Patient Agreement & Telemedicine Consent", label:"I agree to the New Patient Agreement and telemedicine consent.",
+    doc:`<p>Age Bold's clinical care is provided by an affiliated Provider Group (Mighty Health Medical Services, P.C. and affiliated practices). Age Bold itself does not practice medicine.</p>
+      <h4>Telemedicine</h4><p>You consent to receive care by secure video and messaging. Telemedicine has benefits and limits; your provider will advise if an in-person visit is needed.</p>
+      <h4>AI Scribe</h4><p>The Practice and Age Bold use a note-taking tool called <b>AI Scribe</b>. By agreeing, you allow your clinician to use AI Scribe during your consultation to draft visit notes. You can ask your provider to turn it off at any time.</p>` },
+  scribe:{ title:"Contact & text-message consent", label:"Bold can text and call me about my care and appointments.",
+    doc:`<p>You agree that Bold may contact you by phone, text (SMS), and email about your appointments, coverage, and care. Message and data rates may apply. Reply STOP to opt out of texts at any time.</p>
+      <p>Consent to texts is not a condition of receiving care.</p>` }
+};
+const csheet=document.getElementById("csheet");
+function openConsent(type){
+  return new Promise(resolve=>{
+    const c=CONSENTS[type];
+    document.getElementById("ctitle").textContent=c.title;
+    document.getElementById("cdoc").innerHTML=c.doc;
+    document.getElementById("clabel").textContent=c.label;
+    const chk=document.getElementById("cchk"), ok=document.getElementById("cok"), doc=document.getElementById("cdoc");
+    chk.checked=false; ok.disabled=true; doc.scrollTop=0;
+    chk.onchange=()=>ok.disabled=!chk.checked;
+    csheet.classList.add("open"); csheet.setAttribute("aria-hidden","false");
+    ok.onclick=()=>{ csheet.classList.remove("open"); csheet.setAttribute("aria-hidden","true"); resolve(true); };
+  });
+}
+function consentList(){
+  return new Promise(resolve=>{
+    const items=[["hipaa","HIPAA privacy notice","Required"],["care","New patient & telemedicine","Includes AI Scribe"],["scribe","Contact preferences","Text & call"]];
+    const node=el(`<div class="clist"></div>`);
+    let doneCount=0;
+    items.forEach(([type,title,sub])=>{
+      const it=el(`<div class="citem"><div class="cc"></div><div><div class="ct">${title}</div><div class="cs">${sub}</div></div><span class="go-r">Review ›</span></div>`);
+      it.onclick=async()=>{ if(it.classList.contains("done")) return; const ok=await openConsent(type); if(ok){ it.classList.add("done"); it.querySelector(".cc").innerHTML='<svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l3.5 3.5L12 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; doneCount++; if(doneCount===items.length){ lock(node.closest(".ctl")); me("All agreements signed"); resolve(); } } };
+      node.appendChild(it);
+    });
+    control(node);
+  });
+}
+
+function askPhone(){
+  return new Promise(resolve=>{
+    const node=el(`<div class="fields">
+      <div class="fld"><label>Mobile number</label><input id="f-phone" placeholder="(555) 123-4567" value="(310) 555-0142" inputmode="tel"></div>
+      <button class="go">Confirm my call</button>
+    </div>`);
+    node.querySelector(".go").onclick=()=>{ lock(node.closest(".ctl")); me("Number confirmed"); resolve(); };
+    control(node);
+  });
+}
+
+/* ---------- summary ---------- */
+function summary(){
+  const o=OUTCOMES[PROFILE.outcome]||OUTCOMES.bridge;
+  const covLine = PROFILE.goal!=="weight"
+    ? `Your visits are $0 with ${PROFILE.insurer}. Your coordinator will help you get the most from your Care Plan.`
+    : (PROFILE.outcome==="bridge" ? "Visits are $0. If a GLP-1 is prescribed, you'll pay a flat $50/month through the Medicare Bridge — your provider files the claim."
+    : PROFILE.outcome==="partd" ? "Visits are $0. You're not on the $50 Bridge, but you may still qualify through other conditions or discounts — your coordinator checks every option, free, before anything is prescribed."
+    : "Visits are $0. You're starting with a lifestyle plan; your provider can revisit medication if your needs or coverage change.");
+  const node=el(`<div class="allset">
+    <div class="big">You're all set, ${esc(PROFILE.name)}! 🎉</div>
+    <p class="lead">Your care coordinator will call you at your scheduled time to confirm everything and book your provider visit.</p>
+    <div class="callcard">
+      <div class="ch">Upcoming call</div>
+      <div class="cn">15-min intake call with Ali N.</div>
+      <div class="cd">${PROFILE.slot||"Mon, Nov 3, 9:00 am PT"}</div>
+      <div class="cf">✓ No cost</div>
+    </div>
+    <div class="sumcov">${covLine}</div>
+  </div>`);
+  control(node);
+  setProgress(1);
+}
+
+/* ============================================================
+   The conversation
+   ============================================================ */
+async function run(askFirst){
+  thread.innerHTML=""; setProgress(.06);
+  composer.hidden=true; composer.classList.remove("open");
+  aiHistory=[];
+  Object.assign(PROFILE,{ coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
+
+  await welcomeHero(askFirst);          // June intro + "Verify my coverage" / "Ask a question first"
+  composer.hidden=false;
+  await bot(`Let's confirm your coverage, ${PROFILE.name} — then I can show your exact cost.`, {first:true});
+  await verifyCoverage();
+  await bot("Good news — with your plan, your Bold visits are $0.");
+  setProgress(.22);
+  await bot("Now a few quick questions so I can tailor your care.");
+
+  await bot("What would you most like Bold to help you with?");
+  const g=await askChips([
+    {label:"Managing my weight", value:"weight"},
+    {label:"More energy", value:"energy"},
+    {label:"Less joint pain", value:"pain"},
+    {label:"Staying strong & mobile", value:"mobility"}
+  ]);
+  PROFILE.goal=g[0];
+  setProgress(.38);
+
+  await bot("A few quick health questions so we make sure Bold is a good fit. Any of these apply to you?");
+  PROFILE.conditions=await askChips([
+    {label:"High blood pressure", value:"htn"},
+    {label:"Type 2 diabetes", value:"t2d"},
+    {label:"Heart disease", value:"cvd"},
+    {label:"None of these", value:"none", exclusive:true}
+  ],{multi:true});
+  setProgress(.5);
+
+  if(PROFILE.goal==="weight"){
+    await bot("Since weight is your focus, I can check whether a GLP-1 medication might be an option — and exactly what it would cost you. A few more questions.");
+    PROFILE.contra=await askChips([
+      {label:"Thyroid cancer (personal or family)", value:"thyroid"},
+      {label:"Pancreatitis", value:"pancreatitis"},
+      {label:"Type 1 diabetes", value:"t1d"},
+      {label:"None of these", value:"none", exclusive:true}
+    ],{multi:true});
+    await bot("What's your height and weight? This helps your provider tailor your care.");
+    await askHeightWeight();
+    setProgress(.6);
+    await bot("Have you taken any weight-loss medications before?");
+    const hx=await askChips([
+      {label:"No, never", value:"never"},
+      {label:"Yes, in the past", value:"past"},
+      {label:"Yes, currently", value:"current"}
+    ]); PROFILE.glp1hx=hx[0];
+    if((PROFILE.bmi||0)<=35){
+      await bot("Last few — do any of these apply? (People with a higher BMI can skip this.)");
+      PROFILE.comorbid=await askChips([
+        {label:"High cholesterol", value:"chol"},
+        {label:"Sleep apnea", value:"apnea"},
+        {label:"Prediabetes", value:"pre"},
+        {label:"None of these", value:"none", exclusive:true}
+      ],{multi:true});
+    } else {
+      await bot("Thanks — with your numbers I don't need the extra questions.");
+    }
+    setProgress(.7);
+  }
+
+  await bot("Anything you'd like your provider to focus on during your visit?");
+  await askIntake();
+  setProgress(.78);
+
+  if(PROFILE.goal==="weight"){
+    await bot("Okay — here's what I found for you. This is the part most people worry about, so let me lay out your coverage and cost clearly. 👇");
+    await showEligibility();
+  } else {
+    await bot("Here's your match — and the good news, your visits are fully covered.");
+    await providerCard();
+  }
+  setProgress(.86);
+
+  await bot("Let's book your free 15-minute call with a Bold care coordinator. They'll confirm your coverage and schedule your first provider visit.");
+  await scheduler();
+  setProgress(.92);
+
+  await bot("Almost done — just a couple of quick agreements. Tap each to review and sign.");
+  await consentList();
+  setProgress(.96);
+
+  await bot("And the best number to reach you?");
+  await askPhone();
+
+  await bot(`That's everything, ${PROFILE.name}. You're all set. 💜`);
+  summary();
+}
+
+/* ---------- open-text chat: ask June anything, anytime (runs alongside the guided flow) ---------- */
+const ta=document.getElementById("ta"), sendBtn=document.getElementById("send");
+let replying=false;
+
+/* ---------- live June backend: real Claude answers via the Vercel proxy ----------
+   Defaults on (same origin as the main mock, so CORS allows it). Emergencies are
+   caught client-side before any network call; if the proxy is unreachable, we fall
+   back to the canned juneReply(). Override the endpoint with ?proxy=<url>. */
+const JUNE_DEFAULT_PROXY="https://bold-chat.vercel.app/api/june";
+const JUNE_CLIENT_TOKEN="bjk_2f9Qv7Lp2Xr8Ka1Ns6Tz"; // handshake; set the same value as JUNE_CLIENT_TOKEN in Vercel
+let JUNE_PROXY=(()=>{ try{ const p=new URLSearchParams(location.search).get("proxy"); if(p!==null){ localStorage.setItem("june_proxy",p); return p; } return localStorage.getItem("june_proxy")||JUNE_DEFAULT_PROXY; }catch(e){ return JUNE_DEFAULT_PROXY; } })();
+let aiHistory=[];
+function memberContext(){
+  return { name:PROFILE.name||"there",
+    state: PROFILE.goal==="weight" ? "weight-management onboarding" : (PROFILE.goal ? "onboarding" : "new sign-up"),
+    coverage_confirmed: !!PROFILE.coverageConfirmed,
+    plan: PROFILE.insurer||"" };
+}
+function splitParas(s){ return String(s).trim().split(/\n{2,}/).map(x=>x.replace(/\s*\n\s*/g," ").trim()).filter(Boolean); }
+function addBotBubble(text){ const r=el(`<div class="row bot"><div class="bubble"></div></div>`); r.querySelector(".bubble").textContent=text; thread.appendChild(r); scroll(); }
+function safetyText(t){ const s=t.toLowerCase();
+  if(/chest pain|can'?t breathe|cannot breathe|trouble breathing|stroke|passed out|suicide|kill myself|harm myself|hurt myself|end my life|want to die/.test(s))
+    return "If this is a medical emergency, please call 911 right now. And if you're ever having thoughts of harming yourself, you can call or text 988 for the Suicide & Crisis Lifeline — 24/7, free. I can't help with emergencies myself, but real people are ready to.";
+  return null;
+}
+async function askJune(text){
+  aiHistory.push({role:"user", content:text});
+  const typing=el(`<div class="row bot"><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
+  thread.appendChild(typing); scroll();
+  try{
+    const res=await fetch(JUNE_PROXY,{ method:"POST", headers:{"content-type":"application/json","x-june-key":JUNE_CLIENT_TOKEN},
+      body: JSON.stringify({ messages: aiHistory.slice(-20), member: memberContext() }) });
+    const data=await res.json().catch(()=>null);
+    typing.remove();
+    if(res.ok && data && data.text){
+      aiHistory.push({role:"assistant", content:data.text});
+      splitParas(data.text).forEach(p=>addBotBubble(p));
+      lastBotText=data.text; if(autoRead) speakOne(data.text);
+      if(askMode) askPills();
+    } else { await juneReply(text); }
+  }catch(e){ typing.remove(); await juneReply(text); }
+}
+
+async function juneReply(t){
+  const s=t.toLowerCase();
+  let ans;
+  if(/chest pain|can'?t breathe|cannot breathe|trouble breathing|stroke|passed out|suicide|kill myself|harm myself|hurt myself|end my life|want to die/.test(s)){
+    ans="If this is a medical emergency, please call 911 right now. And if you're ever having thoughts of harming yourself, you can call or text 988 for the Suicide & Crisis Lifeline — 24/7, free. I can't help with emergencies myself, but real people are ready to.";
+  } else if(/\b(human|real person|someone|representative|agent|coordinator|talk to|speak to|call me)\b/.test(s)){
+    ans="Of course — you can reach a real person anytime. Your free 15-minute care coordinator call is part of getting set up, and they can go deeper on anything I can't. Want to keep going and book it?";
+  } else if(/glp|wegovy|ozempic|zepbound|semaglutide|mounjaro|medication|medicine|\bdrug/.test(s)){
+    ans="GLP-1s are FDA-approved medications that help with weight by gently curbing appetite. Whether one's right for you is a decision you and your Bold provider make together — and I'll show you exactly what it would cost before anything is prescribed.";
+  } else if(/cost|price|pay|how much|afford|copay|expensive|money|insurance|cover|\$/.test(s)){
+    ans="Your Bold visits are $0 with your plan. If a GLP-1 is ever the right fit, eligible members pay a flat $50/month through the Medicare Bridge. I can confirm your exact cost right now — it just takes a couple quick things: your insurance and date of birth.";
+  } else if(/safe|side effect|risk|dangerous|worried|scared|nervous|afraid/.test(s)){
+    ans="That's a really good thing to ask. Your provider reviews your full health picture and stays in the loop to keep you safe, adjusting the plan as you go. Anything specific on your mind? I can make sure your provider sees it.";
+  } else if(/how long|time|minutes|quick|fast/.test(s)){
+    ans="This takes about 2 minutes — just a few taps. You can stop and pick up anytime, and your free coordinator call is only 15 minutes.";
+  } else if(/^(hi|hello|hey|thanks|thank you|ok|okay|great|cool)\b/.test(s)){
+    ans="You're very welcome. I'm right here — ask me anything, or tap an option above whenever you're ready.";
+  } else {
+    ans="Good question. I'll make sure your care team can walk you through that on your call. For now, tap an option above and we'll keep going — and ask me anything along the way.";
+  }
+  await bot(ans);
+  if(askMode) askPills();
+}
+function sendText(){
+  const t=(ta.value||"").trim(); if(!t||replying) return;
+  me(t); ta.value=""; sendBtn.disabled=true; replying=true;
+  if(/cost|price|pay|afford|copay|how much|\$/i.test(t)) costAsked=true;
+  const safe=safetyText(t);
+  if(safe){ bot(safe).finally(()=>{ replying=false; }); return; }        // emergencies: no network
+  if(JUNE_PROXY){ askJune(t).finally(()=>{ replying=false; }); return; } // real Claude
+  juneReply(t).finally(()=>{ replying=false; });                        // canned fallback
+}
+sendBtn.onclick=sendText;
+ta.addEventListener("input",()=>{ sendBtn.disabled=!ta.value.trim(); });
+ta.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(); } });
+/* free-text input stays hidden until the member taps "Type your own answer" */
+const composer=document.getElementById("composer"), typeToggle=document.getElementById("typeToggle");
+typeToggle.onclick=()=>{ composer.classList.add("open"); ta.focus(); };
+/* tap the little June avatar in the header for the same easter egg */
+const headAv=document.querySelector(".thead .av"); if(headAv){ headAv.setAttribute("title","Tap me!"); headAv.onclick=()=>juneTap(headAv,true); }
+
+/* ---------- voice input (Web Speech API), same as the main mock ---------- */
+const micBtn=document.getElementById("mic");
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog=null, listening=false;
+function toggleMic(){
+  if(!SR){ return; }
+  if(listening){ try{ if(recog) recog.stop(); }catch(e){} return; }
+  recog=new SR(); recog.lang="en-US"; recog.interimResults=true; recog.continuous=false;
+  recog.onstart=()=>{ listening=true; micBtn.classList.add("on"); ta.placeholder="Listening…"; };
+  recog.onresult=(e)=>{ let s=""; for(let i=0;i<e.results.length;i++) s+=e.results[i][0].transcript; ta.value=s; sendBtn.disabled=!ta.value.trim(); };
+  recog.onerror=()=>{};
+  recog.onend=()=>{ listening=false; micBtn.classList.remove("on"); ta.placeholder="Ask June anything…"; if(ta.value.trim()) sendText(); };
+  try{ recog.start(); }catch(e){}
+}
+if(SR){ micBtn.onclick=toggleMic; } else { micBtn.style.display="none"; }
+
+/* ---------- views + entry (landing → June) ---------- */
+const screenEl=document.querySelector(".screen");
+const viewLanding=document.getElementById("view-landing"), viewChat=document.getElementById("view-chat"), fab=document.getElementById("fab");
+function showView(name){ viewLanding.hidden=(name!=="landing"); viewChat.hidden=(name!=="chat"); screenEl.classList.toggle("landing", name==="landing"); }
+let juneStarted=false;
+function enterJune(askFirst){ showView("chat"); if(!juneStarted){ juneStarted=true; run(askFirst); } }
+function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"Carol").trim(); PROFILE.insurer="UnitedHealthcare"; enterJune(false); }
+document.getElementById("lp-check").onclick=startFromLanding;
+document.getElementById("lp-check2").onclick=startFromLanding;
+document.getElementById("lp-june").onclick=function(){
+  if(this._j){ this._j.remove(); this._j=null; return; }
+  const j=el(`<p class="lp-june-info">June is Bold's AI health assistant. She helps you check your coverage and answers your questions — and gets you a real person on your care team whenever you want one. Your chat is private and encrypted, and Bold never sells your information.</p>`);
+  this.closest(".lp-prime").after(j); this._j=j;
+};
+fab.onclick=()=>enterJune(true);
+/* FAB intro: on load, briefly open to "Ask me anything", then collapse to the orb */
+(function(){ var lbl=fab.querySelector(".fab-label"); if(!lbl) return;
+  setTimeout(function(){ lbl.textContent="Ask me anything"; fab.classList.add("open"); }, 900);
+  setTimeout(function(){ fab.classList.remove("open"); }, 4200);
+  setTimeout(function(){ lbl.textContent="Chat with June"; }, 4750);
+})();
+document.getElementById("chatClose").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); showView("landing"); viewLanding.scrollTop=0; };
+document.getElementById("lp-why").onclick=function(){
+  if(this._h){ this._h.remove(); this._h=null; return; }
+  const h=el(`<p class="lp-blurb" style="text-align:left;color:var(--ink-soft);font-weight:500;margin-top:8px">So we can confirm your Medicare coverage and check what you'd pay. A care coordinator double-checks everything before anything is charged — and we never sell your information.</p>`);
+  this.after(h); this._h=h;
+};
+function resetToLanding(){ juneStarted=false; askMode=false; askPillsRow=null; costAsked=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
+{ const rb=document.getElementById("restart"); if(rb) rb.onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); resetToLanding(); }; }
+showView("landing");
+</script>
+</body>
+</html>
