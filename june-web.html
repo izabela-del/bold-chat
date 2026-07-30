@@ -1719,14 +1719,15 @@ fab.onclick=()=>enterJune("ask");
   if(!fab || !form || !viewLanding || !("IntersectionObserver" in window)) return;
   var mq=window.matchMedia("(max-width:859px)");
   var lbl=fab.querySelector(".fab-label");
-  var shimT;
-  function tuck(){ fab.classList.add("peek"); fab.classList.remove("open","shimmer"); }
+  var shimT, collapseT;
+  function tuck(){ clearTimeout(collapseT); clearTimeout(shimT); fab.classList.add("peek"); fab.classList.remove("open","shimmer"); }
   function reveal(){
     fab.classList.remove("peek");
     if(lbl) lbl.textContent="Ask me anything";
-    fab.classList.add("open");                          // expand to the full box
-    fab.classList.remove("shimmer"); void fab.offsetWidth; fab.classList.add("shimmer"); // (re)play the shimmer
+    fab.classList.add("open");                          // expand to the full box…
+    fab.classList.remove("shimmer"); void fab.offsetWidth; fab.classList.add("shimmer"); // …with a shimmer sweep
     clearTimeout(shimT); shimT=setTimeout(function(){ fab.classList.remove("shimmer"); }, 1200);
+    clearTimeout(collapseT); collapseT=setTimeout(function(){ fab.classList.remove("open"); }, 3200); // then collapse to the face only (like web)
   }
   function apply(formVisible){
     if(!mq.matches){ fab.classList.remove("peek"); return; }   // desktop: never tuck
@@ -1735,7 +1736,7 @@ fab.onclick=()=>enterJune("ask");
   if(mq.matches) tuck();                                // start tucked on mobile (page opens at the top)
   var io=new IntersectionObserver(function(es){ apply(es[0].isIntersecting); }, {root:viewLanding, threshold:0});
   io.observe(form);
-  var onMq=function(){ if(!mq.matches){ fab.classList.remove("peek","open","shimmer"); } };
+  var onMq=function(){ if(!mq.matches){ clearTimeout(collapseT); clearTimeout(shimT); fab.classList.remove("peek","open","shimmer"); } };
   if(mq.addEventListener) mq.addEventListener("change", onMq); else if(mq.addListener) mq.addListener(onMq);
 })();
 document.getElementById("chatClose").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); showView("landing"); viewLanding.scrollTop=0; };
