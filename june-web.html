@@ -67,6 +67,7 @@
   .lp-err{color:#c0392b; font-size:13px; font-weight:600; margin:8px 0 0;}
   .lp-field input.invalid{border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,.14);}
   .fld-err{color:#c0392b; font-size:13px; font-weight:600; margin:5px 0 0;}
+  .fld input::placeholder{color:#8a8a8a;}
   .lp-legal u{text-decoration:underline;}
   .lp-blurb{font-size:16px; line-height:1.5; color:#29006a; font-weight:400; margin:16px 0 0;}
   .lp-heroimg{margin:16px 0 0; border:1px solid #d8ddeb; border-radius:16px; overflow:hidden; aspect-ratio:361/215; background:#dfe3e6;}
@@ -798,7 +799,7 @@ async function verifyCoverage(){
       PROFILE.email = await askField("And the best email to reach you", PROFILE.email||"");
     }
   }
-  PROFILE.dob = await askField("Last one — what's your date of birth?", PROFILE.dob||"04 / 12 / 1958");
+  PROFILE.dob = await askField("Last one — what's your date of birth?", "", "text", "MM / DD / YYYY");
   await bot("Thanks — pulling up your coverage now.");
   await wait(400);
   await showInsurance();
@@ -1095,10 +1096,10 @@ function summary(){
    The conversation
    ============================================================ */
 /* one conversational question at a time — a single field, never a multi-field form */
-async function askField(q, val, type){
+async function askField(q, val, type, ph){
   await bot(q);
   return new Promise(resolve=>{
-    const node=el(`<div class="fields"><div class="fld"><input id="af-in" type="${type||"text"}" value="${esc(val||"")}" autocomplete="off"></div><p class="fld-err" hidden></p><button class="go">Continue</button></div>`);
+    const node=el(`<div class="fields"><div class="fld"><input id="af-in" type="${type||"text"}" value="${esc(val||"")}" placeholder="${esc(ph||"")}" autocomplete="off"></div><p class="fld-err" hidden></p><button class="go">Continue</button></div>`);
     const errEl=node.querySelector(".fld-err");
     const submit=()=>{ const v=(node.querySelector("#af-in").value||"").trim();
       if(!v){ errEl.textContent="Please fill this in."; errEl.hidden=false; return; }
