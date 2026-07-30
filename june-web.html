@@ -408,9 +408,9 @@
             <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>78% of Bold patients pay $0 out of pocket to meet a Bold provider</span></li>
           </ul>
           <div class="lp-form">
-            <div class="lp-field"><label>First name</label><input id="lp-first" type="text" value="Carol" autocomplete="off"></div>
-            <div class="lp-field"><label>Last name</label><input id="lp-last" type="text" value="Stevens" autocomplete="off"></div>
-            <div class="lp-field"><label>Email</label><input id="lp-email" type="email" value="carol.s@email.com" autocomplete="off"></div>
+            <div class="lp-field"><label>First name</label><input id="lp-first" type="text" value="" placeholder="First name" autocomplete="off"></div>
+            <div class="lp-field"><label>Last name</label><input id="lp-last" type="text" value="" placeholder="Last name" autocomplete="off"></div>
+            <div class="lp-field"><label>Email</label><input id="lp-email" type="email" value="" placeholder="you@email.com" autocomplete="off"></div>
             <button class="lp-why" type="button" id="lp-why"><span class="lp-q">?</span>Why are we asking this?</button>
             <button class="lp-cta" id="lp-check" type="button">Check coverage</button>
             <p class="lp-prime">Our AI assistant June will help verify your coverage — private &amp; secure. <button type="button" class="lp-june" id="lp-june">Who's June?</button></p>
@@ -784,10 +784,11 @@ async function verifyCoverage(){
     PROFILE.signedUp = true;
   } else {
     // came from the landing form — read the name back and confirm it matches the ID/insurance card exactly
-    await bot(`I have your name as ${PROFILE.name} ${PROFILE.last}. For your insurance, this needs to match your insurance or ID card exactly.`);
-    if(!(await askYesNo("Yes, that's exactly right", "No, let me fix it"))){
+    await bot(`Here's what I have — name: ${PROFILE.name} ${PROFILE.last}, email: ${PROFILE.email}. Your name needs to match your insurance or ID card exactly. Does this all look right?`);
+    if(!(await askYesNo("Yes, that's correct", "No, let me fix it"))){
       PROFILE.name = await askField("First name — exactly as it appears on your card", PROFILE.name||"");
       PROFILE.last = await askField("Last name — exactly as it appears on your card", PROFILE.last||"");
+      PROFILE.email = await askField("And the best email to reach you", PROFILE.email||"");
     }
   }
   PROFILE.dob = await askField("Last one — what's your date of birth?", PROFILE.dob||"04 / 12 / 1958");
@@ -1313,7 +1314,7 @@ const viewLanding=document.getElementById("view-landing"), viewChat=document.get
 function showView(name){ viewLanding.hidden=(name!=="landing"); viewChat.hidden=(name!=="chat"); screenEl.classList.toggle("landing", name==="landing"); }
 let juneStarted=false, juneMode=null;
 function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){ juneStarted=true; juneMode=mode; if(mode==="ask") runAsk(); else run(); } }
-function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"Carol").trim(); PROFILE.last=(document.getElementById("lp-last").value||"").trim(); PROFILE.email=(document.getElementById("lp-email").value||"").trim(); PROFILE.signedUp=true; PROFILE.insurer="UnitedHealthcare"; enterJune("onboard"); }
+function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"there").trim(); PROFILE.last=(document.getElementById("lp-last").value||"").trim(); PROFILE.email=(document.getElementById("lp-email").value||"").trim(); PROFILE.signedUp=true; PROFILE.insurer="UnitedHealthcare"; enterJune("onboard"); }
 document.getElementById("lp-check").onclick=startFromLanding;
 document.getElementById("lp-check2").onclick=startFromLanding;
 document.getElementById("lp-june").onclick=function(){
