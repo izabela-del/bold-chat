@@ -627,7 +627,14 @@ function askPills(){
   });
 }
 /* steer back into onboarding: resolve the welcome so run() continues into the coverage flow */
-function steerToOnboarding(){ const go=document.querySelector(".cw-go"); if(go) go.click(); }
+function steerToOnboarding(){
+  const go=document.querySelector(".cw-go");
+  if(go){ go.click(); return; }          // onboarding entry: resolve the welcome hero
+  askMode=false;                          // ask entry: no welcome hero — start the guided flow now
+  if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
+  juneMode="onboard";
+  runOnboarding();
+}
 
 /* ---------- read aloud (continuous until Stop; natural voice picker) ---------- */
 const sayBtn=document.getElementById("sayBtn");
@@ -1016,13 +1023,29 @@ function summary(){
 /* ============================================================
    The conversation
    ============================================================ */
-async function run(askFirst){
+/* FAB entry — a focused "ask June" instance: short intro + questions, no onboarding hero */
+async function runAsk(){
+  thread.innerHTML=""; setProgress(0);
+  composer.hidden=false; composer.classList.add("open");
+  aiHistory=[];
+  Object.assign(PROFILE,{ coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
+  askMode=true;
+  await bot("Hi, I'm June — Bold's AI health assistant.", {first:true});
+  await bot("Ask me anything about Bold — your coverage, your costs, or how visits work. It's private and secure, and whenever you're ready I can check your coverage for you.");
+  askPills();
+}
+/* Onboarding entry (Check coverage) — full-page welcome, then the guided flow */
+async function run(){
   thread.innerHTML=""; setProgress(.06);
   composer.hidden=true; composer.classList.remove("open");
   aiHistory=[];
   Object.assign(PROFILE,{ coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
 
-  await welcomeHero(askFirst);          // June intro + "Verify my coverage" / "Ask a question first"
+  await welcomeHero();                   // full-page June welcome (onboarding entry only)
+  await runOnboarding();
+}
+/* the guided onboarding continuation — reused by the Check-coverage entry and the ask-mode "verify my coverage" hand-off */
+async function runOnboarding(){
   composer.hidden=false;
   await bot(`Let's confirm your coverage, ${PROFILE.name} — then I can show your exact cost.`, {first:true});
   await verifyCoverage();
@@ -1212,9 +1235,9 @@ if(SR){ micBtn.onclick=toggleMic; } else { micBtn.style.display="none"; }
 const screenEl=document.querySelector(".screen");
 const viewLanding=document.getElementById("view-landing"), viewChat=document.getElementById("view-chat"), fab=document.getElementById("fab");
 function showView(name){ viewLanding.hidden=(name!=="landing"); viewChat.hidden=(name!=="chat"); screenEl.classList.toggle("landing", name==="landing"); }
-let juneStarted=false;
-function enterJune(askFirst){ showView("chat"); if(!juneStarted){ juneStarted=true; run(askFirst); } }
-function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"Carol").trim(); PROFILE.insurer="UnitedHealthcare"; enterJune(false); }
+let juneStarted=false, juneMode=null;
+function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){ juneStarted=true; juneMode=mode; if(mode==="ask") runAsk(); else run(); } }
+function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"Carol").trim(); PROFILE.insurer="UnitedHealthcare"; enterJune("onboard"); }
 document.getElementById("lp-check").onclick=startFromLanding;
 document.getElementById("lp-check2").onclick=startFromLanding;
 document.getElementById("lp-june").onclick=function(){
@@ -1222,7 +1245,7 @@ document.getElementById("lp-june").onclick=function(){
   const j=el(`<p class="lp-june-info">June is Bold's AI health assistant. She helps you check your coverage and answers your questions — and gets you a real person on your care team whenever you want one. Your chat is private and encrypted, and Bold never sells your information.</p>`);
   this.closest(".lp-prime").after(j); this._j=j;
 };
-fab.onclick=()=>enterJune(true);
+fab.onclick=()=>enterJune("ask");
 /* FAB intro: on load, briefly open to "Ask me anything", then collapse to the orb */
 (function(){ var lbl=fab.querySelector(".fab-label"); if(!lbl) return;
   setTimeout(function(){ lbl.textContent="Ask me anything"; fab.classList.add("open"); }, 900);
@@ -1235,7 +1258,7 @@ document.getElementById("lp-why").onclick=function(){
   const h=el(`<p class="lp-blurb" style="text-align:left;color:var(--ink-soft);font-weight:500;margin-top:8px">So we can confirm your Medicare coverage and check what you'd pay. A care coordinator double-checks everything before anything is charged — and we never sell your information.</p>`);
   this.after(h); this._h=h;
 };
-function resetToLanding(){ juneStarted=false; askMode=false; askPillsRow=null; costAsked=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
+function resetToLanding(){ juneStarted=false; juneMode=null; askMode=false; askPillsRow=null; costAsked=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
 { const rb=document.getElementById("restart"); if(rb) rb.onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); resetToLanding(); }; }
 showView("landing");
 </script>
