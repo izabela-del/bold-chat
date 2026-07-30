@@ -662,7 +662,7 @@ async function resumeOnboarding(){
   }
 }
 /* --- correct info the member gave earlier (name / email / DOB) — June owns this data, so just overwrite it --- */
-const STOP=new Set("correct corrected correcting my mine name named names is are it its it's to too as the a an i i'm im am first last full surname family spell spelled spelling spelt change changed update updated fix fixed call me and or please you your yours actually should be been this that of do does did can could would will now not no yes ok okay so just we get got make sure".split(" "));
+const STOP=new Set("correct corrected correcting my mine name named names is are it its it's to too as the a an i i'm im am first last full surname family spell spelled spelling spelt change changed update updated fix fixed call me and or please you your yours actually should be been this that of do does did can could would will now not no yes ok okay so just we get got make sure wrong incorrect misspelled misspelt typo mistake off different right".split(" "));
 function cap(s){ s=(s||"").trim().replace(/[;:,.]+$/,""); return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
 /* the corrected value is almost always the trailing word(s) — grab up to two, skipping filler */
 function tailNames(t){
