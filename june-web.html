@@ -522,7 +522,10 @@
     /* desktop hero image fills the text-column height (portrait hero-dweb.jpg) without
        inflating the hero grid rows — spanning container + absolutely-filled <img> */
     .lp-heroimg{aspect-ratio:auto;}
-    .lp-hero > .lp-heroimg{align-self:stretch; position:relative; min-height:0;}
+    .lp-hero{position:relative;}
+    .lp-hero > .lp-heroimg{position:absolute; margin:0; top:88px;
+      right:max(40px,calc((100% - 1080px)/2));
+      width:calc((min(1080px, 100% - 80px) - 56px) / 2); height:660px;}
     .lp-heroimg img{position:absolute; inset:0;}
 
     .lp-built{display:grid; grid-template-columns:minmax(0,440px) minmax(0,1fr); column-gap:64px; align-items:center;}
