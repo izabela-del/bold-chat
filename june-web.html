@@ -784,10 +784,10 @@ function askYesNo(yes, no){
 async function verifyCoverage(){
   await bot("Your information is safe and secure — we never share or sell it. We only use it to confirm your eligibility and share it with your Bold care team.");
   if(!PROFILE.signedUp){
-    PROFILE.name = await askField("First — what's your first name?", PROFILE.name||"Carol");
+    PROFILE.name = await askField("First — what's your first name?", "", "text", "First name");
     await checkName();
-    PROFILE.last = await askField("And your last name?", PROFILE.last||"Stevens");
-    PROFILE.email = await askField("What's the best email to reach you?", PROFILE.email||"carol.s@email.com", "email");
+    PROFILE.last = await askField("And your last name?", "", "text", "Last name");
+    PROFILE.email = await askField("What's the best email to reach you?", "", "email", "you@email.com");
     PROFILE.signedUp = true;
   } else {
     // came from the landing form — read the name back and confirm it matches the ID/insurance card exactly
@@ -811,11 +811,13 @@ async function askHeight(){
   await bot("How tall are you?");
   return new Promise(resolve=>{
     const node=el(`<div class="fields"><div class="two">
-      <div class="fld"><label>Feet</label><input id="h-ft" type="text" inputmode="numeric" value="5" autocomplete="off"></div>
-      <div class="fld"><label>Inches</label><input id="h-in" type="text" inputmode="numeric" value="4" autocomplete="off"></div>
-    </div><button class="go">Continue</button></div>`);
+      <div class="fld"><label>Feet</label><input id="h-ft" type="text" inputmode="numeric" value="" placeholder="5" autocomplete="off"></div>
+      <div class="fld"><label>Inches</label><input id="h-in" type="text" inputmode="numeric" value="" placeholder="4" autocomplete="off"></div>
+    </div><p class="fld-err" hidden></p><button class="go">Continue</button></div>`);
+    const errEl=node.querySelector(".fld-err");
     node.querySelector(".go").onclick=()=>{
-      const ft=parseInt(node.querySelector("#h-ft").value,10)||0, inch=parseInt(node.querySelector("#h-in").value,10)||0;
+      const ft=parseInt(node.querySelector("#h-ft").value,10), inch=parseInt(node.querySelector("#h-in").value,10)||0;
+      if(!ft || ft<3 || ft>8 || inch<0 || inch>11){ errEl.textContent="Please enter your height (feet and inches)."; errEl.hidden=false; return; }
       PROFILE.height={ft,in:inch};
       lock(node.closest(".ctl")); me(`${ft}'${inch}"`); resolve();
     };
@@ -825,9 +827,12 @@ async function askHeight(){
 async function askWeight(){
   await bot("And about how much do you weigh?");
   return new Promise(resolve=>{
-    const node=el(`<div class="fields"><div class="fld"><label>Pounds</label><input id="w-lb" type="text" inputmode="numeric" value="190" autocomplete="off"></div><button class="go">Continue</button></div>`);
+    const node=el(`<div class="fields"><div class="fld"><label>Pounds</label><input id="w-lb" type="text" inputmode="numeric" value="" placeholder="190" autocomplete="off"></div><p class="fld-err" hidden></p><button class="go">Continue</button></div>`);
+    const errEl=node.querySelector(".fld-err");
     const submit=()=>{
-      PROFILE.weight=parseInt(node.querySelector("#w-lb").value,10)||0;
+      const lbs=parseInt(node.querySelector("#w-lb").value,10);
+      if(!lbs || lbs<50 || lbs>800){ errEl.textContent="Please enter your weight in pounds."; errEl.hidden=false; return; }
+      PROFILE.weight=lbs;
       const totIn=(PROFILE.height.ft*12+PROFILE.height.in)||1;
       PROFILE.bmi=Math.round((703*PROFILE.weight/(totIn*totIn))*10)/10;
       lock(node.closest(".ctl")); me(`${PROFILE.weight} lb`); resolve();
