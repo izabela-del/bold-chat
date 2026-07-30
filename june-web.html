@@ -424,6 +424,7 @@
 
   /* --- hero band unify --- */
   .lp-hero{background:var(--lp-peri);}
+  .lp-heroimg picture{display:contents;}
 
   /* --- shared section bits --- */
   .lp-h2-dark{color:var(--ink);}
@@ -518,6 +519,7 @@
     .lp-navlink{color:var(--ink); font-size:15px; font-weight:600; text-decoration:none; opacity:.9;}
     .lp-navlink:hover{color:var(--brand-press); opacity:1;}
     .lp-login{display:inline-block;}
+    .lp-heroimg{aspect-ratio:600/842;}
 
     .lp-built{display:grid; grid-template-columns:minmax(0,440px) minmax(0,1fr); column-gap:64px; align-items:center;}
     .lp-built-media{margin:0; min-height:360px;}
@@ -573,7 +575,7 @@
             <p class="lp-legal">June, Bold's AI assistant, helps you check your coverage — private &amp; secure. By signing up, you agree to Bold's <u>Terms of Service</u> and <u>Privacy Policy</u>.</p>
           </div>
           <p class="lp-blurb">Covered by Medicare, UnitedHealthcare, Aetna, Cigna, Blue Cross Blue Shield, Humana, and more</p>
-          <div class="lp-heroimg"><img src="lp-hero.jpg" alt="Older adult on a telehealth video visit with a Bold doctor"></div>
+          <div class="lp-heroimg"><picture><source media="(min-width:860px)" srcset="hero-dweb.jpg"><img src="lp-hero.jpg" alt="Older adult on a telehealth video visit with a Bold doctor"></picture></div>
           <div class="lp-trust">
             <span class="lp-avs"><img src="lp-av1.jpg" alt=""><img src="lp-av2.jpg" alt=""><img src="lp-av3.jpg" alt=""></span>
             <span class="lp-tt">Beloved by members</span>
