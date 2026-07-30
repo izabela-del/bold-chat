@@ -546,6 +546,17 @@
 
     .lp-bottom{padding:56px max(40px,calc((100% - 1080px)/2)) 72px;}
   }
+
+  /* --- June FAB: ~50% larger + gentle eye blink (scoped to the FAB orb) --- */
+  .fab{padding:7px; border-radius:44px; font-size:15px;}
+  .fab.open, .fab:hover{padding-right:18px;}
+  .fab .av{width:60px; height:60px;}
+  .fab .av .eyes{gap:8px;}
+  .fab .av .eye{width:9px; height:10.5px; animation:fabBlink 4.2s ease-in-out infinite; transform-origin:center;}
+  .fab .av .mouth{width:16px; height:9px;}
+  .fab.open .fab-label, .fab:hover .fab-label{max-width:210px;}
+  @keyframes fabBlink{0%,91%,100%{transform:scaleY(1);} 95.5%{transform:scaleY(.1);}}
+  @media (prefers-reduced-motion: reduce){ .fab .av .eye{animation:none;} }
 </style>
 </head>
 <body>
