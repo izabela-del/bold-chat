@@ -608,7 +608,7 @@ function askPills(){
   if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
   const remaining=ASK_POOL.filter(x=>!askedQs.has(x.q)).slice(0,4);
   const qHtml=remaining.map(x=>`<button class="chip" data-q="${x.q}">${x.label}</button>`).join("");
-  const leadLabel=costAsked ? "Confirm my exact cost →" : "Let's verify my coverage →";
+  const leadLabel=costAsked ? "Confirm coverage for a better estimate →" : "Let's verify my coverage →";
   const node=el(`<div class="chips"><button class="chip lead" data-go="onboard">${leadLabel}</button>${qHtml}</div>`);
   const ctl=control(node);
   askPillsRow=ctl.closest(".row");
@@ -1018,7 +1018,7 @@ async function run(askFirst){
 
   await welcomeHero(askFirst);          // June intro + "Verify my coverage" / "Ask a question first"
   composer.hidden=false;
-  await bot(`Let's confirm your coverage, ${PROFILE.name} — then I can show your exact cost.`, {first:true});
+  await bot(`Let's confirm your coverage, ${PROFILE.name} — then I can give you a better estimate.`, {first:true});
   await verifyCoverage();
   await bot("Good news — with your plan, your Bold visits are $0.");
   setProgress(.22);
@@ -1155,7 +1155,7 @@ async function juneReply(t){
   } else if(/glp|wegovy|ozempic|zepbound|semaglutide|mounjaro|medication|medicine|\bdrug/.test(s)){
     ans="GLP-1s are FDA-approved medications that help with weight by gently curbing appetite. Whether one's right for you is a decision you and your Bold provider make together — and I'll show you exactly what it would cost before anything is prescribed.";
   } else if(/cost|price|pay|how much|afford|copay|expensive|money|insurance|cover|\$/.test(s)){
-    ans="Your Bold visits are $0 with your plan. If a GLP-1 is ever the right fit, eligible members pay a flat $50/month through the Medicare Bridge. I can confirm your exact cost right now — it just takes a couple quick things: your insurance and date of birth.";
+    ans="Your Bold visits are $0 with your plan. If a GLP-1 is ever the right fit, eligible members pay a flat $50/month through the Medicare Bridge. Confirm your coverage and I can give you a better estimate — it just takes a couple quick things: your insurance and date of birth.";
   } else if(/safe|side effect|risk|dangerous|worried|scared|nervous|afraid/.test(s)){
     ans="That's a really good thing to ask. Your provider reviews your full health picture and stays in the loop to keep you safe, adjusting the plan as you go. Anything specific on your mind? I can make sure your provider sees it.";
   } else if(/how long|time|minutes|quick|fast/.test(s)){
