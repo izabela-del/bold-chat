@@ -410,14 +410,12 @@
             <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>78% of Bold patients pay $0 out of pocket to meet a Bold provider</span></li>
           </ul>
           <div class="lp-form">
-            <div class="lp-eyebrow"><span class="lp-eyeorb"></span><span>June, your AI assistant, will help you check your coverage.</span></div>
             <div class="lp-field"><label>First name</label><input id="lp-first" type="text" value="" placeholder="First name" autocomplete="off"></div>
             <div class="lp-field"><label>Last name</label><input id="lp-last" type="text" value="" placeholder="Last name" autocomplete="off"></div>
             <div class="lp-field"><label>Email</label><input id="lp-email" type="email" value="" placeholder="you@email.com" autocomplete="off"></div>
             <button class="lp-why" type="button" id="lp-why"><span class="lp-q">?</span>Why are we asking this?</button>
             <button class="lp-cta" id="lp-check" type="button">Check coverage</button>
-            <p class="lp-prime">Private &amp; secure. <button type="button" class="lp-june" id="lp-june">Who's June?</button></p>
-            <p class="lp-legal">By signing up, you agree to Bold's <u>Terms of Service</u> and <u>Privacy Policy</u>.</p>
+            <p class="lp-legal">June, Bold's AI assistant, helps you check your coverage — private &amp; secure. By signing up, you agree to Bold's <u>Terms of Service</u> and <u>Privacy Policy</u>.</p>
           </div>
           <p class="lp-blurb">Covered by Medicare, UnitedHealthcare, Aetna, Cigna, Blue Cross Blue Shield, Humana, and more</p>
           <div class="lp-heroimg"><img src="lp-hero.jpg" alt="Older adult on a telehealth video visit with a Bold doctor"></div>
@@ -1320,11 +1318,6 @@ function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){
 function startFromLanding(){ PROFILE.name=(document.getElementById("lp-first").value||"there").trim(); PROFILE.last=(document.getElementById("lp-last").value||"").trim(); PROFILE.email=(document.getElementById("lp-email").value||"").trim(); PROFILE.signedUp=true; PROFILE.insurer="UnitedHealthcare"; enterJune("onboard"); }
 document.getElementById("lp-check").onclick=startFromLanding;
 document.getElementById("lp-check2").onclick=startFromLanding;
-document.getElementById("lp-june").onclick=function(){
-  if(this._j){ this._j.remove(); this._j=null; return; }
-  const j=el(`<p class="lp-june-info">June is Bold's AI health assistant. She helps you check your coverage and answers your questions — and gets you a real person on your care team whenever you want one. Your chat is private and encrypted, and Bold never sells your information.</p>`);
-  this.closest(".lp-prime").after(j); this._j=j;
-};
 fab.onclick=()=>enterJune("ask");
 /* FAB intro: on load, briefly open to "Ask me anything", then collapse to the orb */
 (function(){ var lbl=fab.querySelector(".fab-label"); if(!lbl) return;
