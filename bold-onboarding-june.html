@@ -583,27 +583,32 @@ function welcomeHero(askFirst){
 async function showAskPills(){
   askMode=true;
   composer.hidden=false; composer.classList.add("open");
-  await bot("Sure — ask me anything about Bold, or tap a question below. Whenever you're ready, tap “Let's verify my coverage.”");
+  await bot("You can ask me anything about Bold — tap a question below or type your own. Whenever you're ready, tap “Let's verify my coverage.”");
   askPills();
 }
-/* persistent quick-question pills for ask mode — always led by a steer-back-to-onboarding option */
+/* persistent quick-question pills for ask mode — always led by a steer-back-to-onboarding option; already-asked questions drop off */
 let askMode=false, askPillsRow=null;
+const ASK_POOL=[
+  {q:"What will it cost me?", label:"What will it cost?"},
+  {q:"Am I eligible for medication?", label:"Am I eligible for medication?"},
+  {q:"Is Bold safe and private?", label:"Is this safe &amp; private?"},
+  {q:"How does the visit work?", label:"How does the visit work?"},
+  {q:"What is Bold?", label:"What is Bold?"},
+  {q:"Do I need my insurance card?", label:"Do I need my card?"}
+];
+const askedQs=new Set();
 function askPills(){
   if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
-  const node=el(`<div class="chips">
-      <button class="chip lead" data-go="onboard">Let's verify my coverage →</button>
-      <button class="chip" data-q="What will it cost me?">What will it cost?</button>
-      <button class="chip" data-q="Am I eligible for medication?">Am I eligible for medication?</button>
-      <button class="chip" data-q="Is Bold safe and private?">Is this safe &amp; private?</button>
-      <button class="chip" data-q="How does the visit work?">How does the visit work?</button>
-    </div>`);
+  const remaining=ASK_POOL.filter(x=>!askedQs.has(x.q)).slice(0,4);
+  const qHtml=remaining.map(x=>`<button class="chip" data-q="${x.q}">${x.label}</button>`).join("");
+  const node=el(`<div class="chips"><button class="chip lead" data-go="onboard">Let's verify my coverage →</button>${qHtml}</div>`);
   const ctl=control(node);
   askPillsRow=ctl.closest(".row");
   node.querySelectorAll(".chip").forEach(b=>{
     b.onclick=()=>{
       if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
       if(b.dataset.go==="onboard"){ steerToOnboarding(); return; }
-      const q=b.dataset.q; me(q); if(JUNE_PROXY) askJune(q); else juneReply(q);
+      const q=b.dataset.q; askedQs.add(q); me(q); if(JUNE_PROXY) askJune(q); else juneReply(q);
     };
   });
 }
@@ -1202,7 +1207,7 @@ document.getElementById("lp-why").onclick=function(){
   const h=el(`<p class="lp-blurb" style="text-align:left;color:var(--ink-soft);font-weight:500;margin-top:8px">So we can confirm your Medicare coverage and check what you'd pay. A care coordinator double-checks everything before anything is charged — and we never sell your information.</p>`);
   this.after(h); this._h=h;
 };
-function resetToLanding(){ juneStarted=false; thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
+function resetToLanding(){ juneStarted=false; askMode=false; askPillsRow=null; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
 document.getElementById("restart").onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); resetToLanding(); };
 showView("landing");
 </script>
