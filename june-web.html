@@ -1494,10 +1494,13 @@ async function askField(q, val, type, ph, mask){
   });
 }
 /* gentle name check — offer a correction when a name looks like a typo of a common one */
-const COMMON_NAMES=new Set("james robert john michael david william richard joseph thomas charles christopher daniel matthew anthony mark donald steven paul andrew joshua kenneth kevin brian george edward ronald timothy jason jeffrey gary ryan jacob frank scott eric stephen raymond gregory larry jose henry carl arthur albert peter harold mary patricia jennifer linda elizabeth barbara susan jessica sarah karen nancy lisa margaret betty sandra dorothy carol carolyn ashley kimberly donna emily michelle helen laura ruth sharon cynthia kathleen katherine catherine katie katy kate amanda stephanie rebecca virginia deborah gloria teresa doris judith judy joan joyce frances martha janet jane anne ann diane alice julie heather grace rose".split(" "));
+const COMMON_NAMES=new Set("james robert john michael david william richard joseph thomas charles christopher daniel matthew anthony mark donald steven paul andrew joshua kenneth kevin brian george edward ronald timothy jason jeffrey gary ryan jacob frank scott eric stephen raymond gregory larry jose henry carl arthur albert peter harold mary patricia jennifer linda elizabeth barbara susan jessica sarah karen nancy lisa margaret betty sandra dorothy carol carolyn ashley kimberly donna emily michelle helen laura ruth sharon cynthia kathleen katherine catherine katie katy kate amanda stephanie rebecca virginia deborah gloria teresa doris judith judy joan joyce frances martha janet jane anne ann diane alice julie heather grace rose jude jean cole dean beau gene neil reid dale gail jill joel glen dana dane marc drew tara roy ray jay kay guy faye sara ana anna jon marie annie sofia sophia rosa rosie carrie cathy tomas nan jan".split(" "));
 function lev(a,b){ a=a.toLowerCase(); b=b.toLowerCase(); const m=a.length,n=b.length,d=[]; for(let i=0;i<=m;i++){ d[i]=[i]; } for(let j=0;j<=n;j++){ d[0][j]=j; } for(let i=1;i<=m;i++){ for(let j=1;j<=n;j++){ d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); } } return d[m][n]; }
 function isCommonName(name){ return COMMON_NAMES.has((name||"").toLowerCase()); }
-function suggestName(name){ const n=(name||"").toLowerCase(); if(n.length<3||isCommonName(n)) return null; for(const c of COMMON_NAMES){ if(Math.abs(c.length-n.length)<=1 && lev(n,c)===1) return c.charAt(0).toUpperCase()+c.slice(1); } return null; }
+/* Only flag a likely typo when the entered name has one EXTRA or MISSING letter
+   (e.g. Kartie->Katie). A same-length one-letter swap usually just makes a different
+   real name (Jude->Judy, Jean->Joan), so we never suggest those. */
+function suggestName(name){ const n=(name||"").toLowerCase(); if(n.length<4||isCommonName(n)) return null; for(const c of COMMON_NAMES){ if(Math.abs(c.length-n.length)===1 && lev(n,c)===1) return c.charAt(0).toUpperCase()+c.slice(1); } return null; }
 async function checkName(){
   const first=(PROFILE.name||"").trim();
   const sug=suggestName(first);
