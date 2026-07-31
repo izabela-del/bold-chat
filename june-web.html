@@ -1392,16 +1392,25 @@ async function consentList(){
   await signOne("scribe","Contact preferences","Text & call");
 }
 
+/* formats digits into (555) 123-4567 as you type; strips anything non-numeric */
+function maskPhone(v){
+  const d=(v||"").replace(/\D/g,"").slice(0,10);
+  if(!d.length) return "";
+  if(d.length<=3) return "("+d;
+  if(d.length<=6) return "("+d.slice(0,3)+") "+d.slice(3);
+  return "("+d.slice(0,3)+") "+d.slice(3,6)+"-"+d.slice(6);
+}
 function askPhone(){
   return new Promise(resolve=>{
     const node=el(`<div class="fields">
-      <div class="fld"><label>Mobile number</label><input id="f-phone" placeholder="(555) 123-4567" value="" inputmode="tel" autocomplete="off"></div>
+      <div class="fld"><label>Mobile number</label><input id="f-phone" type="tel" placeholder="(555) 123-4567" value="" inputmode="numeric" autocomplete="off" data-1p-ignore data-lpignore="true" maxlength="14"></div>
       <p class="fld-err" hidden></p>
       <button class="go">Confirm my call</button>
     </div>`);
     const inp=node.querySelector("#f-phone"), errEl=node.querySelector(".fld-err");
+    inp.addEventListener("input",()=>{ const atEnd=inp.selectionStart===inp.value.length; inp.value=maskPhone(inp.value); if(atEnd){ const p=inp.value.length; inp.setSelectionRange(p,p); } });
     const submit=()=>{ const v=(inp.value||"").trim();
-      if(v.replace(/\D/g,"").length<10){ errEl.textContent="Please enter a valid mobile number."; errEl.hidden=false; return; }
+      if(v.replace(/\D/g,"").length<10){ errEl.textContent="Please enter a valid 10-digit mobile number."; errEl.hidden=false; return; }
       PROFILE.phone=v; lock(node.closest(".ctl")); me(v); resolve(); };
     node.querySelector(".go").onclick=submit;
     inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); submit(); } });
