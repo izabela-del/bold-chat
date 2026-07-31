@@ -1018,13 +1018,20 @@ const END_POOL=[
 ];
 function endPills(){
   if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
-  const remaining=END_POOL.filter(x=>!askedQs.has(x.q)).slice(0,4);
-  if(!remaining.length) return;
-  const qHtml=remaining.map(x=>`<button class="chip" data-q="${x.q}">${x.label}</button>`).join("");
+  const o=OUTCOMES[PROFILE.outcome];
+  // outcome-specific questions (with their canned answers) come first, then the generic ones
+  const faqPool=(o && o.faqs && PROFILE.goal==="weight") ? o.faqs.map(f=>({q:f.q, label:f.q, a:f.a})) : [];
+  const pool=[...faqPool, ...END_POOL].filter(x=>!askedQs.has(x.q)).slice(0,4);
+  if(!pool.length) return;
+  const qHtml=pool.map(x=>`<button class="chip" data-q="${esc(x.q)}">${esc(x.label||x.q)}</button>`).join("");
   const node=el(`<div class="chips">${qHtml}</div>`);
   const ctl=control(node); askPillsRow=ctl.closest(".row");
   node.querySelectorAll(".chip").forEach(b=>{
-    b.onclick=()=>{ if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } const q=b.dataset.q; askedQs.add(q); me(q); if(JUNE_PROXY) askJune(q); else juneReply(q); };
+    b.onclick=async()=>{ if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } const q=b.dataset.q; askedQs.add(q); me(q);
+      const hit=faqPool.find(f=>f.q===q);
+      if(hit){ await bot(hit.a); endPills(); }              // canned answer for the result's own questions
+      else if(JUNE_PROXY){ askJune(q); } else { juneReply(q); } // generic → engine (re-shows via endMode)
+    };
   });
 }
 /* steer back into onboarding: resolve the welcome so run() continues into the coverage flow */
@@ -1436,13 +1443,9 @@ function renderEligInto(container,key){
         ${o.rows.map(r=>`<div class="crow"><div><div class="ck">${r.k}</div><div class="cnote">${r.note.replace("UnitedHealthcare", PROFILE.insurer)}</div></div><div class="cv ${r.cls}">${r.v}</div></div>`).join("")}
       </div>
       <p class="elig-plain">${o.plain}</p>
-      <div class="faqs">
-        ${o.faqs.map(f=>`<div class="faq"><button type="button"><span>${f.q}</span><span class="car">⌄</span></button><div class="ans"><p>${f.a}</p></div></div>`).join("")}
-      </div>
       <button class="elig-cta">Book my free 15-min call</button>
       <p class="elig-fine">A real care coordinator reviews this with you — for free — before anything is prescribed. Nothing here is a prescription or a guarantee.</p>
     </div>`;
-  container.querySelectorAll(".faq > button").forEach(b=>b.onclick=()=>{ b.parentElement.classList.toggle("open"); scroll(); });
   container._ctaHook && container.querySelector(".elig-cta").addEventListener("click", container._ctaHook);
 }
 
