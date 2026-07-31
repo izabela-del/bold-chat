@@ -1362,18 +1362,22 @@ function openConsent(type){
     ok.onclick=()=>{ csheet.classList.remove("open"); csheet.setAttribute("aria-hidden","true"); resolve(true); };
   });
 }
-function consentList(){
+/* one consent at a time — June introduces each, member reviews & signs, then the next */
+function signOne(type,title,sub){
   return new Promise(resolve=>{
-    const items=[["hipaa","HIPAA privacy notice","Required"],["care","New patient & telemedicine","Includes AI Scribe"],["scribe","Contact preferences","Text & call"]];
-    const node=el(`<div class="clist"></div>`);
-    let doneCount=0;
-    items.forEach(([type,title,sub])=>{
-      const it=el(`<div class="citem"><div class="cc"></div><div><div class="ct">${title}</div><div class="cs">${sub}</div></div><span class="go-r">Review ›</span></div>`);
-      it.onclick=async()=>{ if(it.classList.contains("done")) return; const ok=await openConsent(type); if(ok){ it.classList.add("done"); it.querySelector(".cc").innerHTML='<svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l3.5 3.5L12 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; doneCount++; if(doneCount===items.length){ lock(node.closest(".ctl")); me("All agreements signed"); resolve(); } } };
-      node.appendChild(it);
-    });
+    const node=el(`<div class="clist"><div class="citem"><div class="cc"></div><div><div class="ct">${title}</div><div class="cs">${sub}</div></div><span class="go-r">Review &amp; sign ›</span></div></div>`);
+    const it=node.querySelector(".citem");
+    it.onclick=async()=>{ if(it.classList.contains("done")) return; const ok=await openConsent(type); if(ok){ it.classList.add("done"); it.querySelector(".cc").innerHTML='<svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l3.5 3.5L12 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; it.querySelector(".go-r").textContent="Signed"; lock(node.closest(".ctl")); me("Signed ✓"); resolve(); } };
     control(node);
   });
+}
+async function consentList(){
+  await bot("First, the HIPAA privacy notice — it explains how we protect your health information, and that we never sell it.");
+  await signOne("hipaa","HIPAA privacy notice","Required · how we protect your info");
+  await bot("Next, the New Patient Agreement and telemedicine consent — this covers care by secure video, and the AI Scribe your provider can use to draft visit notes.");
+  await signOne("care","New patient & telemedicine","Includes AI Scribe");
+  await bot("Last one — contact preferences, so your care team can text and call you about your appointments. You can opt out of texts anytime.");
+  await signOne("scribe","Contact preferences","Text & call");
 }
 
 function askPhone(){
@@ -1576,7 +1580,7 @@ async function runOnboarding(){
   await askPhone();
   setProgress(.92);
 
-  await bot("Last step — the standard agreements every Bold member signs. Tap each to review and sign.");
+  await bot("Last step — a few standard agreements every Bold member signs. I'll go through them one at a time.");
   await consentList();
   setProgress(.96);
 
