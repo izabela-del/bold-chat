@@ -1221,7 +1221,7 @@ const OUTCOMES = {
       {k:"Your Bold visits", v:"$0", cls:"free", note:"Covered by UnitedHealthcare"},
       {k:"GLP-1 medication, if prescribed", v:"$50/mo", cls:"", note:"Flat copay through the Bridge — your provider files the claim"}
     ],
-    plain:"If you and your provider decide a GLP-1 is right for you, your provider works with Medicare to get it covered. When it's approved, you pay a flat $50 a month. No hidden costs.",
+    plain:"You're eligible for GLP-1 medications through the Medicare Bridge — a flat $50 monthly copay. That $50 does not count toward your standard Part D deductible or your out-of-pocket maximum. You and your Bold provider decide together if a GLP-1 is the right fit.",
     faqs:[
       {q:"Why $50 a month?", a:"The Medicare Bridge covers GLP-1s like Wegovy and Zepbound at a flat $50 monthly copay for eligible members. Your provider handles the Medicare paperwork — you just pay the copay if it's approved."},
       {q:"Are GLP-1s required?", a:"Not at all. If a GLP-1 isn't the right fit, your provider will still support you with a personalized lifestyle plan — meals, movement, sleep — to reach your goals."},
@@ -1229,16 +1229,16 @@ const OUTCOMES = {
     ]
   },
   partd:{
-    key:"partd", badge:"More options", cls:"partd",
-    title:"You're not on the $50 Bridge — but you may still qualify for help with GLP-1 costs.",
+    key:"partd", badge:"Standard Part D", cls:"partd",
+    title:"Because of your diagnosis, your GLP-1 would go through your standard Medicare Part D plan.",
     rows:[
       {k:"Your Bold visits", v:"$0", cls:"free", note:"Covered by UnitedHealthcare"},
-      {k:"GLP-1 medication, if prescribed", v:"Let's check", cls:"vary", note:"You may qualify through other health conditions or plan discounts — a care coordinator checks every option, free, before anything is prescribed"}
+      {k:"GLP-1 medication, if prescribed", v:"$25–$500/mo", cls:"vary", note:"Through standard Part D — depends on your plan and remaining deductible; your provider files it first, so you'll know the exact price before you pay"}
     ],
-    plain:"You're not on the flat $50 Bridge copay — but that doesn't mean you're out of options. Depending on your health conditions and your plan, you may still qualify for coverage or other discounts. A care coordinator looks into everything with you, for free, before your provider prescribes anything — so there are no surprises.",
+    plain:"Because of your diagnosis, your GLP-1 prescription would be routed through your standard Medicare Part D plan rather than the $50 Bridge. The price depends on your specific plan and your remaining deductible — typically from a $25 monthly copay to upwards of $500. Your provider files the prescription first, so you'll know the exact price before you ever pay for it.",
     faqs:[
-      {q:"How might I still qualify?", a:"Other health conditions can open up coverage, and some plans or programs offer discounts. Your care coordinator checks every path for you — for free — before anything is prescribed."},
-      {q:"When will I know the cost?", a:"Your care coordinator confirms any cost with you, for free, on your intake call — before your provider prescribes anything."},
+      {q:"Why not the $50 Bridge?", a:"The flat $50 Bridge is for members without a qualifying diagnosis like Type 2 diabetes, moderate-to-severe sleep apnea, or fatty liver disease. With one of those, your GLP-1 is covered through standard Part D instead."},
+      {q:"When will I know the exact cost?", a:"Your provider files the prescription first, so you'll see the exact price before you ever pay. A care coordinator can also help you look up your deductible over the phone — for free."},
       {q:"Are GLP-1s required?", a:"No. If a GLP-1 isn't right for you, your provider will support you with a personalized lifestyle plan instead."}
     ]
   },
@@ -1258,14 +1258,16 @@ const OUTCOMES = {
 };
 
 function computeOutcome(){
-  // Deterministic — June narrates this, she does not decide it.
+  // Deterministic — June narrates this, she does not decide it. Logic per the Bold Care AI Coverage flow.
   if(PROFILE.goal!=="weight") return null;
   if(PROFILE.contra.length && !PROFILE.contra.includes("none")) return "lifestyle";
   const bmi=PROFILE.bmi||0;
   const qualifies = bmi>=30 || (bmi>=27 && PROFILE.comorbid.some(c=>c!=="none"));
   if(!qualifies) return "lifestyle";
-  // Medicare Bridge vs standard Part D (demo heuristic)
-  return "bridge";
+  // Bridge disqualifiers → routed to standard Part D instead of the flat-$50 Bridge:
+  // Type 2 diabetes, moderate-to-severe sleep apnea, or fatty liver (MASH). (MASH isn't asked in this demo flow.)
+  const partD = PROFILE.conditions.includes("t2d") || PROFILE.comorbid.includes("apnea");
+  return partD ? "partd" : "bridge";
 }
 
 function renderEligInto(container,key){
@@ -1275,7 +1277,7 @@ function renderEligInto(container,key){
     <div class="demoseg">Demo · preview scenario
       <div class="segs">
         <button data-o="bridge" class="${key==='bridge'?'on':''}">Bridge</button>
-        <button data-o="partd" class="${key==='partd'?'on':''}">Other</button>
+        <button data-o="partd" class="${key==='partd'?'on':''}">Part D</button>
         <button data-o="lifestyle" class="${key==='lifestyle'?'on':''}">Lifestyle</button>
       </div>
     </div>
@@ -1390,7 +1392,7 @@ function summary(){
   const covLine = PROFILE.goal!=="weight"
     ? `Your visits are $0 with ${PROFILE.insurer}. Your coordinator will help you get the most from your Care Plan.`
     : (PROFILE.outcome==="bridge" ? "Visits are $0. If a GLP-1 is prescribed, you'll pay a flat $50/month through the Medicare Bridge — your provider files the claim."
-    : PROFILE.outcome==="partd" ? "Visits are $0. You're not on the $50 Bridge, but you may still qualify through other conditions or discounts — your coordinator checks every option, free, before anything is prescribed."
+    : PROFILE.outcome==="partd" ? "Visits are $0. Because of your diagnosis, a GLP-1 would go through standard Part D (about $25–$500/mo, depending on your plan) rather than the $50 Bridge — your provider files it first, so you'll know the exact price before you pay."
     : "Visits are $0. You're starting with a lifestyle plan; your provider can revisit medication if your needs or coverage change.");
   const node=el(`<div class="allset">
     <div class="big">You're all set, ${esc(PROFILE.name)}! 🎉</div>
@@ -1636,9 +1638,9 @@ async function juneReply(t){
   } else if(/\b(human|real person|someone|representative|agent|coordinator|talk to|speak to|call me)\b/.test(s)){
     ans="Of course — you can reach a real person anytime. Your free 15-minute care coordinator call is part of getting set up, and they can go deeper on anything I can't. Want to keep going and book it?";
   } else if(/glp|wegovy|ozempic|zepbound|semaglutide|mounjaro|medication|medicine|\bdrug/.test(s)){
-    ans="GLP-1s are FDA-approved medications that help with weight by gently curbing appetite. Whether one's right for you is a decision you and your Bold provider make together — and I'll show you exactly what it would cost before anything is prescribed.";
+    ans="GLP-1s are FDA-approved medications (like Wegovy, Zepbound, or Foundayo) that help with weight — whether one's right for you is decided with your Bold provider. If you're eligible, they're a flat $50/month through the Medicare Bridge. If you have Type 2 diabetes, sleep apnea, or fatty liver, they go through standard Part D instead ($25 to upwards of $500, depending on your plan) — your provider files it first, so you know the price before you pay.";
   } else if(/cost|price|pay|how much|afford|copay|expensive|money|insurance|cover|\$/.test(s)){
-    ans="Your Bold visits are $0 with your plan. If a GLP-1 is ever the right fit, eligible members pay a flat $50/month through the Medicare Bridge. Confirm your coverage and I can give you a better estimate — it just takes a couple quick things: your insurance and date of birth.";
+    ans="78% of Bold patients pay $0 out of pocket for virtual visits. If you do have a cost, it's $5 to $55 per visit, depending on your plan — and because Bold is a medical practice, we bill Medicare directly. Want me to confirm your coverage for a better estimate? It just takes your insurance and date of birth.";
   } else if(/safe|side effect|risk|dangerous|worried|scared|nervous|afraid/.test(s)){
     ans="That's a really good thing to ask. Your provider reviews your full health picture and stays in the loop to keep you safe, adjusting the plan as you go. Anything specific on your mind? I can make sure your provider sees it.";
   } else if(/how long|time|minutes|quick|fast/.test(s)){
