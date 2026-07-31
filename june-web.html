@@ -1403,10 +1403,16 @@ async function consentList(){
 function askPhone(){
   return new Promise(resolve=>{
     const node=el(`<div class="fields">
-      <div class="fld"><label>Mobile number</label><input id="f-phone" placeholder="(555) 123-4567" value="(310) 555-0142" inputmode="tel"></div>
+      <div class="fld"><label>Mobile number</label><input id="f-phone" placeholder="(555) 123-4567" value="" inputmode="tel" autocomplete="off"></div>
+      <p class="fld-err" hidden></p>
       <button class="go">Confirm my call</button>
     </div>`);
-    node.querySelector(".go").onclick=()=>{ lock(node.closest(".ctl")); me("Number confirmed"); resolve(); };
+    const inp=node.querySelector("#f-phone"), errEl=node.querySelector(".fld-err");
+    const submit=()=>{ const v=(inp.value||"").trim();
+      if(v.replace(/\D/g,"").length<10){ errEl.textContent="Please enter a valid mobile number."; errEl.hidden=false; return; }
+      PROFILE.phone=v; lock(node.closest(".ctl")); me(v); resolve(); };
+    node.querySelector(".go").onclick=submit;
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); submit(); } });
     control(node);
   });
 }
