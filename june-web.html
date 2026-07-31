@@ -899,7 +899,7 @@
 const thread = document.getElementById("thread");
 const pbar = document.getElementById("pbar");
 
-const PROFILE = { name:"Carol", dob:"", state:"", insurer:"UnitedHealthcare", coverageConfirmed:false, goal:"", conditions:[], contra:[], height:{ft:5,in:4}, weight:190, bmi:0, glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge" };
+const PROFILE = { name:"", dob:"", state:"", insurer:"UnitedHealthcare", coverageConfirmed:false, goal:"", conditions:[], contra:[], height:{ft:5,in:4}, weight:190, bmi:0, glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge" };
 
 /* ---------- helpers ---------- */
 function el(html){ const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstElementChild; }
@@ -945,7 +945,7 @@ function welcomeHero(askFirst){
   return new Promise(resolve=>{
     const node=el(`<div class="chat-welcome">
       <div class="cworb" id="cw-orb"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
-      <div class="cw-title">Hi ${esc(PROFILE.name)} — I'm June</div>
+      <div class="cw-title">Hi ${esc(PROFILE.name||"there")} — I'm June</div>
       <div class="cw-sub">${askFirst
         ? "I'm your AI health assistant — ask me anything about Bold: your coverage, your costs, or how your first visit works. Ready to sign up? Tap below."
         : "I'm your AI health assistant. I'll help you verify your coverage and answer any questions along the way. This chat is private and secure."}</div>
@@ -967,7 +967,7 @@ function welcomeHero(askFirst){
     node.querySelector(".cw-ask").onclick=()=>{ const a=node.querySelector(".cw-ask"); if(a) a.remove(); showAskPills(); };
     const heroOrb=node.querySelector("#cw-orb"); if(heroOrb) heroOrb.onclick=()=>juneTap(heroOrb,false);
     thread.appendChild(node);
-    lastBotText="Hi "+PROFILE.name+", I'm June, your AI health assistant. Thanks for signing up — I'll answer any questions and get you set up in about two minutes.";
+    lastBotText="Hi "+(PROFILE.name||"there")+", I'm June, your AI health assistant. Thanks for signing up — I'll answer any questions and get you set up in about two minutes.";
     if(autoRead) speakOne(lastBotText);
     scroll();
     if(askFirst){ requestAnimationFrame(()=>{ const a=node.querySelector(".cw-ask"); if(a) a.click(); }); }
@@ -1367,7 +1367,7 @@ function providerCard(){
 const OUTCOMES = {
   bridge:{
     key:"bridge", badge:"Medicare Bridge", cls:"bridge",
-    title:"Good news, Carol — you're likely eligible for a GLP-1 through the Medicare Bridge.",
+    title:"Good news — you're likely eligible for a GLP-1 through the Medicare Bridge.",
     rows:[
       {k:"Your Bold visits", v:"$0", cls:"free", note:"Covered by UnitedHealthcare"},
       {k:"GLP-1 medication, if prescribed", v:"$50/mo", cls:"", note:"Flat copay through the Bridge — your provider files the claim"}
@@ -1775,7 +1775,7 @@ const JUNE_CLIENT_TOKEN="bjk_2f9Qv7Lp2Xr8Ka1Ns6Tz"; // handshake; set the same v
 let JUNE_PROXY=(()=>{ try{ const p=new URLSearchParams(location.search).get("proxy"); if(p!==null){ localStorage.setItem("june_proxy",p); return p; } return localStorage.getItem("june_proxy")||JUNE_DEFAULT_PROXY; }catch(e){ return JUNE_DEFAULT_PROXY; } })();
 let aiHistory=[];
 function memberContext(){
-  return { name:PROFILE.name||"there",
+  return { name:PROFILE.name||"",
     state: PROFILE.goal==="weight" ? "weight-management onboarding" : (PROFILE.goal ? "onboarding" : "new sign-up"),
     coverage_confirmed: !!PROFILE.coverageConfirmed,
     onboarding: !!onboarding,
@@ -1934,7 +1934,7 @@ document.getElementById("lp-why").onclick=function(){
   const h=el(`<p class="lp-blurb" style="text-align:left;color:var(--ink-soft);font-weight:500;margin-top:8px">So we can confirm your Medicare coverage and check what you'd pay. A care coordinator double-checks everything before anything is charged — and we never sell your information.</p>`);
   this.after(h); this._h=h;
 };
-function resetToLanding(){ juneStarted=false; juneMode=null; askMode=false; onboarding=false; endMode=false; askPillsRow=null; wantCoverageOffer=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"Carol", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
+function resetToLanding(){ juneStarted=false; juneMode=null; askMode=false; onboarding=false; endMode=false; askPillsRow=null; wantCoverageOffer=false; askedQs.clear(); thread.innerHTML=""; composer.hidden=true; composer.classList.remove("open"); Object.assign(PROFILE,{ name:"", insurer:"UnitedHealthcare", coverageConfirmed:false }); showView("landing"); viewLanding.scrollTop=0; }
 { const rb=document.getElementById("restart"); if(rb) rb.onclick=()=>{ if("speechSynthesis" in window) speechSynthesis.cancel(); setAutoRead(false); resetToLanding(); }; }
 showView("landing");
 </script>
