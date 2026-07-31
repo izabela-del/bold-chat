@@ -587,6 +587,69 @@
     .fab.peek::before{opacity:1;}          /* keep the colorful ring as a hint while tucked */
     .fab.peek .fab-label{max-width:0; opacity:0; margin:0;}  /* stay a clean orb while tucked */
   }
+  /* ===== below-fold: Figma-matched sections ===== */
+  .lp-left{text-align:left !important;}
+  .lp-h2-dark2{color:#29006a;} .lp-h2-dark2 span{color:var(--brand);}
+  .lp-benef{background:#fff;}
+  .lp-benef-grid{display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; padding:2px 0; margin-top:8px;}
+  .lp-benef-grid::-webkit-scrollbar{display:none;} .lp-benef-grid{scrollbar-width:none;}
+  .lp-benef-card{flex:0 0 60%; max-width:300px; width:100%; height:auto; border-radius:20px; display:block; scroll-snap-align:center;}
+  .lp-built-img{width:100%; max-width:440px; height:auto; display:block; margin:0 auto;}
+  .lp-hiw-media::before{display:none;}
+  .lp-hiw-img{width:100%; max-width:360px; height:auto; display:block; margin:0 auto;}
+  .lp-care{background:var(--lp-grey);}
+  .lp-care-media img{width:100%; height:auto; border-radius:16px; display:block;}
+  .lp-plan{background:var(--lp-peri);}
+  .lp-plan-media img{width:100%; height:auto; border-radius:20px; display:block;}
+  /* blog */
+  .lp-blog{background:#fff;}
+  .lp-blog-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:16px;}
+  .lp-blog-head .lp-h2{margin:0;}
+  .lp-seeall{color:var(--brand); font-weight:800; font-size:14px; text-decoration:none; flex:0 0 auto;}
+  .lp-blog-grid{display:flex; flex-direction:column; gap:22px;}
+  .lp-blog-feat{display:block; text-decoration:none; color:inherit;}
+  .lp-blog-feat img{width:100%; height:auto; border-radius:16px; display:block; margin-bottom:12px;}
+  .lp-blog-feat h3{font-size:18px; font-weight:800; color:var(--ink); margin:0 0 6px; line-height:1.3;}
+  .lp-blog-feat p{font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.5;}
+  .lp-blog-list{display:flex; flex-direction:column; gap:16px;}
+  .lp-blog-row{display:flex; gap:14px; align-items:center; text-decoration:none; color:inherit;}
+  .lp-blog-row img{flex:0 0 118px; width:118px; height:82px; object-fit:cover; border-radius:12px;}
+  .lp-blog-row h4{font-size:14.5px; font-weight:800; color:var(--ink); margin:0; line-height:1.32;}
+  /* faq */
+  .lp-faq{background:var(--lp-grey);}
+  .lp-faqlist{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:10px;}
+  .lp-faqlist details{background:#fff; border:1px solid var(--line); border-radius:14px;}
+  .lp-faqlist summary{list-style:none; cursor:pointer; padding:15px 18px; font-weight:800; font-size:15.5px; color:var(--ink); display:flex; justify-content:space-between; gap:12px; align-items:center;}
+  .lp-faqlist summary::-webkit-details-marker{display:none;}
+  .lp-faqlist summary::after{content:"+"; color:var(--brand); font-weight:800; font-size:22px; line-height:1;}
+  .lp-faqlist details[open] summary::after{content:"\2013";}
+  .lp-faqlist .faq-a{padding:0 18px 16px; font-size:14px; line-height:1.55; color:var(--ink-soft); margin:0;}
+  /* footer */
+  .lp-footer{background:#fff; border-top:1px solid var(--line); padding:34px 16px 24px;}
+  .lp-footwrap{display:flex; flex-direction:column; gap:26px;}
+  .lp-foot-brand .lp-flogo{height:26px; margin-bottom:12px; display:block;}
+  .lp-foot-tag{font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0; max-width:340px;}
+  .lp-foot-cols{display:grid; grid-template-columns:1fr 1fr; gap:22px 18px;}
+  .lp-foot-col h4,.lp-foot-news h4{font-size:13px; font-weight:800; color:var(--ink); margin:0 0 10px;}
+  .lp-foot-col a{display:block; font-size:14px; color:var(--brand); text-decoration:none; margin-bottom:9px; font-weight:600;}
+  .lp-foot-news p{font-size:13.5px; color:var(--ink-soft); margin:0 0 12px; line-height:1.5;}
+  .lp-news-form{display:flex; gap:8px;}
+  .lp-news-form input{flex:1; min-width:0; height:44px; border:1px solid var(--line); border-radius:10px; padding:0 12px; font:inherit; font-size:14px;}
+  .lp-news-form button{height:44px; padding:0 18px; border:0; border-radius:10px; background:var(--brand); color:#fff; font:inherit; font-weight:800; cursor:pointer;}
+  .lp-foot-bottom{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; border-top:1px solid var(--line); margin-top:22px; padding-top:16px; font-size:12.5px; color:#9a94a8;}
+  .lp-foot-bottom a{color:#9a94a8; text-decoration:none; margin-left:14px;}
+  @media (min-width:860px){
+    .lp-benef-grid{overflow:visible; display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+    .lp-benef-card{max-width:none; flex:none;}
+    .lp-care{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:60px; align-items:center;}
+    .lp-plan{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:60px; align-items:center;}
+    .lp-care-body .lp-h2,.lp-plan-body .lp-h2{font-size:34px;}
+    .lp-plan-media{order:2;}
+    .lp-blog-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:48px; align-items:start;}
+    .lp-blog-feat h3{font-size:20px;}
+    .lp-footwrap{display:grid; grid-template-columns:1.3fr 3fr; gap:44px; align-items:start;}
+    .lp-foot-cols{grid-template-columns:repeat(3,1fr) 1.5fr;}
+  }
 </style>
 </head>
 <body>
@@ -633,17 +696,26 @@
             <span class="lp-tt">based on 10k+ reviews</span>
           </div>
         </div>
-        <div class="lp-sec lp-built" id="lp-built">
-          <div class="lp-built-media">
-            <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
-            <div class="lp-phone"><img src="lp-hero.jpg" alt="A Bold provider meeting a patient on a telehealth visit"></div>
+        <div class="lp-sec lp-benef" id="lp-benef">
+          <div class="lp-hiw-head">
+            <h2 class="lp-h2 lp-h2-dark lp-center">Feel better. Live bolder.</h2>
+            <p class="lp-sub">Meet virtually with a Bold provider to feel good in your body again.</p>
           </div>
+          <div class="lp-benef-grid">
+            <img class="lp-benef-card" src="img/bf-card-1.png" alt="Chronic pain">
+            <img class="lp-benef-card" src="img/bf-card-2.png" alt="Weight management">
+            <img class="lp-benef-card" src="img/bf-card-3.png" alt="Energy &amp; fatigue">
+            <img class="lp-benef-card" src="img/bf-card-4.png" alt="General healthy aging">
+          </div>
+        </div>
+        <div class="lp-sec lp-built" id="lp-built">
+          <div class="lp-built-media"><img class="lp-built-img" src="img/bf-telehealth.png" alt="A Bold provider on a telehealth visit with an older patient"></div>
           <div class="lp-built-body">
             <h2 class="lp-h2 lp-h2-dark">Built for adults 65+ to lose weight, reduce pain, gain energy.</h2>
             <ul class="lp-checks lp-bluechecks">
-              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>45-minute appointments — take the time you need.</span></li>
-              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>FDA-approved GLP-1s (like Wegovy®) for a $50/month copay.*</span></li>
-              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>A personalized Care Plan for results that last.</span></li>
+              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>45-minute appointments allow you to take the time you need.</span></li>
+              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>FDA-approved GLP-1s (Foundayo® or Wegovy®), for a $50 monthly copay.*</span></li>
+              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Receive a personalized Care Plan to see improvements that last.</span></li>
             </ul>
             <button class="lp-cta2" type="button" onclick="startFromLanding()">Check coverage</button>
             <p class="lp-note">*Medicare GLP-1 Bridge lets eligible members get FDA-approved GLP-1s for a flat $50/month copay.</p>
@@ -660,18 +732,17 @@
               <li><span class="lp-num">2</span><div><b>Meet your Bold Care provider virtually</b><p>Your provider creates a personalized, practical Care Plan, and prescribes FDA-approved medications, if it's the right fit.</p></div></li>
               <li><span class="lp-num">3</span><div><b>Start losing weight safely</b><p>Your care team checks in on side effects, dosage, and progress, and keeps you on track.</p></div></li>
             </ol>
-            <div class="lp-hiw-media">
-              <div class="lp-doccard">
-                <div class="lp-doccard-top">Doctor Profile</div>
-                <img class="lp-docimg" src="profile-avatar.png" alt="Dr. Mitul S. Desai, MD">
-                <div class="lp-docname">Dr. Mitul S. Desai, MD</div>
-                <div class="lp-docrole">Geriatric Specialist</div>
-                <div class="lp-docrate">★ 4.9 <span>(128 reviews)</span></div>
-                <div class="lp-docabout"><b>About Dr. Desai</b><p>Board-certified geriatric specialist with 21+ years caring for older adults — weight, chronic conditions, and healthy aging.</p></div>
-              </div>
-            </div>
+            <div class="lp-hiw-media"><img class="lp-hiw-img" src="img/bf-hiw-phone.png" alt="A Bold provider's profile in the app"></div>
           </div>
           <div class="lp-hiw-cta"><button class="lp-cta2" type="button" onclick="startFromLanding()">Check coverage</button></div>
+        </div>
+        <div class="lp-sec lp-care" id="lp-care">
+          <div class="lp-care-media"><img src="img/bf-doctors.png" alt="Bold's board-certified care team"></div>
+          <div class="lp-care-body">
+            <h2 class="lp-h2 lp-h2-dark">A care team for change that sticks</h2>
+            <p class="lp-sub lp-left">Bold Care's board-certified providers specialize in weight loss, geriatrics, and lifestyle medicine. They bridge the gaps between your regular doctor visits and focus on high-impact lifestyle interventions to help you age stronger and feel better.</p>
+            <button class="lp-cta2" type="button" onclick="startFromLanding()">Match with a provider</button>
+          </div>
         </div>
         <div class="lp-sec lp-testi" id="lp-testi">
           <h2 class="lp-h2 lp-center lp-h2-inv">Real people, <span>real results.</span></h2>
