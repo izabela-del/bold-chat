@@ -1379,18 +1379,17 @@ function openConsent(type){
     const chk=document.getElementById("cchk"), ok=document.getElementById("cok"),
       fade=document.getElementById("cfade"), hint=document.getElementById("cscrollhint"),
       aglab=document.getElementById("cagreelab"), cx=document.getElementById("cx"), dim=document.getElementById("cdim");
-    chk.checked=false; chk.disabled=true; ok.disabled=true;
-    aglab.classList.add("disabled"); fade.classList.remove("hide"); hint.style.display="";
-    let read=false;
-    function markRead(){ if(read) return; read=true; chk.disabled=false; aglab.classList.remove("disabled"); fade.classList.add("hide"); hint.style.display="none"; }
-    doc.onscroll=()=>{ if(doc.scrollTop+doc.clientHeight >= doc.scrollHeight-8) markRead(); };
+    chk.checked=false; chk.disabled=false; ok.disabled=true;
+    aglab.classList.remove("disabled"); hint.style.display="none";   // no scroll gate — agree is available right away
+    fade.classList.remove("hide");
+    // fade is just a "more below" cue now; it clears once they scroll to the end
+    doc.onscroll=()=>{ if(doc.scrollTop+doc.clientHeight >= doc.scrollHeight-8) fade.classList.add("hide"); };
     chk.onchange=()=>{ ok.disabled=!chk.checked; };
     function close(result){ csheet.classList.remove("open"); csheet.setAttribute("aria-hidden","true"); doc.onscroll=null; resolve(result); }
     cx.onclick=()=>close(false); dim.onclick=()=>close(false);
     ok.onclick=()=>close(true);
     csheet.classList.add("open"); csheet.setAttribute("aria-hidden","false");
-    // short docs that don't need scrolling unlock right away
-    requestAnimationFrame(()=>{ if(doc.scrollHeight <= doc.clientHeight+8) markRead(); });
+    requestAnimationFrame(()=>{ if(doc.scrollHeight <= doc.clientHeight+8) fade.classList.add("hide"); });
   });
 }
 /* one consent at a time — June introduces each, member reviews & signs, then the next */
