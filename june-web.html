@@ -649,6 +649,7 @@
     .lp-blog-feat h3{font-size:20px;}
     .lp-footwrap{display:grid; grid-template-columns:1.3fr 3fr; gap:44px; align-items:start;}
     .lp-foot-cols{grid-template-columns:repeat(3,1fr) 1.5fr;}
+    .lp-footer{padding:46px max(40px,calc((100% - 1080px)/2)) 30px;}
   }
 </style>
 </head>
@@ -744,6 +745,18 @@
             <button class="lp-cta2" type="button" onclick="startFromLanding()">Match with a provider</button>
           </div>
         </div>
+        <div class="lp-sec lp-plan" id="lp-plan">
+          <div class="lp-plan-body">
+            <h2 class="lp-h2 lp-h2-dark2">A personalized, practical <span>Care Plan</span> to keep you accountable</h2>
+            <ul class="lp-checks lp-bluechecks">
+              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Personalized exercise and nutrition programming, plus guidance on medication, sleep, and daily habits.</span></li>
+              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Recipes, reminders, and tips chosen for you.</span></li>
+              <li><span class="lp-seal"><svg viewBox="0 0 24 24" fill="none"><path d="M6 12.5l4 4 8-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Your provider stays in the loop and adjusts the plan over time.</span></li>
+            </ul>
+            <button class="lp-cta-gold" type="button" onclick="startFromLanding()">Get my Care Plan</button>
+          </div>
+          <div class="lp-plan-media"><img src="img/bf-careplan.png" alt="A personalized Care Plan with recipes and reminders"></div>
+        </div>
         <div class="lp-sec lp-testi" id="lp-testi">
           <h2 class="lp-h2 lp-center lp-h2-inv">Real people, <span>real results.</span></h2>
           <div class="lp-laurel">
@@ -753,15 +766,15 @@
           </div>
           <div class="lp-cards">
             <figure class="lp-card lp-card-cream">
-              <div class="lp-card-top"><img src="lp-av1.jpg" alt=""><div><div class="lp-card-date">Jun 15, 2026</div><div class="lp-card-name">Tammy <span>· 66 years old</span></div></div></div>
+              <div class="lp-card-top"><img src="img/bf-av-tammy.png" alt=""><div><div class="lp-card-date">Jun 15, 2026</div><div class="lp-card-name">Tammy <span>· 66 years old</span></div></div></div>
               <blockquote>"My Bold Care doctor is very friendly, not pushy, and seems to accept shortcomings on my part."</blockquote>
             </figure>
             <figure class="lp-card lp-card-lav">
-              <div class="lp-card-top"><img src="lp-av2.jpg" alt=""><div><div class="lp-card-date">Jun 11, 2026</div><div class="lp-card-name">Cal <span>· 72 years old</span></div></div></div>
+              <div class="lp-card-top"><img src="img/bf-av-cal.png" alt=""><div><div class="lp-card-date">Jun 11, 2026</div><div class="lp-card-name">Cal <span>· 72 years old</span></div></div></div>
               <blockquote>"I'm very fond of my Bold Care doctor. She asks all the right questions. She listens as well — a lost art. I don't feel rushed, and she always has good info for me."</blockquote>
             </figure>
             <figure class="lp-card lp-card-cream">
-              <div class="lp-card-top"><img src="lp-av3.jpg" alt=""><div><div class="lp-card-date">Jun 11, 2026</div><div class="lp-card-name">Renay <span>· 68 years old</span></div></div></div>
+              <div class="lp-card-top"><img src="img/bf-av-renay.png" alt=""><div><div class="lp-card-date">Jun 11, 2026</div><div class="lp-card-name">Renay <span>· 68 years old</span></div></div></div>
               <blockquote>"My Bold Care doctor is very friendly and easy to talk to — she gave great direction for taking action to improve my health."</blockquote>
             </figure>
           </div>
@@ -775,10 +788,48 @@
           </div>
           <div class="lp-testi-cta"><button class="lp-cta-gold" type="button" onclick="startFromLanding()">Check coverage</button></div>
         </div>
-        <div class="lp-bottom" id="lp-bottom">
-          <h2 class="lp-h2 lp-center lp-h2-dark lp-bottom-h">Ready to feel good in your body again?</h2>
-          <button class="lp-cta" id="lp-check2" type="button">Check my coverage</button>
+        <div class="lp-sec lp-blog" id="lp-blog">
+          <div class="lp-blog-head"><h2 class="lp-h2 lp-h2-dark2">Healthy aging insights</h2><a class="lp-seeall" href="#" onclick="return false">See all</a></div>
+          <div class="lp-blog-grid">
+            <a class="lp-blog-feat" href="#" onclick="return false">
+              <img src="img/bf-blog-main.png" alt="">
+              <h3>How to lose weight as a senior: Weight loss tips for people over 60</h3>
+              <p>Losing weight after 60 can be challenging due to hormone and metabolism changes with age. These diet and exercise tips can help you lose weight as a senior.</p>
+            </a>
+            <div class="lp-blog-list">
+              <a class="lp-blog-row" href="#" onclick="return false"><img src="img/bf-blog-1.png" alt=""><h4>The protein guide for adults 60+</h4></a>
+              <a class="lp-blog-row" href="#" onclick="return false"><img src="img/bf-blog-2.png" alt=""><h4>The cost of your Bold Care appointment</h4></a>
+              <a class="lp-blog-row" href="#" onclick="return false"><img src="img/bf-blog-3.png" alt=""><h4>How Bold Care helps you manage chronic conditions – without adding another prescription</h4></a>
+            </div>
+          </div>
+          <div class="lp-hiw-cta"><button class="lp-cta2" id="lp-check2" type="button">Check coverage</button></div>
         </div>
+        <div class="lp-sec lp-faq" id="lp-faq">
+          <h2 class="lp-h2 lp-h2-dark lp-center">Frequently asked questions</h2>
+          <div class="lp-faqlist">
+            <details><summary>Will Medicare cover my visit?</summary><p class="faq-a">Yes — Original Medicare Part B covers telehealth visits from home, and most Medicare Advantage plans do too. 78% of Bold patients pay $0 out of pocket; if there's a cost, it's typically $5–$55 per visit.</p></details>
+            <details><summary>How much do GLP-1 medications cost?</summary><p class="faq-a">If a GLP-1 is right for you and you're eligible, it's a flat $50/month through the Medicare GLP-1 Bridge. A care coordinator confirms your exact cost for free before anything is prescribed.</p></details>
+            <details><summary>Do I have to take medication?</summary><p class="faq-a">Not at all. Bold focuses on nutrition, movement, sleep, and daily habits. You and your provider decide together whether medication is the right fit.</p></details>
+            <details><summary>Is my information private and secure?</summary><p class="faq-a">Yes. Bold is HIPAA compliant. Your health information is encrypted, never sold, and shared only with your care team.</p></details>
+            <details><summary>Who are the providers?</summary><p class="faq-a">Bold Care's board-certified providers specialize in weight loss, geriatrics, and lifestyle medicine, with years of experience caring for adults 65+.</p></details>
+            <details><summary>How long does it take to get started?</summary><p class="faq-a">Checking your coverage takes about 2 minutes. Then you book a free 15-minute call with a care coordinator who confirms everything and schedules your first provider visit.</p></details>
+          </div>
+        </div>
+        <footer class="lp-footer" id="lp-footer">
+          <div class="lp-footwrap">
+            <div class="lp-foot-brand">
+              <img class="lp-flogo" src="BoldLogo.png" alt="Bold">
+              <p class="lp-foot-tag">Find better balance, build strength, and reduce pain with easy-to-follow online video workouts personalized for you.</p>
+            </div>
+            <div class="lp-foot-cols">
+              <div class="lp-foot-col"><h4>Company</h4><a href="#" onclick="return false">About Bold</a><a href="#" onclick="return false">Science</a><a href="#" onclick="return false">Careers</a><a href="#" onclick="return false">Trainers</a><a href="#" onclick="return false">Blog</a><a href="#" onclick="return false">Press</a></div>
+              <div class="lp-foot-col"><h4>Product</h4><a href="#" onclick="return false">Sign up</a><a href="#" onclick="return false">How's my health?</a><a href="#" onclick="return false">Partnerships</a><a href="#" onclick="return false">FAQ</a></div>
+              <div class="lp-foot-col"><h4>Connect</h4><a href="#" onclick="return false">Contact us</a><a href="#" onclick="return false">Facebook</a><a href="#" onclick="return false">Instagram</a></div>
+              <div class="lp-foot-news"><h4>Stay up to date</h4><p>Receive exercise tips, product updates, event invites, and more!</p><form class="lp-news-form" onsubmit="return false"><input type="email" placeholder="Enter your email" aria-label="Email address"><button type="submit">Subscribe</button></form></div>
+            </div>
+          </div>
+          <div class="lp-foot-bottom"><span>© 2025 Age Bold Inc.</span><span><a href="#" onclick="return false">Terms</a><a href="#" onclick="return false">Privacy</a><a href="#" onclick="return false">Disclaimers</a></span></div>
+        </footer>
       </div>
 
       <!-- ============ JUNE CHAT ============ -->
