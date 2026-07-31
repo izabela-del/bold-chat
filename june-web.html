@@ -801,7 +801,7 @@ async function bot(text,{first=false}={}){
 function control(node){ const wrap=el(`<div class="row bot"></div>`); const ctl=el(`<div class="ctl"></div>`); ctl.appendChild(node); wrap.appendChild(ctl); thread.appendChild(wrap); scroll(); return ctl; }
 function lock(ctl){ ctl.classList.add("done"); }
 /* ---- tap-June easter egg: happy bounce + sparkles + a warm little line ---- */
-const JUNE_SAYINGS=["Hi there! 👋","You've got this. 💜","So glad you're here.","One small step at a time.","Proud of you already. 🌟","Feeling good today?","I'm right here for you.","Tap — that tickles! 😄"];
+const JUNE_SAYINGS=["Hi there!","You've got this.","So glad you're here.","One small step at a time.","Proud of you already.","Feeling good today?","I'm right here for you.","Tap — that tickles!"];
 let juneSayIdx=-1;
 function juneTap(orb, below){
   if(!orb) return;
@@ -1426,7 +1426,7 @@ function summary(){
     : PROFILE.outcome==="partd" ? "Visits are $0. Because of your diagnosis, a GLP-1 would go through standard Part D (about $25–$500/mo, depending on your plan) rather than the $50 Bridge — your provider files it first, so you'll know the exact price before you pay."
     : "Visits are $0. You're starting with a lifestyle plan; your provider can revisit medication if your needs or coverage change.");
   const node=el(`<div class="allset">
-    <div class="big">You're all set, ${esc(PROFILE.name)}! 🎉</div>
+    <div class="big">You're all set, ${esc(PROFILE.name)}!</div>
     <p class="lead">Your care coordinator will call you at your scheduled time to confirm everything and book your provider visit.</p>
     <div class="callcard">
       <div class="ch">Upcoming call</div>
@@ -1592,7 +1592,7 @@ async function runOnboarding(){
   setProgress(.78);
 
   if(PROFILE.goal==="weight"){
-    await bot("Okay — here's what I found for you. This is the part most people worry about, so let me lay out your coverage and cost clearly. 👇");
+    await bot("Okay — here's what I found for you. This is the part most people worry about, so let me lay out your coverage and cost clearly.");
     await showEligibility();
   } else {
     await bot("Here's your match — and the good news, your visits are fully covered.");
@@ -1611,7 +1611,7 @@ async function runOnboarding(){
   setProgress(.96);
 
   onboarding=false;   // flow complete
-  await bot(`That's everything, ${PROFILE.name}. You're all set. 💜`);
+  await bot(`That's everything, ${PROFILE.name}. You're all set.`);
   summary();
 }
 
