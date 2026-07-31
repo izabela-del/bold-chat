@@ -1058,13 +1058,9 @@ async function offerCoverageCheck(){
 /* the member interjected with a free-text question mid-onboarding — answer it, then
    return to the goal: re-anchor on confirming coverage and move the pending step to the bottom */
 async function resumeOnboarding(){
+  // June already steers back in her reply — here we just re-surface the pending step at the bottom (no extra line)
   const pending=[...thread.querySelectorAll(".ctl:not(.done)")].pop();
-  if(pending){
-    await bot(`No problem — let's pick up right where we left off and finish confirming your coverage${PROFILE.name?`, ${PROFILE.name}`:""}.`);
-    const row=pending.closest(".row"); if(row){ thread.appendChild(row); scroll(); }
-  } else {
-    await bot("Let's keep going and finish confirming your coverage — I'll take it from here.");
-  }
+  if(pending){ const row=pending.closest(".row"); if(row){ thread.appendChild(row); scroll(); } }
 }
 /* --- correct info the member gave earlier (name / email / DOB) — June owns this data, so just overwrite it --- */
 const STOP=new Set("correct corrected correcting my mine name named names is are it its it's to too as the a an i i'm im am first last full surname family spell spelled spelling spelt change changed update updated fix fixed call me and or please you your yours actually should be been this that of do does did can could would will now not no yes ok okay so just we get got make sure wrong incorrect misspelled misspelt typo mistake off different right".split(" "));
@@ -1798,17 +1794,32 @@ function safetyText(t){ const s=t.toLowerCase();
     return "If this is a medical emergency, please call 911 right now. And if you're ever having thoughts of harming yourself, you can call or text 988 for the Suicide & Crisis Lifeline — 24/7, free. I can't help with emergencies myself, but real people are ready to.";
   return null;
 }
+/* full visible conversation (flow messages + free-text) so June has real continuity —
+   collapse consecutive same-role turns and start on a user turn so the API stays valid */
+function buildTranscript(){
+  const raw=[];
+  thread.querySelectorAll(".row").forEach(r=>{
+    const b=r.querySelector(".bubble"); if(!b) return;
+    const txt=(b.textContent||"").trim(); if(!txt) return;
+    raw.push({ role: r.classList.contains("me") ? "user" : "assistant", content: txt });
+  });
+  const msgs=[];
+  for(const m of raw){
+    if(msgs.length && msgs[msgs.length-1].role===m.role) msgs[msgs.length-1].content += "\n" + m.content;
+    else msgs.push({ role:m.role, content:m.content });
+  }
+  while(msgs.length && msgs[0].role!=="user") msgs.shift();
+  return msgs;
+}
 async function askJune(text){
-  aiHistory.push({role:"user", content:text});
   const typing=el(`<div class="row bot"><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
   thread.appendChild(typing); scroll();
   try{
     const res=await fetch(JUNE_PROXY,{ method:"POST", headers:{"content-type":"application/json","x-june-key":JUNE_CLIENT_TOKEN},
-      body: JSON.stringify({ messages: aiHistory.slice(-20), member: memberContext() }) });
+      body: JSON.stringify({ messages: buildTranscript().slice(-24), member: memberContext() }) });
     const data=await res.json().catch(()=>null);
     typing.remove();
     if(res.ok && data && data.text){
-      aiHistory.push({role:"assistant", content:data.text});
       splitParas(data.text).forEach(p=>addBotBubble(p));
       lastBotText=data.text; if(autoRead) speakOne(data.text);
       if(askMode){ if(wantCoverageOffer){ wantCoverageOffer=false; await offerCoverageCheck(); } else askPills(); }
