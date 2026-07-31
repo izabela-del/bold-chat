@@ -1779,7 +1779,7 @@ function memberContext(){
     state: PROFILE.goal==="weight" ? "weight-management onboarding" : (PROFILE.goal ? "onboarding" : "new sign-up"),
     coverage_confirmed: !!PROFILE.coverageConfirmed,
     onboarding: !!onboarding,
-    plan: PROFILE.insurer||"" };
+    plan: (PROFILE.coverageConfirmed && PROFILE.insurer) ? PROFILE.insurer : "" };  // don't claim a plan we haven't confirmed
 }
 function splitParas(s){ return String(s).trim().split(/\n{2,}/).map(x=>x.replace(/\s*\n\s*/g," ").trim()).filter(Boolean); }
 function addBotBubble(text){ const r=el(`<div class="row bot"><div class="bubble"></div></div>`); r.querySelector(".bubble").textContent=text; thread.appendChild(r); scroll(); }
