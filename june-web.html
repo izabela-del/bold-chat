@@ -1094,6 +1094,7 @@ function askYesNo(yes, no){
 async function verifyCoverage(){
   await bot("Your information is safe and secure — we never share or sell it. We only use it to confirm your eligibility and share it with your Bold care team.");
   if(!PROFILE.signedUp){
+    await bot("First, the basic details your insurance uses to match you to your plan — I'll ask one at a time.");
     PROFILE.name = await askField("First — what's your first name?", "", "text", "First name");
     await checkName();
     PROFILE.last = await askField("And your last name?", "", "text", "Last name");
@@ -1515,7 +1516,7 @@ async function runOnboarding(){
   PROFILE.goal=g[0];
   setProgress(.38);
 
-  await bot("A few quick health questions so we make sure Bold is a good fit. Any of these apply to you?");
+  await bot("Next, a standard health check — the same few questions every new member answers, so your provider knows Bold's a good fit. Any of these apply to you?");
   PROFILE.conditions=await askChips([
     {label:"High blood pressure", value:"htn"},
     {label:"Type 2 diabetes", value:"t2d"},
@@ -1532,7 +1533,7 @@ async function runOnboarding(){
       {label:"Type 1 diabetes", value:"t1d"},
       {label:"None of these", value:"none", exclusive:true}
     ],{multi:true});
-    await bot("What's your height and weight? This helps your provider tailor your care.");
+    await bot("Standard intake next — your height and weight help your provider set a safe, personalized plan. I'll take them one at a time.");
     await askHeight();
     await askWeight();
     setProgress(.6);
@@ -1571,14 +1572,13 @@ async function runOnboarding(){
 
   await bot("Let's book your free 15-minute call with a Bold care coordinator. They'll confirm your coverage and schedule your first provider visit.");
   await scheduler();
+  await bot("Perfect — what's the best number for your coordinator to call you at?");
+  await askPhone();
   setProgress(.92);
 
-  await bot("Almost done — just a couple of quick agreements. Tap each to review and sign.");
+  await bot("Last step — the standard agreements every Bold member signs. Tap each to review and sign.");
   await consentList();
   setProgress(.96);
-
-  await bot("And the best number to reach you?");
-  await askPhone();
 
   onboarding=false;   // flow complete
   await bot(`That's everything, ${PROFILE.name}. You're all set. 💜`);
