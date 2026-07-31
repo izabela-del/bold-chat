@@ -1284,13 +1284,6 @@ function renderEligInto(container,key){
   const o=OUTCOMES[key];
   container.className="elig "+o.cls;
   container.innerHTML=`
-    <div class="demoseg">Demo · preview scenario
-      <div class="segs">
-        <button data-o="bridge" class="${key==='bridge'?'on':''}">Bridge</button>
-        <button data-o="partd" class="${key==='partd'?'on':''}">Part D</button>
-        <button data-o="lifestyle" class="${key==='lifestyle'?'on':''}">Lifestyle</button>
-      </div>
-    </div>
     <div class="elig-band">
       <span class="elig-badge">✓ ${o.badge}</span>
       <h3 class="elig-title">${o.title}</h3>
@@ -1306,7 +1299,6 @@ function renderEligInto(container,key){
       <button class="elig-cta">Book my free 15-min call</button>
       <p class="elig-fine">A real care coordinator reviews this with you — for free — before anything is prescribed. Nothing here is a prescription or a guarantee.</p>
     </div>`;
-  container.querySelectorAll(".demoseg button").forEach(b=>b.onclick=()=>{ PROFILE.outcome=b.dataset.o; renderEligInto(container,b.dataset.o); });
   container.querySelectorAll(".faq > button").forEach(b=>b.onclick=()=>{ b.parentElement.classList.toggle("open"); scroll(); });
   container._ctaHook && container.querySelector(".elig-cta").addEventListener("click", container._ctaHook);
 }
