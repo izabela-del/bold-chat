@@ -665,7 +665,7 @@
             <a class="lp-navlink" href="#lp-built">What it's for</a>
             <a class="lp-navlink" href="#lp-hiw">How it works</a>
             <a class="lp-navlink" href="#lp-testi">Resources</a>
-            <a class="lp-navlink" href="#lp-bottom">FAQ</a>
+            <a class="lp-navlink" href="#lp-faq">FAQ</a>
           </nav>
           <div class="lp-navactions">
             <button class="lp-login" type="button">Sign in</button>
@@ -910,14 +910,16 @@ function setProgress(p){ pbar.style.width=Math.min(100,Math.round(p*100))+"%"; }
 
 let lastBotText="";
 function me(text){ const r=el(`<div class="row me"><div class="bubble"></div></div>`); r.querySelector(".bubble").textContent=text; thread.appendChild(r); scroll(); }
-async function bot(text,{first=false}={}){
+async function bot(text,{first=false,html=false}={}){
   const typing=el(`<div class="row bot"><div class="bubble"><span class="typing"><i></i><i></i><i></i></span></div></div>`);
   thread.appendChild(typing); scroll();
-  await wait(text.length>90?800:520);
+  const plain=html?text.replace(/<[^>]+>/g,""):text;
+  await wait(plain.length>90?800:520);
   typing.remove();
   const r=el(`<div class="row bot">${first?'<div class="who">June</div>':''}<div class="bubble"></div></div>`);
-  r.querySelector(".bubble").textContent=text; thread.appendChild(r); lastBotText=text; scroll();
-  if(autoRead) speakOne(text);
+  const b=r.querySelector(".bubble"); if(html) b.innerHTML=text; else b.textContent=text;
+  thread.appendChild(r); lastBotText=plain; scroll();
+  if(autoRead) speakOne(plain);
   await wait(140);
 }
 function control(node){ const wrap=el(`<div class="row bot"></div>`); const ctl=el(`<div class="ctl"></div>`); ctl.appendChild(node); wrap.appendChild(ctl); thread.appendChild(wrap); scroll(); return ctl; }
@@ -1252,7 +1254,7 @@ async function verifyCoverage(){
   } else {
     // came from the landing form — read the name back and confirm it matches the ID/insurance card exactly
     await checkName();
-    await bot(`Here's what I have — name: ${PROFILE.name} ${PROFILE.last}, email: ${PROFILE.email}. Your name needs to match your insurance or ID card exactly. Does this all look right?`);
+    await bot(`Here's what I have — name: <b>${esc(PROFILE.name)} ${esc(PROFILE.last)}</b>, email: <b>${esc(PROFILE.email)}</b>. Your name needs to match your insurance or ID card exactly. Does this all look right?`, {html:true});
     if(!(await askYesNo("Yes, that's correct", "No, let me fix it"))){
       PROFILE.name = await askField("First name — exactly as it appears on your card", PROFILE.name||"");
       PROFILE.last = await askField("Last name — exactly as it appears on your card", PROFILE.last||"");
