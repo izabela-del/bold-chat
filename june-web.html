@@ -1217,7 +1217,7 @@ async function showInsurance(){
     const node=el(`<div>
       <div class="inscard">
         <div class="seal">✓ Verified</div>
-        <div class="plan">${esc(PROFILE.insurer)}</div>
+        <div class="plan">${esc(PROFILE.insurerChosen && PROFILE.insurer ? PROFILE.insurer : "Medicare")}</div>
         <div class="nm">${esc(PROFILE.name)} S.</div>
         <div class="mid">MEMBER ID ·······789</div>
         <div class="cov">$0 copay for virtual visits with Bold</div>
