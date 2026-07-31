@@ -1532,8 +1532,8 @@ async function run(){
 }
 /* the guided onboarding continuation — reused by the Check-coverage entry and the ask-mode "verify my coverage" hand-off */
 async function runOnboarding(){
-  composer.hidden=false;
-  askMode=false; onboarding=true;   // guided flow is active — free-text asides steer back here
+  composer.hidden=true; composer.classList.remove("open");   // no free-text during the guided flow — buttons/fields only
+  askMode=false; onboarding=true;
   await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name} — then I can give you a better estimate.` : "Let's confirm your coverage — then I can give you a better estimate.", {first:true});
   await verifyCoverage();
   await bot("Good news — with your plan, your Bold visits are $0.");
@@ -1617,6 +1617,8 @@ async function runOnboarding(){
   onboarding=false;   // flow complete
   await bot(`That's everything, ${PROFILE.name}. You're all set.`);
   summary();
+  composer.hidden=false; composer.classList.add("open");   // now open the free-text box for any questions
+  await bot("I'm right here if you have any questions — just type below.");
 }
 
 /* ---------- open-text chat: ask June anything, anytime (runs alongside the guided flow) ---------- */
