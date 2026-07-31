@@ -1212,11 +1212,10 @@ async function showInsurance(){
   const ok = await new Promise(resolve=>{
     const node=el(`<div>
       <div class="inscard">
-        <div class="seal">✓ Verified</div>
+        <div class="seal">What we found</div>
         <div class="plan">${esc(PROFILE.insurerChosen && PROFILE.insurer ? PROFILE.insurer : "Medicare")}</div>
-        <div class="nm">${esc(PROFILE.name)} S.</div>
-        <div class="mid">MEMBER ID ·······789</div>
-        <div class="cov">$0 copay for virtual visits with Bold</div>
+        <div class="nm">${esc(PROFILE.name)}${PROFILE.last?(" "+esc(PROFILE.last.charAt(0))+"."):""}</div>
+        <div class="cov">Most Bold members pay $0 for virtual visits</div>
       </div>
       <button class="go" style="margin-top:12px">That's me — continue</button>
       <button class="skip">This isn't right</button>
@@ -1270,7 +1269,7 @@ async function verifyCoverage(){
   }
   PROFILE.dob = await askField("Last one — what's your date of birth?", "", "text", "MM/DD/YYYY", "date");
   showComposer();   // identity captured — text box available for the rest of the flow
-  await bot("Thanks — pulling up your coverage now.");
+  await bot("Thanks — here's what we found. Does this look right?");
   await wait(400);
   await showInsurance();
   PROFILE.coverageConfirmed=true;
@@ -1682,7 +1681,7 @@ async function runOnboarding(){
   askMode=false; onboarding=true; endMode=false;
   await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name} — then I can give you a better estimate.` : "Let's confirm your coverage — then I can give you a better estimate.", {first:true});
   await verifyCoverage();
-  await bot("Good news — with your plan, your Bold visits are $0.");
+  await bot("Good news — with Medicare, most Bold members pay $0 for their visits.");
   setProgress(.22);
   await bot("Now a few quick questions so I can tailor your care.");
 
