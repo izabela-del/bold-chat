@@ -284,6 +284,9 @@
   .crow .cv.free{color:var(--teal-ink);}
   .crow .cv.vary{font-size:16px; color:var(--blue);}
   .elig-plain{font-size:15px; line-height:1.6; color:var(--ink); margin:0 0 15px;}
+  .elig-consult{background:var(--brand-soft); border-radius:12px; padding:12px 14px; margin:0 0 14px; display:flex; flex-direction:column; gap:3px;}
+  .elig-consult b{font-size:14px; color:var(--brand-press);}
+  .elig-consult span{font-size:13px; line-height:1.5; color:var(--ink);}
   .faqs{display:flex; flex-direction:column; gap:8px; margin-bottom:16px;}
   .faq{border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff;}
   .faq > button{width:100%; text-align:left; background:#fff; border:0; font:inherit; font-size:14px; font-weight:700; color:var(--brand-press); padding:13px 14px; cursor:pointer; display:flex; justify-content:space-between; gap:10px; align-items:center;}
@@ -1404,7 +1407,7 @@ const OUTCOMES = {
   },
   lifestyle:{
     key:"lifestyle", badge:"Lifestyle plan", cls:"lifestyle",
-    title:"Here's the good news — you don't need medication to start losing weight.",
+    title:"Good news — you're covered and ready to get started.",
     rows:[
       {k:"Your Bold visits", v:"$0", cls:"free", note:"Covered by UnitedHealthcare"},
       {k:"Your personalized care plan", v:"Included", cls:"free", note:"Meals, movement, sleep — no calorie counting"}
@@ -1443,8 +1446,9 @@ function renderEligInto(container,key){
         ${o.rows.map(r=>`<div class="crow"><div><div class="ck">${r.k}</div><div class="cnote">${r.note.replace("UnitedHealthcare", PROFILE.insurer)}</div></div><div class="cv ${r.cls}">${r.v}</div></div>`).join("")}
       </div>
       <p class="elig-plain">${o.plain}</p>
+      <div class="elig-consult"><b>Next: your free 15-minute consult</b><span>A Bold care coordinator confirms your coverage and exact costs, answers your questions, and books your first provider visit — free, no obligation.</span></div>
       <button class="elig-cta">Book my free 15-min consult</button>
-      <p class="elig-fine">A real care coordinator reviews this with you — for free — before anything is prescribed. Nothing here is a prescription or a guarantee.</p>
+      <p class="elig-fine">Nothing here is a prescription or a guarantee.</p>
     </div>`;
   container._ctaHook && container.querySelector(".elig-cta").addEventListener("click", container._ctaHook);
 }
