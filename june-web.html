@@ -1548,7 +1548,7 @@ async function runOnboarding(){
       {label:"Yes, currently", value:"current"}
     ]); PROFILE.glp1hx=hx[0];
     if((PROFILE.bmi||0)<=35){
-      await bot("Last few — do any of these apply? (People with a higher BMI can skip this.)");
+      await bot("Last few — do any of these apply?");
       PROFILE.comorbid=await askChips([
         {label:"High cholesterol", value:"chol"},
         {label:"Sleep apnea", value:"apnea"},
