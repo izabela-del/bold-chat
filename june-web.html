@@ -1270,21 +1270,25 @@ async function verifyCoverage(){
     }
   }
   PROFILE.dob = await askField("Last one — what's your date of birth?", "", "text", "MM/DD/YYYY", "date");
-  showComposer();   // identity captured — text box available for the rest of the flow
-  await bot("And which state do you live in? Bold's coverage depends on where you are.");
-  const st=await askChips([
-    {label:"California", value:"CA"},
-    {label:"Texas", value:"TX"},
-    {label:"Pennsylvania", value:"PA"},
-    {label:"Another state", value:"other"}
-  ],{radio:true});
-  PROFILE.state=st[0];
-  if(PROFILE.state==="other"){
-    PROFILE.eligibleState=false;
+  // guided coverage steps stay buttons-only (no text box that could derail the flow)
+  let stateOk=false;
+  while(!stateOk){
+    await bot("And which state do you live in? Bold's coverage depends on where you are.");
+    const st=await askChips([
+      {label:"California", value:"CA"},
+      {label:"Texas", value:"TX"},
+      {label:"Pennsylvania", value:"PA"},
+      {label:"Another state", value:"other"}
+    ],{radio:true});
+    PROFILE.state=st[0];
+    if(PROFILE.state!=="other"){ stateOk=true; break; }
     await bot("Right now Bold cares for members in California, Texas, and Pennsylvania — and we're expanding.");
+    if(await askYesNo("Wait — I'm in CA, TX, or PA","No, I'm elsewhere")) continue;   // mistap recovery — ask again
+    PROFILE.eligibleState=false;
     await bot("You're a step ahead of us! Want me to add you to the waitlist so you're first to know when Bold reaches your state?");
     if(await askYesNo("Add me to the waitlist","No thanks")) await bot("Done — you're on the list. We'll reach out the moment Bold is near you.");
     else await bot("No problem at all.");
+    showComposer();
     await bot("In the meantime, I'm right here — ask me anything about Bold.");
     return;
   }
@@ -1732,7 +1736,7 @@ async function runOnboarding(){
       {label:"None of these", value:"none", exclusive:true}
     ],{multi:true});
     await bot("Standard intake next — your height and weight help your provider set a safe, personalized plan. I'll take them one at a time.");
-    hideComposer(); await askHeight(); await askWeight(); showComposer();
+    await askHeight(); await askWeight();
     setProgress(.6);
     await bot("Have you taken any weight-loss medications before?");
     const hx=await askChips([
@@ -1755,7 +1759,7 @@ async function runOnboarding(){
   }
 
   await bot("Anything you'd like your provider to focus on during your visit?");
-  hideComposer(); await askIntake(); showComposer();
+  await askIntake();
   setProgress(.78);
 
   if(PROFILE.goal==="weight"){
@@ -1770,7 +1774,7 @@ async function runOnboarding(){
   await bot("Last step — let's book your free 15-minute consultation with a Bold care coordinator. This is where a real person confirms your coverage and your exact costs — no surprises — answers any questions, and schedules your first visit with a provider. It's free, with no obligation.");
   await scheduler();
   await bot("Perfect — what's the best number for your coordinator to call you at?");
-  hideComposer(); await askPhone(); showComposer();
+  await askPhone();
   setProgress(.92);
 
   await bot("Last step — a few standard agreements every Bold member signs. I'll go through them one at a time.");
@@ -1878,6 +1882,9 @@ function sendText(){
   if(/cost|price|pay|afford|copay|how much|\$/i.test(t)) wantCoverageOffer=true;
   const safe=safetyText(t);
   if(safe){ bot(safe).finally(()=>{ replying=false; }); return; }        // emergencies: no network
+  // in Ask mode, a typed "verify my coverage / let's get started" actually STARTS the guided flow
+  // (so June doesn't just promise a prompt that never loads)
+  if(askMode && (/\b(verify|confirm|check)\b[\s\S]{0,20}\b(coverage|insurance|eligib)/i.test(t) || /\blet'?s (do it|get started|start|go)\b/i.test(t) || /\b(sign me up|get me started|get started)\b/i.test(t))){ replying=false; steerToOnboarding(); return; }
   if(onboarding){ const corr=detectCorrection(t); if(hasCorrection(corr)){ applyCorrection(corr).finally(()=>{ replying=false; }); return; } } // "fix my name" → overwrite it, don't defer
   if(JUNE_PROXY){ askJune(t).finally(()=>{ replying=false; }); return; } // real Claude
   juneReply(t).finally(()=>{ replying=false; });                        // canned fallback
