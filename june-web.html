@@ -1151,7 +1151,7 @@ function setAutoRead(on){
 sayBtn.onclick=()=>setAutoRead(!autoRead);
 
 /* ---------- widgets (each returns a Promise) ---------- */
-function askChips(options,{multi=false,cta="Continue"}={}){
+function askChips(options,{multi=false,radio=false,cta="Continue"}={}){
   return new Promise(resolve=>{
     const node=el(`<div><div class="chips"></div></div>`);
     const chips=node.querySelector(".chips");
@@ -1164,6 +1164,9 @@ function askChips(options,{multi=false,cta="Continue"}={}){
           else { const ex=options.find(x=>x.exclusive); if(ex){ const exBtn=[...chips.children].find(c=>c.textContent===ex.label); if(exBtn){exBtn.classList.remove("sel"); chosen.delete(ex.value);} } }
           if(chosen.has(o.value)){ chosen.delete(o.value); b.classList.remove("sel"); } else { chosen.add(o.value); b.classList.add("sel"); }
           goBtn.disabled=chosen.size===0;
+        } else if(radio){
+          chips.querySelectorAll(".chip").forEach(c=>c.classList.remove("sel"));
+          b.classList.add("sel"); chosen.clear(); chosen.add(o.value); goBtn.disabled=false;
         } else {
           const ctl=node.closest(".ctl"); lock(ctl); me(o.label); resolve([o.value]);
         }
@@ -1171,7 +1174,7 @@ function askChips(options,{multi=false,cta="Continue"}={}){
       chips.appendChild(b);
     });
     let goBtn;
-    if(multi){
+    if(multi||radio){
       goBtn=el(`<button class="go" disabled>${cta}</button>`);
       goBtn.onclick=()=>{ const ctl=node.closest(".ctl"); lock(ctl); const labels=options.filter(o=>chosen.has(o.value)).map(o=>o.label); me(labels.join(", ")); resolve([...chosen]); };
       node.appendChild(goBtn);
@@ -1685,15 +1688,14 @@ async function runOnboarding(){
   setProgress(.22);
   await bot("Now a few quick questions so I can tailor your care.");
 
-  await bot("What would you like Bold to help you with? Pick any that apply.");
+  await bot("What would you most like Bold to help you with?");
   const g=await askChips([
     {label:"Managing my weight", value:"weight"},
     {label:"More energy", value:"energy"},
     {label:"Less joint pain", value:"pain"},
     {label:"Staying strong & mobile", value:"mobility"}
-  ],{multi:true});
-  PROFILE.goals=g;
-  PROFILE.goal = g.includes("weight") ? "weight" : (g[0]||"weight");
+  ],{radio:true});
+  PROFILE.goal=g[0];
   setProgress(.38);
 
   await bot("Next, a standard health check — the same few questions every new member answers, so your provider knows Bold's a good fit. Any of these apply to you?");
@@ -1706,7 +1708,7 @@ async function runOnboarding(){
   setProgress(.5);
 
   if(PROFILE.goal==="weight"){
-    await bot("Since managing your weight is one of your goals, I can check whether a GLP-1 medication might be an option — and exactly what it would cost you. A few more questions.");
+    await bot("Since weight is your focus, I can check whether a GLP-1 medication might be an option — and exactly what it would cost you. A few more questions.");
     PROFILE.contra=await askChips([
       {label:"Thyroid cancer (personal or family)", value:"thyroid"},
       {label:"Pancreatitis", value:"pancreatitis"},
