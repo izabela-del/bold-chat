@@ -1211,34 +1211,33 @@ function askIdentity(){
 }
 
 async function showInsurance(){
-  PROFILE.insurerChosen=false;   // only becomes true if they explicitly pick their plan below
-  const ok = await new Promise(resolve=>{
-    const node=el(`<div>
-      <div class="inscard">
-        <div class="seal">What we found</div>
-        <div class="plan">${esc(PROFILE.insurerChosen && PROFILE.insurer ? PROFILE.insurer : "Medicare")}</div>
-        <div class="nm">${esc(PROFILE.name)}${PROFILE.last?(" "+esc(PROFILE.last.charAt(0))+"."):""}</div>
-        <div class="cov">Most Bold members pay $0 for virtual visits</div>
-      </div>
-      <button class="go" style="margin-top:12px">That's me — continue</button>
-      <button class="skip">This isn't right</button>
-    </div>`);
-    node.querySelector(".go").onclick=()=>{ lock(node.closest(".ctl")); me("That's me"); resolve(true); };
-    node.querySelector(".skip").onclick=()=>{ lock(node.closest(".ctl")); me("This isn't right"); resolve(false); };
-    control(node);
-  });
-  if(ok) return;
-  // June updates the plan herself — this is guided setup, not an account change
-  await bot("No problem — I can update that for you. Which plan are you on?");
-  const chosen = await askChips([
-    {label:"UnitedHealthcare", value:"UnitedHealthcare"},
-    {label:"Aetna", value:"Aetna"},
-    {label:"Humana", value:"Humana"},
-    {label:"Cigna", value:"Cigna"},
-    {label:"Original Medicare", value:"Original Medicare"}
-  ]);
-  PROFILE.insurer = chosen[0]; PROFILE.insurerChosen = true;
-  await bot(`Updated to ${PROFILE.insurer} — thanks for the correction. Good news: your Bold visits are still fully covered at $0.`);
+  PROFILE.insurerChosen=false;
+  await bot("Which type of insurance do you have?");
+  const type=await askChips([
+    {label:"Medicare — Original Medicare (Part A & B)", value:"original"},
+    {label:"Medicare Advantage — a private plan (UnitedHealthcare, Humana, etc.)", value:"advantage"},
+    {label:"None of the above / I'm not sure", value:"unsure"}
+  ],{radio:true});
+  const t=type[0];
+  if(t==="advantage"){
+    await bot("Which carrier is your Medicare Advantage plan through?");
+    const c=await askChips([
+      {label:"UnitedHealthcare", value:"UnitedHealthcare"},
+      {label:"Humana", value:"Humana"},
+      {label:"Aetna", value:"Aetna"},
+      {label:"Blue Cross Blue Shield", value:"Blue Cross Blue Shield"},
+      {label:"Another plan", value:"other"},
+      {label:"I'm not sure", value:"unsure"}
+    ],{radio:true});
+    if(["UnitedHealthcare","Humana","Aetna","Blue Cross Blue Shield"].includes(c[0])){ PROFILE.insurer=c[0]; PROFILE.insurerChosen=true; await bot(`${PROFILE.insurer} — got it.`); }
+    else { PROFILE.insurer="Medicare Advantage"; PROFILE.insurerChosen=false; await bot("Got it — a Medicare Advantage plan. Your care coordinator will confirm your specific plan's details."); }
+  } else if(t==="original"){
+    PROFILE.insurer="Original Medicare"; PROFILE.insurerChosen=true;
+    await bot("Original Medicare — got it.");
+  } else {
+    PROFILE.insurer=""; PROFILE.insurerChosen=false;
+    await bot("No problem — your care coordinator will help sort out your coverage for free, before anything is scheduled.");
+  }
 }
 
 /* one shared verification step: identity (DOB + state) then insurance — used by the normal flow and the cost on-ramp */
@@ -1290,8 +1289,6 @@ async function verifyCoverage(){
     return;
   }
   PROFILE.eligibleState=true;
-  await bot("Thanks — here's what we found. Does this look right?");
-  await wait(400);
   await showInsurance();
   PROFILE.coverageConfirmed=true;
 }
