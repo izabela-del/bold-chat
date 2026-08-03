@@ -1272,6 +1272,24 @@ async function verifyCoverage(){
   }
   PROFILE.dob = await askField("Last one — what's your date of birth?", "", "text", "MM/DD/YYYY", "date");
   showComposer();   // identity captured — text box available for the rest of the flow
+  await bot("And which state do you live in? Bold's coverage depends on where you are.");
+  const st=await askChips([
+    {label:"California", value:"CA"},
+    {label:"Texas", value:"TX"},
+    {label:"Pennsylvania", value:"PA"},
+    {label:"Another state", value:"other"}
+  ],{radio:true});
+  PROFILE.state=st[0];
+  if(PROFILE.state==="other"){
+    PROFILE.eligibleState=false;
+    await bot("Right now Bold cares for members in California, Texas, and Pennsylvania — and we're expanding.");
+    await bot("You're a step ahead of us! Want me to add you to the waitlist so you're first to know when Bold reaches your state?");
+    if(await askYesNo("Add me to the waitlist","No thanks")) await bot("Done — you're on the list. We'll reach out the moment Bold is near you.");
+    else await bot("No problem at all.");
+    await bot("In the meantime, I'm right here — ask me anything about Bold.");
+    return;
+  }
+  PROFILE.eligibleState=true;
   await bot("Thanks — here's what we found. Does this look right?");
   await wait(400);
   await showInsurance();
@@ -1684,6 +1702,7 @@ async function runOnboarding(){
   askMode=false; onboarding=true; endMode=false;
   await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name} — then I can give you a better estimate.` : "Let's confirm your coverage — then I can give you a better estimate.", {first:true});
   await verifyCoverage();
+  if(PROFILE.eligibleState===false){ onboarding=false; return; }   // out of Bold's service area — stop here; composer stays open for questions
   await bot("Good news — with Medicare, most Bold members pay $0 for their visits.");
   setProgress(.22);
   await bot("Now a few quick questions so I can tailor your care.");
