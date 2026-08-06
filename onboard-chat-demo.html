@@ -697,6 +697,8 @@
   .opt-cta{align-self:flex-start;border:none;background:var(--brand);color:#fff;font-size:16px;font-weight:700;padding:13px 30px;border-radius:26px;cursor:pointer;font-family:inherit;margin-top:2px;}
   .opt-cta:active{background:var(--brand-press);}
   .opt-cta:disabled{background:#d9d5e2;}
+  /* sticky Continue for multi-select (stays reachable on long lists / mweb) */
+  .messages > .opt-cta{position:sticky;bottom:8px;align-self:stretch;text-align:center;margin-top:14px;z-index:5;box-shadow:0 6px 20px rgba(91,22,224,.32);}
   .num-inline{align-self:stretch;width:100%;display:flex;flex-direction:column;gap:10px;}
   .num-inline .nl{font-size:13px;font-weight:700;color:var(--ink-soft);}
 
