@@ -650,6 +650,18 @@
   .pay .col .k{font-size:12px;color:var(--ink-soft);} .pay .col .v{font-size:19px;font-weight:700;margin-top:2px;} .pay .col .u{font-size:12px;color:var(--ink-soft);}
   .infobtn{border:none;background:none;color:var(--brand);cursor:pointer;font-size:13px;text-decoration:underline;padding:0;}
   .infonote{background:var(--amber-bg);color:var(--amber-ink);font-size:13px;line-height:1.45;padding:10px 12px;border-radius:10px;margin-top:10px;display:none;}
+  .costcard{padding:0;overflow:hidden;}
+  .costcard .cc-band{background:var(--teal-soft);color:var(--teal);font-size:12px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:9px 16px;}
+  .costcard .cc-body{padding:15px 16px 16px;}
+  .costcard .cols{display:flex;gap:0;}
+  .costcard .col{flex:1;padding:0 16px;}
+  .costcard .col:first-child{padding-left:0;border-right:1px solid var(--line);}
+  .costcard .col:last-child{padding-right:0;}
+  .costcard .col .k{font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:5px;}
+  .costcard .col .v{font-size:24px;font-weight:800;margin-top:4px;color:var(--ink);line-height:1.1;white-space:nowrap;}
+  .costcard .col .v.txt{font-size:18px;white-space:normal;line-height:1.15;}
+  .costcard .col .u{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .costcard .infonote{margin-top:14px;}
   .quote{background:var(--ai);border-radius:16px;padding:14px;display:flex;gap:11px;max-width:94%;align-self:flex-start;}
   .quote .qav{flex:0 0 40px;width:40px;height:40px;border-radius:50%;background:#cdbfe0;display:flex;align-items:center;justify-content:center;font-weight:700;color:#5b4a78;font-size:13px;}
   .quote .qt{font-size:13.5px;line-height:1.5;color:#3a2f57;font-style:italic;} .quote .qn{font-size:12.5px;font-weight:700;color:var(--brand-press);margin-top:8px;font-style:normal;}
@@ -1219,6 +1231,16 @@ function computeOutcome(){
 function programCard(pay){var e=document.createElement('div');e.className='card';e.innerHTML='<h3>Bold doctor-supervised weight-loss program for adults 65+</h3><ul><li><span class="ck">✓</span><span><strong>Lose fat, and keep it off.</strong> Reduce pain and get energy with a lifestyle Care Plan.</span></li><li><span class="ck">✓</span><span>Access FDA-approved GLP-1s like Wegovy® and Zepbound® if prescribed.</span></li><li><span class="ck">✓</span><span><strong>Your provider stays in the loop</strong> to keep you safe and adjusts the plan as you go.</span></li></ul>'+pay;return e;}
 function payCovered50(){return '<div class="pay"><div class="lbl">Your coverage</div><div class="cols"><div class="col"><div class="k">Initial visit</div><div class="v">$0-25</div><div class="u">out of pocket</div></div><div class="col"><div class="k">GLP-1s</div><div class="v">$50</div><div class="u">monthly copay</div></div></div></div>';}
 function payPartD(){return '<div class="pay"><div class="lbl">Your coverage</div><div class="cols"><div class="col"><div class="k">Initial visit</div><div class="v">$0-25</div><div class="u">out of pocket</div></div><div class="col"><div class="k">GLP-1s <button class="infobtn" id="ppdI">ⓘ</button></div><div class="v">Cost varies</div><div class="u">based on insurance</div></div></div><div class="infonote" id="ppdNote">We\'ll confirm the final cost with you before you need to pay anything. It\'s based on your Part D benefits and remaining deductible — starting at $30/month before you meet your deductible.</div></div>';}
+function costCard(out){
+  var e=document.createElement('div');e.className='card costcard';
+  var col2;
+  if(out==='partd') col2='<div class="col"><div class="k">GLP-1s <button class="infobtn" id="ppdI">ⓘ</button></div><div class="v txt">Cost varies</div><div class="u">based on insurance</div></div>';
+  else if(out==='lifestyle') col2='<div class="col"><div class="k">Medication</div><div class="v">$0</div><div class="u">none needed</div></div>';
+  else col2='<div class="col"><div class="k">GLP-1s</div><div class="v">$50</div><div class="u">monthly copay</div></div>';
+  var note = out==='partd' ? '<div class="infonote" id="ppdNote">We\'ll confirm the final cost with you before you need to pay anything. It\'s based on your Part D benefits and remaining deductible — starting at $30/month before you meet your deductible.</div>' : '';
+  e.innerHTML='<div class="cc-band">Your coverage</div><div class="cc-body"><div class="cols"><div class="col"><div class="k">Initial visit</div><div class="v">$0-25</div><div class="u">out of pocket</div></div>'+col2+'</div>'+note+'</div>';
+  return e;
+}
 function quote(t,n){var e=document.createElement('div');e.className='quote';e.innerHTML='<div class="qav">SP</div><div><div class="qt">'+esc(t)+'</div><div class="qn">'+esc(n)+'</div></div>';return e;}
 async function renderVerdict(){
   var out=computeOutcome();state.outcome=out;clearDock();var faqs;
@@ -1226,11 +1248,15 @@ async function renderVerdict(){
     await say("Carol, the best fit for you is Bold's **lifestyle-medicine weight-loss program** — a proven way to lose weight without medication.");
     await say("It's doctor-supervised and built for adults 65+. A GLP-1 isn't part of your plan right now, and that's completely okay — lifestyle change is the foundation that makes results last.");
     var c=document.createElement('div');c.className='card';c.innerHTML='<h3>Bold lifestyle-medicine weight-loss program</h3><ul><li><span class="ck">✓</span><span><strong>Practical lifestyle support:</strong> meals, movement, sleep. No calorie counting.</span></li><li><span class="ck">✓</span><span>Your provider stays in the loop and adjusts the plan as you go.</span></li><li><span class="ck">✓</span><span><strong>Lose fat, not strength.</strong> Reduce pain and get more energy.</span></li></ul>';addWidget(c);
+    await say("And your cost stays simple — here's what to expect:");
+    addWidget(costCard('lifestyle'));
     faqs=[{label:'How medication coverage works.',ans:["Based on Medicare eligibility criteria, your Bold plan doesn't include a GLP-1 right now — and that's okay. Lifestyle change is the foundation of safe weight loss and what makes results last. You're starting with the part that matters most."]},{label:'Could I be eligible for GLP-1s later?',ans:["**Maybe** — if your health needs or insurance coverage change, your Bold provider can revisit it with you. Starting with lifestyle lays a strong foundation for lasting weight loss."]}];
   }else{
     await say(out==='partd' ? "Good news, "+state.name+" — you've got a **great plan**." : "Good news, "+state.name+" — you're a **strong candidate**.");
     await say("Here's the program your Bold provider would build with you.");
-    addWidget(programCard(out==='partd'?payPartD():payCovered50()));
+    addWidget(programCard(''));
+    await say("Here's what you can expect to pay — no surprises:");
+    addWidget(costCard(out));
     if(out==='partd'){var ib=document.getElementById('ppdI');if(ib)ib.onclick=function(){var n=document.getElementById('ppdNote');n.style.display=n.style.display==='block'?'none':'block';down();};}
     var cov=out==='partd'?["**1. Meet with your Bold provider.** Together, you'll determine whether a GLP-1 is suitable for you.","**2. Your provider will work with Medicare** to get your prescription covered — your GLP-1 goes through your standard Part D plan, with costs as low as **$30/month** before you meet your deductible. We'll confirm the final cost with you before you pay."]:["**1. Meet with your Bold provider.** Together, you'll determine whether a GLP-1 is suitable for you.","**2. Your provider will work with Medicare** to get your prescription covered.","**3. When Medicare approves your prescription**, you'll pay a flat **$50 monthly copay** for your GLP-1 medications."];
     faqs=[{label:'How medication coverage works.',ans:cov},{label:'Are GLP-1s required?',ans:["**No!** If a GLP-1 isn't the right fit for you, your provider will still support you with a personalized lifestyle plan to reach your weight-management goals."]}];
