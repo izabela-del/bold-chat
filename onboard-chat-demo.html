@@ -1292,15 +1292,15 @@ async function renderVerdict(){
   verdictActions(faqs);
 }
 function verdictActions(faqs){
-  var wrap=document.createElement('div');wrap.className='vactions';
-  var b=document.createElement('button');b.className='opt-cta';b.textContent='Schedule my free call';b.onclick=function(){closeChat();show('v-schedule');};wrap.appendChild(b);
   var remaining=faqs.filter(function(f){return !f._asked;});
+  var btn=document.createElement('button');btn.className='opt-cta';btn.textContent='Schedule my free call';btn.onclick=function(){closeChat();show('v-schedule');};
+  var prow=null;
   if(remaining.length){
-    var prow=document.createElement('div');prow.className='pillrow';
-    remaining.forEach(function(item){var p=document.createElement('button');p.className='faqpill';p.innerHTML='💬 '+esc(item.label);p.onclick=async function(){item._asked=true;wrap.remove();addUser(item.label);for(var i=0;i<item.ans.length;i++){showTyping();await wait(430);hideTyping();addAI(item.ans[i]);await wait(140);}verdictActions(faqs);};prow.appendChild(p);});
-    wrap.appendChild(prow);
+    prow=document.createElement('div');prow.className='pillrow';
+    remaining.forEach(function(item){var p=document.createElement('button');p.className='faqpill';p.innerHTML='💬 '+esc(item.label);p.onclick=async function(){item._asked=true;if(prow)prow.remove();btn.remove();addUser(item.label);for(var i=0;i<item.ans.length;i++){showTyping();await wait(430);hideTyping();addAI(item.ans[i]);await wait(140);}verdictActions(faqs);};prow.appendChild(p);});
+    M.appendChild(prow);
   }
-  M.appendChild(wrap);down();
+  M.appendChild(btn);down();
 }
 
 /* ---- chat input controls ---- */
