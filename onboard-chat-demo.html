@@ -748,7 +748,11 @@
   .ins-badge svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.6;}
   .ins-correct{font-size:13px;color:var(--ink-soft);} .ins-correct u{color:var(--brand);text-decoration:underline;}
   .ic-orb{position:relative;display:flex;justify-content:center;margin:16px 0 30px;}
-  .ic-orb::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);width:50px;height:11px;border-radius:50%;background:radial-gradient(closest-side, rgba(43,54,74,.30), rgba(43,54,74,0));filter:blur(1px);}
+  .ic-orb::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);width:50px;height:11px;border-radius:50%;background:radial-gradient(closest-side, rgba(43,54,74,.30), rgba(43,54,74,0));filter:blur(1px);animation:juneShadow 3.2s ease-in-out infinite;}
+  .ic-orb svg{animation:juneFloat 3.2s ease-in-out infinite;}
+  @keyframes juneFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes juneShadow{0%,100%{transform:translateX(-50%) scale(1);opacity:.9}50%{transform:translateX(-50%) scale(.82);opacity:.55}}
+  @media (prefers-reduced-motion:reduce){.ic-orb svg,.ic-orb::after{animation:none!important;}}
   .ic-orb .cworb{width:56px;height:56px;margin:6px auto 2px;box-shadow:inset 0 -5px 9px rgba(38,7,92,.3);}
   .ic-orb .cworb-face .eyes{gap:6px;}
   .ic-orb .cworb-face .eye{width:8px;height:10px;box-shadow:0 0 4px rgba(158,134,236,.4);}
