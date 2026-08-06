@@ -640,7 +640,7 @@
   @keyframes tp{0%,60%,100%{opacity:.3}30%{opacity:1}}
   .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 6px 20px rgba(20,16,30,.06);max-width:94%;align-self:flex-start;}
   .card h3{margin:0 0 10px;font-size:16px;font-weight:700;display:flex;gap:10px;align-items:center;}
-  .card .plabel{width:34px;height:34px;border-radius:9px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center;flex:0 0 34px;}
+  .card .plabel{width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex:0 0 38px;}
   .card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;}
   .card li{display:flex;gap:9px;font-size:14px;line-height:1.4;}
   .card li .ck{flex:0 0 18px;width:18px;height:18px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;}
@@ -779,7 +779,6 @@
 </defs></svg>
 
 <div class="phone">
-  <div class="statusbar"><span>9:41</span><span class="r">••• ⌃ ▮</span></div>
   <div class="app">
 
     <!-- ============ LANDING (exact june-web) ============ -->
@@ -1152,7 +1151,7 @@ function openChat(){ document.getElementById('v-chat').classList.add('open'); st
 function closeChat(){ document.getElementById('v-chat').classList.remove('open'); }
 
 /* ---- orb ---- */
-function orb(s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 100 100"><ellipse cx="50" cy="94" rx="30" ry="6" fill="#241046" opacity="0.16"/><circle cx="50" cy="48" r="44" fill="url(#og)"/><ellipse cx="34" cy="26" rx="15" ry="10" fill="#fff" opacity="0.42"/><circle cx="40" cy="50" r="5.4" fill="#2e1b52"/><circle cx="62" cy="50" r="5.4" fill="#2e1b52"/><path d="M39 63 Q51 72 63 63" stroke="#2e1b52" stroke-width="4.6" fill="none" stroke-linecap="round"/></svg>';}
+function orb(s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 100 100" fill="none"><path d="M50 7 C74 7 92 26 92 51 C92 75 78 93 54 94 C52.5 94.1 47.5 94.1 46 94 C22 93 8 75 8 51 C8 26 26 7 50 7 Z" fill="#c6dbf3" stroke="#566f8e" stroke-width="4"/><ellipse cx="35" cy="30" rx="12" ry="8" fill="#ffffff" opacity="0.5" transform="rotate(-18 35 30)"/><ellipse cx="39" cy="52" rx="7" ry="7" fill="#111"><animate attributeName="ry" values="7;7;1;7;7" keyTimes="0;0.9;0.945;0.99;1" dur="4.2s" repeatCount="indefinite"/></ellipse><ellipse cx="61" cy="52" rx="7" ry="7" fill="#111"><animate attributeName="ry" values="7;7;1;7;7" keyTimes="0;0.9;0.945;0.99;1" dur="4.2s" repeatCount="indefinite"/></ellipse><path d="M43 66 Q50 73 57 66" stroke="#111" stroke-width="3.4" fill="none" stroke-linecap="round"/></svg>';}
 document.getElementById('headOrb').innerHTML='<span class="eyes"><span class="eye"></span><span class="eye"></span></span><span class="mouth"></span>';
 document.getElementById('introOrb').innerHTML='<div class="cworb"><div class="cworb-face"><div class="eyes"><span class="eye"></span><span class="eye"></span></div><div class="mouth"></div></div></div>';
 
@@ -1215,7 +1214,7 @@ function computeOutcome(){
   if(partDDx)return 'partd';
   return 'covered50';
 }
-function programCard(pay){var e=document.createElement('div');e.className='card';e.innerHTML='<h3><span class="plabel">'+orb(24)+'</span>Bold doctor-supervised weight-loss program for adults 65+</h3><ul><li><span class="ck">✓</span><span><strong>Lose fat, and keep it off.</strong> Reduce pain and get energy with a lifestyle Care Plan.</span></li><li><span class="ck">✓</span><span>Access FDA-approved GLP-1s like Wegovy® and Zepbound® if prescribed.</span></li><li><span class="ck">✓</span><span><strong>Your provider stays in the loop</strong> to keep you safe and adjusts the plan as you go.</span></li></ul>'+pay;return e;}
+function programCard(pay){var e=document.createElement('div');e.className='card';e.innerHTML='<h3><span class="plabel">'+orb(36)+'</span>Bold doctor-supervised weight-loss program for adults 65+</h3><ul><li><span class="ck">✓</span><span><strong>Lose fat, and keep it off.</strong> Reduce pain and get energy with a lifestyle Care Plan.</span></li><li><span class="ck">✓</span><span>Access FDA-approved GLP-1s like Wegovy® and Zepbound® if prescribed.</span></li><li><span class="ck">✓</span><span><strong>Your provider stays in the loop</strong> to keep you safe and adjusts the plan as you go.</span></li></ul>'+pay;return e;}
 function payCovered50(){return '<div class="pay"><div class="lbl">Your coverage</div><div class="cols"><div class="col"><div class="k">Initial visit</div><div class="v">$0-25</div><div class="u">out of pocket</div></div><div class="col"><div class="k">GLP-1s</div><div class="v">$50</div><div class="u">monthly copay</div></div></div></div>';}
 function payPartD(){return '<div class="pay"><div class="lbl">Your coverage</div><div class="cols"><div class="col"><div class="k">Initial visit</div><div class="v">$0-25</div><div class="u">out of pocket</div></div><div class="col"><div class="k">GLP-1s <button class="infobtn" id="ppdI">ⓘ</button></div><div class="v">Cost varies</div><div class="u">based on insurance</div></div></div><div class="infonote" id="ppdNote">We\'ll confirm the final cost with you before you need to pay anything. It\'s based on your Part D benefits and remaining deductible — starting at $30/month before you meet your deductible.</div></div>';}
 function quote(t,n){var e=document.createElement('div');e.className='quote';e.innerHTML='<div class="qav">SP</div><div><div class="qt">'+esc(t)+'</div><div class="qn">'+esc(n)+'</div></div>';return e;}
@@ -1224,7 +1223,7 @@ async function renderVerdict(){
   if(out==='lifestyle'){
     await say("Carol, the best fit for you is Bold's **lifestyle-medicine weight-loss program** — a proven way to lose weight without medication.");
     await say("It's doctor-supervised and built for adults 65+. A GLP-1 isn't part of your plan right now, and that's completely okay — lifestyle change is the foundation that makes results last.");
-    var c=document.createElement('div');c.className='card';c.innerHTML='<h3><span class="plabel">'+orb(24)+'</span>Bold lifestyle-medicine weight-loss program</h3><ul><li><span class="ck">✓</span><span><strong>Practical lifestyle support:</strong> meals, movement, sleep. No calorie counting.</span></li><li><span class="ck">✓</span><span>Your provider stays in the loop and adjusts the plan as you go.</span></li><li><span class="ck">✓</span><span><strong>Lose fat, not strength.</strong> Reduce pain and get more energy.</span></li></ul>';addWidget(c);
+    var c=document.createElement('div');c.className='card';c.innerHTML='<h3><span class="plabel">'+orb(36)+'</span>Bold lifestyle-medicine weight-loss program</h3><ul><li><span class="ck">✓</span><span><strong>Practical lifestyle support:</strong> meals, movement, sleep. No calorie counting.</span></li><li><span class="ck">✓</span><span>Your provider stays in the loop and adjusts the plan as you go.</span></li><li><span class="ck">✓</span><span><strong>Lose fat, not strength.</strong> Reduce pain and get more energy.</span></li></ul>';addWidget(c);
     faqs=[{label:'How medication coverage works.',ans:["Based on Medicare eligibility criteria, your Bold plan doesn't include a GLP-1 right now — and that's okay. Lifestyle change is the foundation of safe weight loss and what makes results last. You're starting with the part that matters most."]},{label:'Could I be eligible for GLP-1s later?',ans:["**Maybe** — if your health needs or insurance coverage change, your Bold provider can revisit it with you. Starting with lifestyle lays a strong foundation for lasting weight loss."]}];
   }else{
     await say(out==='partd' ? "Good news, "+state.name+" — you've got a **great plan**." : "Good news, "+state.name+" — you're a **strong candidate**.");
@@ -1239,10 +1238,13 @@ async function renderVerdict(){
 }
 function verdictActions(faqs){
   var wrap=document.createElement('div');wrap.className='vactions';
-  var prow=document.createElement('div');prow.className='pillrow';
-  faqs.forEach(function(item){var p=document.createElement('button');p.className='faqpill';p.innerHTML='💬 '+esc(item.label);p.onclick=async function(){wrap.remove();addUser(item.label);for(var i=0;i<item.ans.length;i++){showTyping();await wait(430);hideTyping();addAI(item.ans[i]);await wait(140);}verdictActions(faqs);};prow.appendChild(p);});
-  wrap.appendChild(prow);
-  var b=document.createElement('button');b.className='opt-cta';b.textContent='Schedule intake call';b.onclick=function(){closeChat();show('v-schedule');};wrap.appendChild(b);
+  var b=document.createElement('button');b.className='opt-cta';b.textContent='Schedule my free call';b.onclick=function(){closeChat();show('v-schedule');};wrap.appendChild(b);
+  var remaining=faqs.filter(function(f){return !f._asked;});
+  if(remaining.length){
+    var prow=document.createElement('div');prow.className='pillrow';
+    remaining.forEach(function(item){var p=document.createElement('button');p.className='faqpill';p.innerHTML='💬 '+esc(item.label);p.onclick=async function(){item._asked=true;wrap.remove();addUser(item.label);for(var i=0;i<item.ans.length;i++){showTyping();await wait(430);hideTyping();addAI(item.ans[i]);await wait(140);}verdictActions(faqs);};prow.appendChild(p);});
+    wrap.appendChild(prow);
+  }
   M.appendChild(wrap);down();
 }
 
@@ -1250,7 +1252,19 @@ function verdictActions(faqs){
 function chips(opts,cb){var wrap=document.createElement('div');wrap.className='opts';opts.forEach(function(o){var c=document.createElement('button');c.className='opt';c.textContent=o;c.onclick=function(){wrap.remove();cb(o);};wrap.appendChild(c);});M.appendChild(wrap);down();}
 function multi(opts,none,cb){var anchor=M.lastElementChild;var sel=[];var wrap=document.createElement('div');wrap.className='opts';opts.forEach(function(o){var c=document.createElement('button');c.className='opt'+(o.length>26?' wide':'');c.textContent=o;c.onclick=function(){if(o===none){sel=[none];}else{var i=sel.indexOf(o);if(i>=0)sel.splice(i,1);else sel.push(o);sel=sel.filter(function(x){return x!==none;});}[].forEach.call(wrap.querySelectorAll('.opt'),function(el,ci){el.classList.toggle('sel',sel.indexOf(opts[ci])>=0);});cta.disabled=sel.length===0;};wrap.appendChild(c);});var cta=document.createElement('button');cta.className='opt-cta';cta.textContent='Continue';cta.disabled=true;cta.onclick=function(){wrap.remove();cta.remove();cb(sel.slice());};M.appendChild(wrap);M.appendChild(cta);if(anchor){M.scrollTop+=anchor.getBoundingClientRect().top-M.getBoundingClientRect().top-12;}else{down();}}
 function numeric(group,fields,cb){var wrap=document.createElement('div');wrap.className='num-inline';var lab=document.createElement('div');lab.className='nl';lab.textContent=group;wrap.appendChild(lab);var row=document.createElement('div');row.className='numrow';var ins={};fields.forEach(function(f){var fd=document.createElement('div');fd.className='numfield';fd.innerHTML='<label>'+esc(f.label)+(f.unit?' ('+f.unit+')':'')+'</label>';var inp=document.createElement('input');inp.type='number';inp.inputMode='numeric';inp.placeholder=f.unit||'';inp.oninput=function(){cta.disabled=!fields.every(function(ff){return ins[ff.key].value!=='';});};fd.appendChild(inp);ins[f.key]=inp;row.appendChild(fd);});wrap.appendChild(row);var cta=document.createElement('button');cta.className='opt-cta';cta.textContent='Continue';cta.disabled=true;cta.onclick=function(){var v={};fields.forEach(function(f){v[f.key]=ins[f.key].value;});wrap.remove();cb(v);};wrap.appendChild(cta);M.appendChild(wrap);down();}
-function memberId(cb){var wrap=document.createElement('div');wrap.className='num-inline';wrap.innerHTML='<div class="nl">Insurance ID</div>';var fd=document.createElement('div');fd.className='numfield';var inp=document.createElement('input');inp.type='text';inp.placeholder='Member ID number';fd.appendChild(inp);wrap.appendChild(fd);var cta=document.createElement('button');cta.className='opt-cta';cta.textContent='Continue';cta.disabled=true;inp.oninput=function(){cta.disabled=inp.value.trim()==='';};wrap.appendChild(cta);var pills=document.createElement('div');pills.className='opts';var p1=document.createElement('button');p1.className='opt';p1.textContent='How to find member ID';p1.onclick=async function(){addUser('How to find member ID');showTyping();await wait(430);hideTyping();addAI("It's on the front of your insurance card, usually labeled **Member ID** or **ID #**. No card handy? Tap **Skip for now** and your care team can grab it on your call.");};var p2=document.createElement('button');p2.className='opt';p2.textContent='Skip for now';p2.onclick=function(){wrap.remove();pills.remove();cb(false,null);};pills.appendChild(p1);pills.appendChild(p2);cta.onclick=function(){var val=inp.value.trim();wrap.remove();pills.remove();cb(true,val);};M.appendChild(wrap);M.appendChild(pills);down();}
+function memberId(cb){
+  function render(showHelp){
+    var wrap=document.createElement('div');wrap.className='num-inline';wrap.innerHTML='<div class="nl">Insurance ID</div>';
+    var fd=document.createElement('div');fd.className='numfield';var inp=document.createElement('input');inp.type='text';inp.placeholder='Member ID number';fd.appendChild(inp);wrap.appendChild(fd);
+    var cta=document.createElement('button');cta.className='opt-cta';cta.textContent='Continue';cta.disabled=true;inp.oninput=function(){cta.disabled=inp.value.trim()==='';};wrap.appendChild(cta);
+    var pills=document.createElement('div');pills.className='opts';
+    if(showHelp){var p1=document.createElement('button');p1.className='opt';p1.textContent='Where do I find this?';p1.onclick=async function(){wrap.remove();pills.remove();addUser('Where do I find my member ID?');showTyping();await wait(430);hideTyping();addAI("It's on the front of your insurance card, usually labeled **Member ID** or **ID #**. Go ahead and enter it below — or tap **Skip for now** and your care team can grab it on your call.");await wait(120);render(false);};pills.appendChild(p1);}
+    var p2=document.createElement('button');p2.className='opt';p2.textContent='Skip for now';p2.onclick=function(){wrap.remove();pills.remove();cb(false,null);};pills.appendChild(p2);
+    cta.onclick=function(){var val=inp.value.trim();wrap.remove();pills.remove();cb(true,val);};
+    M.appendChild(wrap);M.appendChild(pills);down();
+  }
+  render(true);
+}
 
 /* ---- schedule ---- */
 var DAYS=[['Tue','Jan 12'],['Wed','Jan 13'],['Thu','Jan 14'],['Fri','Jan 15']];
