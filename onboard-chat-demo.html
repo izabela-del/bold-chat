@@ -669,6 +669,7 @@
   .pillrow{display:flex;flex-wrap:wrap;gap:8px;}
   .faqpill{border:1.5px solid var(--line);background:#faf9fd;color:var(--ink);border-radius:999px;padding:9px 14px;font-size:13.5px;font-weight:600;cursor:pointer;}
   .faqpill.used{opacity:.5;}
+  .vactions{display:flex;flex-direction:column;gap:12px;align-self:flex-start;max-width:100%;}
   /* inline chat options (design 334:3753) */
   .opts{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%;margin:-2px 0 2px;}
   .opt{background:#fff;border:1.5px solid #d9d2f2;border-radius:22px;padding:12px 16px;font-size:15px;font-weight:700;color:var(--brand-press);cursor:pointer;line-height:1.3;text-align:left;font-family:inherit;transition:transform .06s,background .12s,border-color .12s;}
@@ -964,7 +965,7 @@
             <option value="">Select your state</option>
             <option>California</option><option>New York</option><option>Texas</option><option>Florida</option><option>Illinois</option><option>Pennsylvania</option><option>Ohio</option><option>Georgia</option><option>North Carolina</option><option>Michigan</option><option>New Jersey</option><option>Arizona</option><option>Washington</option><option>Other</option>
           </select></div>
-        <div class="field"><label>Date of birth</label><input id="cov-dob" placeholder="MM/DD/YYYY" inputmode="numeric" oninput="covCheck()"></div>
+        <div class="field"><label>Date of birth</label><input id="cov-dob" placeholder="MM/DD/YYYY" inputmode="numeric" maxlength="10" oninput="fmtDob(this);covCheck()"></div>
         <button class="why" onclick="alert('We use your state and date of birth to look up your Medicare coverage through our verification partner. Your data is private and protected.')"><span class="q">?</span>Why are we asking this?</button>
         <p class="legal">By proceeding, you agree that <u>Verified</u> (Bold's service provider) and its vendors may receive your personal info and provide Bold with more info about you, including your health insurance. Your data is private and protected. Learn more in our <u>Privacy policy.</u></p>
         <div class="poweredby">Powered by <span style="display:inline-flex;align-items:center;gap:4px;color:#7a7488;">✔︎ Verified</span></div>
@@ -1133,9 +1134,10 @@ function show(id){
 function goCoverage(){ var f=document.getElementById('lp-first').value.trim(); if(f)state.name=f; show('v-coverage'); }
 function covCheck(){
   var s=document.getElementById('cov-state').value, d=document.getElementById('cov-dob').value.trim();
-  document.getElementById('cov-cta').disabled=!(s && d.length>=8);
+  document.getElementById('cov-cta').disabled=!(s && d.replace(/\D/g,'').length>=8);
   if(s)state.stateName=s; if(d)state.dob=d;
 }
+function fmtDob(el){var v=el.value.replace(/\D/g,'').slice(0,8);var out=v;if(v.length>4)out=v.slice(0,2)+'/'+v.slice(2,4)+'/'+v.slice(4);else if(v.length>2)out=v.slice(0,2)+'/'+v.slice(2);el.value=out;}
 function goLoader(){ show('v-loader'); setTimeout(function(){ fillCovered(); show('v-covered'); }, 2600); }
 function fillCovered(){
   var f=((document.getElementById('lp-first')||{}).value||state.name||'Kathleen').trim()||'Kathleen';
@@ -1214,26 +1216,31 @@ function payCovered50(){return '<div class="pay"><div class="lbl">What you\'ll p
 function payPartD(){return '<div class="pay"><div class="lbl">What you\'ll pay</div><div class="cols"><div class="col"><div class="k">Initial visit</div><div class="v">$0-25</div><div class="u">out of pocket</div></div><div class="col"><div class="k">GLP-1s <em>(if eligible)</em></div><div class="v">Cost varies <button class="infobtn" id="ppdI">ⓘ</button></div></div></div><div class="infonote" id="ppdNote">Based on your answers, a GLP-1 may be covered under your standard Medicare Part D benefits, and the cost varies depending on your plan. We will confirm the cost with you in advance.</div></div>';}
 function quote(t,n){var e=document.createElement('div');e.className='quote';e.innerHTML='<div class="qav">SP</div><div><div class="qt">'+esc(t)+'</div><div class="qn">'+esc(n)+'</div></div>';return e;}
 async function renderVerdict(){
-  var out=computeOutcome();state.outcome=out;clearDock();
+  var out=computeOutcome();state.outcome=out;clearDock();var faqs;
   if(out==='lifestyle'){
     await say("Right now a GLP-1 **isn't covered** for you through Bold — and we can still help.");
     await say("You don't need it to start losing weight. Here's the plan that fits you.");
     var c=document.createElement('div');c.className='card';c.innerHTML='<h3><span class="plabel">'+orb(24)+'</span>Bold lifestyle-focused weight loss program</h3><ul><li><span class="ck">✓</span><span><strong>Practical lifestyle support:</strong> meals, movement, sleep. No calorie counting.</span></li><li><span class="ck">✓</span><span>Your provider stays in the loop and adjusts the plan as you go.</span></li><li><span class="ck">✓</span><span>Lose fat, not strength. Reduce pain and get more energy.</span></li></ul>';addWidget(c);
-    addWidget(quote("You don't need medication to lose weight safely. Bold's program is built for adults 65+ — we pair you with the right provider to help you lose fat, protect your strength, and make changes that last.","Dr. Sandeep Palakodeti, M.D., M.P.H., Chief Medical Officer at Bold"));
-    faqPills([{label:'How medication coverage works.',ans:["Based on Medicare's rules, your Bold plan **doesn't include GLP-1 medication** — and that's okay. Lifestyle change is the foundation of safe, lasting weight loss."]},{label:'Could I be eligible later?',ans:["**Maybe.** If your health needs or coverage change, your provider can revisit it. Starting with lifestyle lays a strong foundation."]}]);
+    faqs=[{label:'How medication coverage works.',ans:["Based on Medicare's rules, your Bold plan **doesn't include GLP-1 medication** — and that's okay. Lifestyle change is the foundation of safe, lasting weight loss."]},{label:'Could I be eligible later?',ans:["**Maybe.** If your health needs or coverage change, your provider can revisit it. Starting with lifestyle lays a strong foundation."]}];
   }else{
     await say("Good news, "+state.name+" — you're a **strong candidate**.");
     await say("Here's the program your Bold provider would build with you.");
     addWidget(programCard(out==='partd'?payPartD():payCovered50()));
     if(out==='partd'){var ib=document.getElementById('ppdI');if(ib)ib.onclick=function(){var n=document.getElementById('ppdNote');n.style.display=n.style.display==='block'?'none':'block';down();};}
-    addWidget(quote("Bold weight-management program is designed for adults 65+ to lose weight safely. With personalized lifestyle support with FDA-approved medications when it's appropriate, it not only works but lasts.","Dr. Sandeep Palakodeti, M.D., M.P.H., Chief Medical Officer at Bold"));
     var cov=out==='partd'?["First, you **meet your Bold provider** — together you'll see whether a GLP-1 is right for you.","Your provider works with Medicare to cover your prescription. You're **not eligible for the $50 Bridge copay**, but your GLP-1 is still covered through your standard Part D benefits.","A **care coordinator confirms the cost with you, for free**, before anything is prescribed."]:["First, you **meet your Bold provider** — together you'll see whether a GLP-1 is right for you.","Your provider works with **Medicare** to get your prescription covered.","If approved, you pay a **$50 copay per month**. If not, your provider focuses on lifestyle support — no medication needed."];
-    faqPills([{label:'How medication coverage works.',ans:cov},{label:'Are GLP-1s required?',ans:["**No.** If a GLP-1 isn't the right fit, your provider builds you a personalized lifestyle plan to reach your goals."]}]);
+    faqs=[{label:'How medication coverage works.',ans:cov},{label:'Are GLP-1s required?',ans:["**No.** If a GLP-1 isn't the right fit, your provider builds you a personalized lifestyle plan to reach your goals."]}];
   }
   await say("When you're ready, let's book your **free 15-minute intake call** with a care coordinator.");
-  var b=document.createElement('button');b.className='opt-cta';b.textContent='Schedule my free call';b.onclick=function(){closeChat();show('v-schedule');};M.appendChild(b);down();
+  verdictActions(faqs);
 }
-function faqPills(list){var row=document.createElement('div');row.className='msg ai';var inner=document.createElement('div');inner.className='pillrow';list.forEach(function(item){var p=document.createElement('button');p.className='faqpill';p.innerHTML='💬 '+esc(item.label);p.onclick=async function(){if(p.classList.contains('used'))return;p.classList.add('used');addUser(item.label);for(var i=0;i<item.ans.length;i++){showTyping();await wait(430);hideTyping();addAI(item.ans[i]);await wait(140);}};inner.appendChild(p);});row.appendChild(inner);M.appendChild(row);down();}
+function verdictActions(faqs){
+  var wrap=document.createElement('div');wrap.className='vactions';
+  var prow=document.createElement('div');prow.className='pillrow';
+  faqs.forEach(function(item){var p=document.createElement('button');p.className='faqpill';p.innerHTML='💬 '+esc(item.label);p.onclick=async function(){wrap.remove();addUser(item.label);for(var i=0;i<item.ans.length;i++){showTyping();await wait(430);hideTyping();addAI(item.ans[i]);await wait(140);}verdictActions(faqs);};prow.appendChild(p);});
+  wrap.appendChild(prow);
+  var b=document.createElement('button');b.className='opt-cta';b.textContent='Schedule my free call';b.onclick=function(){closeChat();show('v-schedule');};wrap.appendChild(b);
+  M.appendChild(wrap);down();
+}
 
 /* ---- chat input controls ---- */
 function chips(opts,cb){var wrap=document.createElement('div');wrap.className='opts';opts.forEach(function(o){var c=document.createElement('button');c.className='opt';c.textContent=o;c.onclick=function(){wrap.remove();cb(o);};wrap.appendChild(c);});M.appendChild(wrap);down();}
