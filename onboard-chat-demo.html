@@ -621,8 +621,8 @@
   .who .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
   .aibadge{background:var(--brand);color:#fff;font-size:10px;font-weight:800;letter-spacing:.5px;padding:2px 6px;border-radius:6px;}
   .progress{height:3px;background:#eee7fb;}.progress>i{display:block;height:100%;background:linear-gradient(90deg,#7c4dff,#5b16e0);width:0;border-radius:0 3px 3px 0;transition:width .5s ease;}
-  .hipaa{display:flex;gap:8px;align-items:flex-start;background:#f7f5fd;padding:9px 14px;font-size:11.5px;line-height:1.4;color:var(--ink-soft);border-bottom:1px solid var(--line);}
-  .hipaa svg{flex:0 0 15px;width:15px;height:15px;margin-top:1px;}
+  .hipaa{display:flex;gap:12px;align-items:flex-start;background:#fff;padding:14px 16px;font-size:13px;line-height:1.45;color:var(--ink-soft);border-bottom:1px solid var(--line);}
+  .hipaa svg{flex:0 0 22px;width:22px;height:22px;margin-top:0;}
   .messages{flex:1;overflow-y:auto;padding:16px 15px 28px;display:flex;flex-direction:column;gap:12px;}
   .msg{display:flex;gap:8px;align-items:flex-end;}
   .msg.ai{align-self:flex-start;max-width:90%;flex-direction:column;align-items:flex-start;gap:4px;}
@@ -667,15 +667,15 @@
   .numfield input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:17px;font-family:inherit;}
   .numfield input:focus{outline:none;border-color:var(--brand);}
   .pillrow{display:flex;flex-wrap:wrap;gap:8px;}
-  .faqpill{border:1.5px solid var(--line);background:#faf9fd;color:var(--ink);border-radius:999px;padding:9px 14px;font-size:13.5px;font-weight:600;cursor:pointer;}
+  .faqpill{border:1px solid #e2e1e8;background:#fff;color:var(--ink);border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(17,17,30,.05);}
   .faqpill.used{opacity:.5;}
   .vactions{display:flex;flex-direction:column;gap:12px;align-self:flex-start;max-width:100%;}
   /* inline chat options (design 334:3753) */
   .opts{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%;margin:-2px 0 2px;}
-  .opt{background:#fff;border:1.5px solid #d9d2f2;border-radius:22px;padding:12px 16px;font-size:15px;font-weight:700;color:var(--brand-press);cursor:pointer;line-height:1.3;text-align:left;font-family:inherit;transition:transform .06s,background .12s,border-color .12s;}
-  .opt:hover{background:var(--brand-soft);border-color:var(--brand);}
+  .opt{background:#fff;border:1px solid #e2e1e8;border-radius:22px;padding:12px 18px;font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;line-height:1.3;text-align:center;font-family:inherit;box-shadow:0 1px 2px rgba(17,17,30,.05);transition:transform .06s,background .12s,border-color .12s;}
+  .opt:hover{background:#f6f6f9;border-color:#d3d2db;}
   .opt:active{transform:scale(.97);}
-  .opt.sel{border-color:var(--brand);background:var(--brand);color:#fff;}
+  .opt.sel{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-press);font-weight:700;}
   .opt.wide{flex-basis:100%;}
   .opt-cta{align-self:flex-start;border:none;background:var(--brand);color:#fff;font-size:16px;font-weight:700;padding:13px 30px;border-radius:26px;cursor:pointer;font-family:inherit;margin-top:2px;}
   .opt-cta:active{background:var(--brand-press);}
@@ -1032,7 +1032,7 @@
           <div class="row"><div class="jav" id="headOrb"></div>
             <div class="who"><span class="nm">Bold AI <span class="aibadge">AI</span></span><span class="sub">AI assistant · replies instantly</span></div></div>
           <div class="progress"><i id="prog"></i></div>
-          <div class="hipaa"><svg viewBox="0 0 24 24" fill="none" stroke="#12a594" stroke-width="1.8"><path d="M12 2 20 5v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5Z"/><path d="M9 12l2 2 4-4"/></svg><span>Bold is HIPAA compliant. Your health information is encrypted, never sold, and shared only with your care team.</span></div>
+          <div class="hipaa"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 20 5v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5Z" fill="#5b16e0"/><path d="M8.4 12.2l2.4 2.4 4.8-4.8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Bold is HIPAA compliant. Your health information is safe and encrypted, never sold, and shared only with your care team.</span></div>
         </div>
         <div class="messages" id="messages"></div>
       </div>
