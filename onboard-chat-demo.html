@@ -1288,7 +1288,7 @@ async function renderVerdict(){
     var cov=out==='partd'?["**1. Meet with your Bold provider.** Together, you'll determine whether a GLP-1 is suitable for you.","**2. Your provider will work with Medicare** to get your prescription covered — your GLP-1 goes through your standard Part D plan, with costs as low as **$30/month** before you meet your deductible. We'll confirm the final cost with you before you pay."]:["**1. Meet with your Bold provider.** Together, you'll determine whether a GLP-1 is suitable for you.","**2. Your provider will work with Medicare** to get your prescription covered.","**3. When Medicare approves your prescription**, you'll pay a flat **$50 monthly copay** for your GLP-1 medications."];
     faqs=[{label:'How medication coverage works.',ans:cov},{label:'Are GLP-1s required?',ans:["**No!** If a GLP-1 isn't the right fit for you, your provider will still support you with a personalized lifestyle plan to reach your weight-management goals."]}];
   }
-  await say("When you're ready, let's book your **free 15-minute intake call** with a care coordinator.");
+  await say("When you're ready, let's book your **free 15-minute intake call**. A care coordinator will confirm your coverage, answer any questions, and help you schedule your first visit — no obligation.");
   verdictActions(faqs);
 }
 function verdictActions(faqs){
@@ -1297,7 +1297,7 @@ function verdictActions(faqs){
   var prow=null;
   if(remaining.length){
     prow=document.createElement('div');prow.className='pillrow';
-    remaining.forEach(function(item){var p=document.createElement('button');p.className='faqpill';p.innerHTML='💬 '+esc(item.label);p.onclick=async function(){item._asked=true;if(prow)prow.remove();btn.remove();addUser(item.label);for(var i=0;i<item.ans.length;i++){showTyping();await wait(430);hideTyping();addAI(item.ans[i]);await wait(140);}verdictActions(faqs);};prow.appendChild(p);});
+    remaining.forEach(function(item){var p=document.createElement('button');p.className='faqpill';p.innerHTML='💬 '+esc(item.label);p.onclick=async function(){item._asked=true;if(prow)prow.remove();btn.remove();addUser(item.label);for(var i=0;i<item.ans.length;i++){showTyping();await wait(430);hideTyping();addAI(item.ans[i]);await wait(140);}showTyping();await wait(430);hideTyping();addAI("Whenever you're ready, just tap **Schedule my free call** below 👇 — it's free, about 15 minutes, and there's no obligation.");await wait(160);verdictActions(faqs);};prow.appendChild(p);});
     M.appendChild(prow);
   }
   M.appendChild(btn);down();
