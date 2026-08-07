@@ -1234,7 +1234,7 @@ async function handle(key){
       numeric('Weight',[{label:'Pounds',unit:'lbs',key:'lbs'}],function(v){state.answers.lbs=+v.lbs;addUser(v.lbs+' lbs');advance();});return true;
     case 'q6': await say("Have you taken a GLP-1 before, like Ozempic, Wegovy, or Zepbound?");
       chips(['No, never','Yes, in the past','Yes, currently'],function(v){state.answers.glp1=v;addUser(v);advance();});return true;
-    case 'memberid': await say("Last question, to determine your plan what's your health insurance member ID?");
+    case 'memberid': await say("Last question — what's your health insurance member ID? It helps us confirm your plan.");
       memberId(function(entered,val){state.memberIdEntered=entered;addUser(entered?('Member ID: '+val):'Skip for now');advance();});return true;
     case 'verdict': await renderVerdict(); return true;
   }
