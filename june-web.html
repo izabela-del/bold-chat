@@ -114,14 +114,15 @@
   /* header */
   .thead{flex:0 0 auto; display:flex; align-items:center; gap:11px; padding:8px 14px 10px; border-bottom:1px solid var(--line);}
   .thead .id{display:flex; align-items:center; gap:10px; min-width:0;}
-  .av{flex:0 0 auto; width:40px; height:40px; border-radius:50%; position:relative;
-    background:radial-gradient(ellipse 42% 30% at 31% 20%, rgba(255,255,255,.95), rgba(255,255,255,0) 62%), radial-gradient(circle at 35% 26%, #ffffff 0%, #eaf4ff 14%, #b9d6fa 39%, #9e86ec 66%, #5b31b8 88%, #38116e 100%);
-    box-shadow:0 3px 10px rgba(42,10,102,.32), 0 0 0 3px rgba(167,139,255,.14), inset 0 -3px 7px rgba(38,7,92,.28);}
-  .av .face{position:absolute; inset:0;}
-  .av .eyes{position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); display:flex; gap:5px;}
-  .av .eye{width:6px; height:7px; border-radius:50%; position:relative; background:radial-gradient(circle at 34% 28%, #a48ee0, #4a3475 55%, #33234f 100%);}
-  .av .eye::after{content:""; position:absolute; left:18%; top:10%; width:42%; height:36%; border-radius:50%; background:#fff; opacity:.8;}
-  .av .mouth{position:absolute; top:57%; left:50%; transform:translateX(-50%); width:11px; height:6px; background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 22'%3E%3Cpath d='M5 8 C10 18 30 18 35 8' fill='none' stroke='%233a2857' stroke-width='4.4' stroke-linecap='round'/%3E%3C/svg%3E");}
+  /* June orb — canonical art from the design file (June Orb, node 204:1236) */
+  .av{flex:0 0 auto; width:40px; height:40px; position:relative; display:flex; align-items:center; justify-content:center;}
+  .av svg{width:100%; height:auto; display:block; filter:drop-shadow(0 0 7px rgba(150,112,236,.42));}
+  .jn-eye{transform-box:fill-box; transform-origin:center; animation:jnblink 5s ease-in-out infinite; transition:opacity .14s ease;}
+  .jn-happy{opacity:0; transition:opacity .14s ease;}
+  .av:hover .jn-eye, .cworb:hover .jn-eye{opacity:0;}
+  .av:hover .jn-happy, .cworb:hover .jn-happy{opacity:1;}
+  @keyframes jnblink{0%,93%,100%{transform:scaleY(1);} 96.5%{transform:scaleY(.12);}}
+  @media (prefers-reduced-motion: reduce){ .jn-eye{animation:none;} }
   .thead .name{font-size:16px; font-weight:800; line-height:1.1; display:flex; align-items:center; gap:6px;}
   .thead .role{font-size:11.5px; color:var(--ink-soft); font-weight:600; margin-top:1px;}
   .aitag{font-size:10px; font-weight:800; color:#fff; background:var(--brand); padding:1px 6px; border-radius:6px; letter-spacing:.4px;}
@@ -150,27 +151,16 @@
 
   /* big June orb welcome hero (matches the main prototype) */
   .chat-welcome{display:flex; flex-direction:column; align-items:center; text-align:center; padding:34px 6px 6px;}
-  .cworb{position:relative; width:122px; height:122px; margin:6px auto 24px; border-radius:50%;
-    background:radial-gradient(ellipse 42% 30% at 31% 20%, rgba(255,255,255,.97), rgba(255,255,255,0) 58%),
-               radial-gradient(circle at 35% 26%, #ffffff 0%, #eaf4ff 13%, #b9d6fa 37%, #9e86ec 60%, rgba(91,49,184,.95) 82%, rgba(70,26,140,.45) 94%, rgba(56,17,110,0) 100%);
-    box-shadow:inset 0 -9px 17px rgba(38,7,92,.3); animation:orbfloat 5.5s ease-in-out infinite;}
-  /* moving iridescent halo — soft diffuse edge + color motion */
-  .cworb::before{content:""; position:absolute; inset:-26px; border-radius:50%; z-index:-1;
-    background:conic-gradient(from 0deg, #b88cff, #7cc4ff, #8bf0d0, #ffd6a6, #ff9ec4, #c8a6ff, #b88cff);
-    filter:blur(20px); opacity:.6; animation:orbspin 9s linear infinite, orbGlow 3.4s ease-in-out infinite;}
-  /* rotating rim rings — the wow */
-  .cworb::after{content:""; position:absolute; inset:-3px; border-radius:50%; pointer-events:none; mix-blend-mode:screen;
-    background:conic-gradient(from 90deg, rgba(255,255,255,0), rgba(255,214,166,.7), rgba(255,158,196,.6), rgba(124,196,255,.65), rgba(184,140,255,.6), rgba(255,255,255,0));
-    -webkit-mask:radial-gradient(circle, transparent 58%, #000 72%, #000 84%, transparent 97%);
-    mask:radial-gradient(circle, transparent 58%, #000 72%, #000 84%, transparent 97%);
-    animation:orbspin 6s linear infinite reverse;}
-  .cworb-face{position:absolute; inset:0; z-index:2; border-radius:50%;}
-  .cworb-face .eyes{position:absolute; top:47%; left:50%; transform:translate(-50%,-50%); display:flex; gap:13px;}
-  .cworb-face .eye{width:17px; height:20px; border-radius:50%; position:relative; animation:orbBlink 4.2s ease-in-out infinite;
-    background:radial-gradient(circle at 70% 82%, rgba(255,150,200,.32), transparent 52%), radial-gradient(circle at 33% 26%, #b7a0f0 0%, #7a5cc0 20%, #4a3475 52%, #33234f 100%);
-    box-shadow:0 0 8px rgba(158,134,236,.4);}
-  .cworb-face .eye::after{content:""; position:absolute; left:21%; top:15%; width:36%; height:31%; border-radius:50%; background:#fff; opacity:.8; filter:blur(.3px);}
-  .cworb-face .mouth{position:absolute; top:60%; left:50%; transform:translateX(-50%); width:26px; height:14px; background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 22'%3E%3Cpath d='M5 8 C10 18 30 18 35 8' fill='none' stroke='%233a2857' stroke-width='3.6' stroke-linecap='round'/%3E%3C/svg%3E");}
+  .cworb{position:relative; width:122px; height:122px; margin:6px auto 24px; display:flex; align-items:center; justify-content:center; animation:juneHue 7s ease-in-out infinite;}
+  .cworb svg{width:100%; height:auto; display:block; animation:juneFloat 3.2s ease-in-out infinite;
+    filter:drop-shadow(0 0 15px rgba(150,112,236,.42)) drop-shadow(7px 9px 17px rgba(226,122,206,.26)) drop-shadow(-8px 3px 15px rgba(120,162,240,.24));}
+  /* soft spot shadow grounds the orb, synced to the float */
+  .cworb::after{content:""; position:absolute; left:50%; bottom:-6px; transform:translateX(-50%); width:56px; height:12px; border-radius:50%;
+    background:radial-gradient(closest-side, rgba(43,54,74,.30), rgba(43,54,74,0)); filter:blur(1px); animation:juneShadow 3.2s ease-in-out infinite;}
+  @keyframes juneHue{0%,100%{filter:hue-rotate(-10deg)} 50%{filter:hue-rotate(10deg)}}
+  @keyframes juneFloat{0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)}}
+  @keyframes juneShadow{0%,100%{transform:translateX(-50%) scale(1); opacity:.9} 50%{transform:translateX(-50%) scale(.82); opacity:.55}}
+  @media (prefers-reduced-motion: reduce){ .cworb, .cworb svg, .cworb::after{animation:none!important;} }
   @keyframes orbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
   @keyframes orbBlink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
   @keyframes orbGlow{0%,100%{opacity:.5}50%{opacity:.82}}
@@ -366,9 +356,9 @@
   .composer .input-shell{display:none;}
   .composer.open .type-toggle{display:none;}
   .composer.open .input-shell{display:flex;}
-  .input-shell{display:flex; gap:7px; align-items:center; background:#fff; border:1.5px solid #d9d2f2; border-radius:24px; padding:4px 5px 4px 15px;}
+  .input-shell{display:flex; gap:7px; align-items:flex-end; background:#fff; border:1.5px solid #d9d2f2; border-radius:24px; padding:4px 5px 4px 15px;}
   .input-shell:focus-within{border-color:var(--brand);}
-  .input-shell input{flex:1; min-width:0; border:0; outline:0; font:inherit; font-size:15px; color:var(--ink); background:transparent; padding:9px 0;}
+  .input-shell textarea{flex:1; min-width:0; border:0; outline:0; font:inherit; font-size:15px; line-height:24px; color:var(--ink); background:transparent; padding:9px 0; resize:none; overflow-y:hidden; max-height:114px; display:block;}
   .send{border:0; background:var(--brand); color:#fff; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:18px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
   .send:hover{background:var(--brand-press);} .send:disabled{opacity:.35; cursor:default;}
   .mic{flex:0 0 auto; width:40px; height:40px; border-radius:50%; border:1.5px solid #d9d2f2; background:#fff; color:var(--brand-press); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .12s, border-color .12s;}
@@ -567,12 +557,7 @@
   .fab{padding:7px; border-radius:44px; font-size:15px;}
   .fab.open, .fab:hover{padding-right:18px;}
   .fab .av{width:60px; height:60px;}
-  .fab .av .eyes{gap:8px;}
-  .fab .av .eye{width:9px; height:10.5px; animation:fabBlink 4.2s ease-in-out infinite; transform-origin:center;}
-  .fab .av .mouth{width:16px; height:9px;}
   .fab.open .fab-label, .fab:hover .fab-label{max-width:210px;}
-  @keyframes fabBlink{0%,91%,100%{transform:scaleY(1);} 95.5%{transform:scaleY(.1);}}
-  @media (prefers-reduced-motion: reduce){ .fab .av .eye{animation:none;} }
 
   /* --- reveal shimmer: a light sweep across the whole button --- */
   .fab::after{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:3;
@@ -842,7 +827,7 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16121f" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
         <div class="id">
-          <div class="av"><span class="face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
+          <div class="av"></div>
           <div class="name">June <span class="aitag">AI</span></div>
         </div>
         <button class="say-h" id="sayBtn" type="button" title="Read aloud" aria-label="Read aloud">
@@ -859,7 +844,7 @@
           Type your own answer
         </button>
         <div class="input-shell">
-          <input id="ta" type="text" placeholder="Type or ask June anything…" autocomplete="off">
+          <textarea id="ta" rows="1" placeholder="Type or ask June anything…" autocomplete="off"></textarea>
           <button class="mic" id="mic" type="button" title="Talk">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
           </button>
@@ -870,7 +855,7 @@
       </div><!-- /view-chat -->
 
       <button class="fab" id="fab" type="button" title="Chat with June">
-        <span class="av"><span class="face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></span>
+        <span class="av"></span>
         <span class="fab-label">Chat with June</span>
       </button>
 
@@ -928,6 +913,12 @@ async function bot(text,{first=false,html=false}={}){
 function control(node){ const wrap=el(`<div class="row bot"></div>`); const ctl=el(`<div class="ctl"></div>`); ctl.appendChild(node); wrap.appendChild(ctl); thread.appendChild(wrap); scroll(); return ctl; }
 function lock(ctl){ ctl.classList.add("done"); }
 /* ---- tap-June easter egg: happy bounce + sparkles + a warm little line ---- */
+/* June — canonical orb art, synced with the design file (June Orb, node 204:1236):
+   round iridescent body, pink bottom-right wash, gloss highlight, dark eyes with glints,
+   smile, plus hidden happy-arc eyes that cross-fade in on hover. */
+function june(s){var h=Math.round(s*102/112);var u=(june._i=(june._i||0)+1);var g0='jg'+u;var g1='jh'+u;var g2='jk'+u;return '<svg width="'+s+'" height="'+h+'" viewBox="0 0 112 102" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M56 2C84.7 2 108 24.4 108 52C108 79.6 84.7 102 56 102C27.3 102 4 79.6 4 52C4 24.4 27.3 2 56 2Z" fill="url(#'+g0+')"/><path d="M56 2C84.7 2 108 24.4 108 52C108 79.6 84.7 102 56 102C27.3 102 4 79.6 4 52C4 24.4 27.3 2 56 2Z" fill="url(#'+g2+')"/><path d="M40.6572 30.5175C48.7681 26.5934 52.7748 19.0167 49.6063 13.5945C46.4378 8.17236 37.2941 6.95794 29.1832 10.8821C21.0723 14.8062 17.0656 22.3829 20.2341 27.805C23.4026 33.2272 32.5463 34.4416 40.6572 30.5175Z" fill="url(#'+g1+')"/><path d="M56 2C84.7 2 108 24.4 108 52C108 79.6 84.7 102 56 102C27.3 102 4 79.6 4 52C4 24.4 27.3 2 56 2Z" stroke="#6A62A6"/><g class="jn-eye"><path d="M37.13 58.1321C40.937 58.1321 44.0231 55.324 44.0231 51.86C44.0231 48.396 40.937 45.5879 37.13 45.5879C33.3231 45.5879 30.2369 48.396 30.2369 51.86C30.2369 55.324 33.3231 58.1321 37.13 58.1321Z" fill="#0C0C14"/><path opacity="0.9" d="M34.8324 51.2794C35.8898 51.2794 36.7471 50.4994 36.7471 49.5372C36.7471 48.575 35.8898 47.7949 34.8324 47.7949C33.7749 47.7949 32.9176 48.575 32.9176 49.5372C32.9176 50.4994 33.7749 51.2794 34.8324 51.2794Z" fill="white"/></g><g class="jn-eye"><path d="M74.87 58.1321C78.677 58.1321 81.7631 55.324 81.7631 51.86C81.7631 48.396 78.677 45.5879 74.87 45.5879C71.0631 45.5879 67.9769 48.396 67.9769 51.86C67.9769 55.324 71.0631 58.1321 74.87 58.1321Z" fill="#0C0C14"/><path opacity="0.9" d="M72.5723 51.2794C73.6298 51.2794 74.4871 50.4994 74.4871 49.5372C74.4871 48.575 73.6298 47.7949 72.5723 47.7949C71.5149 47.7949 70.6576 48.575 70.6576 49.5372C70.6576 50.4994 71.5149 51.2794 72.5723 51.2794Z" fill="white"/></g><path d="M50.1282 71.0498C54.0428 72.8846 57.9574 72.8846 61.872 71.0498" stroke="#0C0C14" stroke-width="1.5" stroke-linecap="round"/><path class="jn-happy" d="M28 55 Q37 45 46 55" stroke="#0C0C14" stroke-width="3.4" fill="none" stroke-linecap="round"/><path class="jn-happy" d="M66 55 Q75 45 84 55" stroke="#0C0C14" stroke-width="3.4" fill="none" stroke-linecap="round"/><defs><radialGradient id="'+g0+'" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(38.24 26.76) scale(86.58 78.78)"><stop stop-color="#EFF2FF"/><stop offset="0.5" stop-color="#CBCBF3"/><stop offset="1" stop-color="#A79FE6"/></radialGradient><radialGradient id="'+g2+'" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(82 86) scale(58 55)"><stop stop-color="#F2C4E6" stop-opacity="0.55"/><stop offset="1" stop-color="#F2C4E6" stop-opacity="0"/></radialGradient><radialGradient id="'+g1+'" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(20.5605 -9.94734 8.03184 13.7448 30.2619 19.1755)"><stop stop-color="white" stop-opacity="0.3"/><stop offset="0.76" stop-color="white" stop-opacity="0"/></radialGradient></defs></svg>';}
+/* fill the static orb containers; CSS scales the SVG to each container (40px header, 60px FAB) */
+document.querySelectorAll(".thead .av, .fab .av").forEach(function(n){ n.innerHTML=june(60); });
 const JUNE_SAYINGS=["Hi there!","You've got this.","So glad you're here.","One small step at a time.","Proud of you already.","Feeling good today?","I'm right here for you.","Tap — that tickles!"];
 let juneSayIdx=-1;
 function juneTap(orb, below){
@@ -949,7 +940,7 @@ function juneTap(orb, below){
 function welcomeHero(askFirst){
   return new Promise(resolve=>{
     const node=el(`<div class="chat-welcome">
-      <div class="cworb" id="cw-orb"><span class="cworb-face"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><span class="mouth"></span></span></div>
+      <div class="cworb" id="cw-orb">${june(122)}</div>
       <div class="cw-title">Hi ${esc(PROFILE.name||"there")} — I'm June</div>
       <div class="cw-sub">${askFirst
         ? "I'm your AI health assistant — ask me anything about Bold: your coverage, your costs, or how your first visit works. Ready to sign up? Tap below."
@@ -1805,6 +1796,9 @@ async function runOnboarding(){
 
 /* ---------- open-text chat: ask June anything, anytime (runs alongside the guided flow) ---------- */
 const ta=document.getElementById("ta"), sendBtn=document.getElementById("send");
+/* composer auto-grow: the field hugs the text, capped at 4 lines then scrolls internally */
+const TA_MAX=114;
+function growTA(){ ta.style.maxHeight="none"; ta.style.height="auto"; const sh=ta.scrollHeight; ta.style.maxHeight=""; if(!sh) return; ta.style.height=Math.min(sh,TA_MAX)+"px"; ta.style.overflowY = sh>TA_MAX ? "auto" : "hidden"; }
 let replying=false;
 
 /* ---------- live June backend: real Claude answers via the Vercel proxy ----------
@@ -1891,7 +1885,7 @@ async function juneReply(t){
 }
 function sendText(){
   const t=(ta.value||"").trim(); if(!t||replying) return;
-  me(t); ta.value=""; sendBtn.disabled=true; replying=true;
+  me(t); ta.value=""; growTA(); sendBtn.disabled=true; replying=true;
   if(/cost|price|pay|afford|copay|how much|\$/i.test(t)) wantCoverageOffer=true;
   const safe=safetyText(t);
   if(safe){ bot(safe).finally(()=>{ replying=false; }); return; }        // emergencies: no network
@@ -1906,14 +1900,14 @@ function sendText(){
   juneReply(t).finally(()=>{ replying=false; });                        // canned fallback
 }
 sendBtn.onclick=sendText;
-ta.addEventListener("input",()=>{ sendBtn.disabled=!ta.value.trim(); });
-ta.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); sendText(); } });
+ta.addEventListener("input",()=>{ sendBtn.disabled=!ta.value.trim(); growTA(); });
+ta.addEventListener("keydown",e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendText(); } });
 /* free-text input stays hidden until the member taps "Type your own answer" */
 const composer=document.getElementById("composer"), typeToggle=document.getElementById("typeToggle");
 /* text box shows for most of the chat; steps that collect a specific typed value hide it so there's one place to type */
 function showComposer(){ composer.hidden=false; composer.classList.add("open"); }
 function hideComposer(){ composer.hidden=true; composer.classList.remove("open"); }
-typeToggle.onclick=()=>{ composer.classList.add("open"); ta.focus(); };
+typeToggle.onclick=()=>{ composer.classList.add("open"); ta.focus(); growTA(); };
 /* tap the little June avatar in the header for the same easter egg */
 const headAv=document.querySelector(".thead .av"); if(headAv){ headAv.setAttribute("title","Tap me!"); headAv.onclick=()=>juneTap(headAv,true); }
 
@@ -1926,7 +1920,7 @@ function toggleMic(){
   if(listening){ try{ if(recog) recog.stop(); }catch(e){} return; }
   recog=new SR(); recog.lang="en-US"; recog.interimResults=true; recog.continuous=false;
   recog.onstart=()=>{ listening=true; micBtn.classList.add("on"); ta.placeholder="Listening…"; };
-  recog.onresult=(e)=>{ let s=""; for(let i=0;i<e.results.length;i++) s+=e.results[i][0].transcript; ta.value=s; sendBtn.disabled=!ta.value.trim(); };
+  recog.onresult=(e)=>{ let s=""; for(let i=0;i<e.results.length;i++) s+=e.results[i][0].transcript; ta.value=s; sendBtn.disabled=!ta.value.trim(); growTA(); };
   recog.onerror=()=>{};
   recog.onend=()=>{ listening=false; micBtn.classList.remove("on"); ta.placeholder="Ask June anything…"; if(ta.value.trim()) sendText(); };
   try{ recog.start(); }catch(e){}
