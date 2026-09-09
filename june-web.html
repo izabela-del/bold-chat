@@ -657,7 +657,7 @@
           </nav>
           <div class="lp-navactions">
             <button class="lp-login" type="button">Sign in</button>
-            <button class="lp-navcta" type="button" onclick="startFromLanding()">Check eligibility</button>
+            <button class="lp-navcta" type="button" onclick="enterJune('eligibility')">Check eligibility</button>
           </div>
         </div>
         <div class="lp-hero">
@@ -1691,6 +1691,18 @@ async function runAsk(){
   await bot("Ask me anything about Bold — your coverage, your costs, or how visits work. It's private and secure, and whenever you're ready I can check your coverage for you.");
   askPills();
 }
+/* Nav "Check eligibility" entry — opens June already on the task (no landing form needed).
+   Task-first opener per the entry-point spec: never "what's on your mind?", straight to coverage. */
+async function runEligibility(){
+  thread.innerHTML=""; setProgress(.06);
+  composer.hidden=true; composer.classList.remove("open");
+  aiHistory=[];
+  Object.assign(PROFILE,{ signedUp:false, coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
+  askMode=false; onboarding=true; endMode=false;
+  await bot("Hi, I'm June — Bold's AI health assistant.", {first:true});
+  await bot("Let's check what Medicare covers for you, and what you'd actually pay. It takes about a minute, and a Bold care coordinator confirms everything with you before anything is billed.");
+  await runOnboarding(true);   // skip its intro — this entry already framed the task
+}
 /* Onboarding entry (Check coverage) — full-page welcome, then the guided flow */
 async function run(){
   thread.innerHTML=""; setProgress(.06);
@@ -1702,10 +1714,10 @@ async function run(){
   await runOnboarding();
 }
 /* the guided onboarding continuation — reused by the Check-coverage entry and the ask-mode "verify my coverage" hand-off */
-async function runOnboarding(){
+async function runOnboarding(skipIntro){
   hideComposer();   // hidden through the identity fields; shown again once those are captured (see verifyCoverage)
   askMode=false; onboarding=true; endMode=false;
-  await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name} — then I can give you a better estimate.` : "Let's confirm your coverage — then I can give you a better estimate.", {first:true});
+  if(!skipIntro) await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name} — then I can give you a better estimate.` : "Let's confirm your coverage — then I can give you a better estimate.", {first:true});
   await verifyCoverage();
   if(PROFILE.eligibleState===false){ onboarding=false; return; }   // out of Bold's service area — stop here; composer stays open for questions
   await bot("Good news — with Medicare, most Bold members pay $0 for their visits.");
@@ -1932,7 +1944,7 @@ const screenEl=document.querySelector(".screen");
 const viewLanding=document.getElementById("view-landing"), viewChat=document.getElementById("view-chat"), fab=document.getElementById("fab");
 function showView(name){ viewLanding.hidden=(name!=="landing"); viewChat.hidden=(name!=="chat"); screenEl.classList.toggle("landing", name==="landing"); }
 let juneStarted=false, juneMode=null;
-function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){ juneStarted=true; juneMode=mode; if(mode==="ask") runAsk(); else run(); } }
+function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){ juneStarted=true; juneMode=mode; if(mode==="ask") runAsk(); else if(mode==="eligibility") runEligibility(); else run(); } }
 function startFromLanding(){
   const f=document.getElementById("lp-first"), l=document.getElementById("lp-last"), eaddr=document.getElementById("lp-email"), errEl=document.getElementById("lp-err");
   [f,l,eaddr].forEach(x=>x.classList.remove("invalid"));
