@@ -937,16 +937,13 @@ function juneTap(orb, below){
   clearTimeout(orb._sayT); orb._sayT=setTimeout(()=>{ if(b.parentNode) b.remove(); },2600);
 }
 /* big June orb welcome hero (like the main prototype) */
-function welcomeHero(askFirst){
+function welcomeHero(){
   return new Promise(resolve=>{
     const node=el(`<div class="chat-welcome">
       <div class="cworb" id="cw-orb">${june(122)}</div>
       <div class="cw-title">Hi ${esc(PROFILE.name||"there")} — I'm June</div>
-      <div class="cw-sub">${askFirst
-        ? "I'm your AI health assistant — ask me anything about Bold: your coverage, your costs, or how your first visit works. Ready to sign up? Tap below."
-        : "I'm your AI health assistant. I'll help you verify your coverage and answer any questions along the way. This chat is private and secure."}</div>
-      <button class="go cw-go">${askFirst ? "Let's get started" : "Verify my coverage"}</button>
-      <button class="cw-ask" type="button">Ask a question first</button>
+      <div class="cw-sub">I'm your AI health assistant. I'll help you verify your coverage and answer any questions along the way. This chat is private and secure.</div>
+      <button class="go cw-go">Verify my coverage</button>
       <div class="trust">
         <div class="hipaa">
           <img class="hipaa-seal" src="hipaa-seal.png" alt="HIPAA compliant seal" width="42" height="42">
@@ -959,14 +956,12 @@ function welcomeHero(askFirst){
         </div>
       </div>
     </div>`);
-    node.querySelector(".cw-go").onclick=()=>{ askMode=false; if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } node.querySelectorAll(".cw-go,.cw-ask").forEach(b=>b.remove()); resolve(); };
-    node.querySelector(".cw-ask").onclick=()=>{ const a=node.querySelector(".cw-ask"); if(a) a.remove(); showAskPills(); };
+    node.querySelector(".cw-go").onclick=()=>{ askMode=false; if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } node.querySelector(".cw-go").remove(); resolve(); };
     const heroOrb=node.querySelector("#cw-orb"); if(heroOrb) heroOrb.onclick=()=>juneTap(heroOrb,false);
     thread.appendChild(node);
     lastBotText="Hi "+(PROFILE.name||"there")+", I'm June, your AI health assistant. Thanks for signing up — I'll answer any questions and get you set up in about two minutes.";
     if(autoRead) speakOne(lastBotText);
     scroll();
-    if(askFirst){ requestAnimationFrame(()=>{ const a=node.querySelector(".cw-ask"); if(a) a.click(); }); }
   });
 }
 /* "Ask a question first" — reveal the composer + quick questions June can answer (does not advance onboarding) */
