@@ -6,8 +6,8 @@
 <title>Bold — AI onboarding with June (concept)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#16121f; --ink-soft:#5a5566; --line:#e9e6f0; --page:#ffffff;
@@ -20,7 +20,7 @@
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;height:100%}
   body{
-    font-family:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:#fff;
     color:var(--ink); -webkit-font-smoothing:antialiased;
     min-height:100%;
@@ -137,6 +137,8 @@
   .prog .bar{height:100%; width:0; background:linear-gradient(90deg,#7c4dff,#5b16e0); border-radius:0 3px 3px 0; transition:width .5s ease;}
 
   .thread{flex:1 1 auto; min-height:0; overflow-y:auto; padding:16px 15px 22px; display:flex; flex-direction:column; gap:12px; scroll-behavior:smooth;}
+  /* the thread is a scrolling flex column — never let it squash its children below their content */
+  .thread>*{flex-shrink:0;}
   .row{display:flex; flex-direction:column; max-width:100%;}
   .row.me{align-items:flex-end;}
   .who{font-size:12px; color:var(--ink-soft); font-weight:700; margin:0 0 5px 4px;}
@@ -150,12 +152,15 @@
   @keyframes blink{0%,60%,100%{opacity:.3} 30%{opacity:1}}
 
   /* big June orb welcome hero (matches the main prototype) */
-  .chat-welcome{display:flex; flex-direction:column; align-items:center; text-align:center; padding:34px 6px 6px;}
-  .cworb{position:relative; width:122px; height:122px; margin:6px auto 24px; display:flex; align-items:center; justify-content:center; animation:juneHue 7s ease-in-out infinite;}
+  /* intro screen — matches design file "Screen · Welcome" (130:1500) */
+  .chat-welcome{display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:16px; min-height:100%; padding:16px 22px 20px; transition:min-height .45s ease, padding .45s ease;}
+  /* once the conversation starts, stop filling the screen so the questions follow on naturally */
+  .chat-welcome.compact{min-height:0; padding-top:6px; padding-bottom:6px;}
+  .cworb{position:relative; width:64px; height:64px; margin:0 auto; display:flex; align-items:center; justify-content:center; animation:juneHue 7s ease-in-out infinite;}
   .cworb svg{width:100%; height:auto; display:block; animation:juneFloat 3.2s ease-in-out infinite;
     filter:drop-shadow(0 0 15px rgba(150,112,236,.42)) drop-shadow(7px 9px 17px rgba(226,122,206,.26)) drop-shadow(-8px 3px 15px rgba(120,162,240,.24));}
   /* soft spot shadow grounds the orb, synced to the float */
-  .cworb::after{content:""; position:absolute; left:50%; bottom:-6px; transform:translateX(-50%); width:56px; height:12px; border-radius:50%;
+  .cworb::after{content:""; position:absolute; left:50%; bottom:-4px; transform:translateX(-50%); width:30px; height:7px; border-radius:50%;
     background:radial-gradient(closest-side, rgba(43,54,74,.30), rgba(43,54,74,0)); filter:blur(1px); animation:juneShadow 3.2s ease-in-out infinite;}
   @keyframes juneHue{0%,100%{filter:hue-rotate(-10deg)} 50%{filter:hue-rotate(10deg)}}
   @keyframes juneFloat{0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)}}
@@ -177,13 +182,14 @@
   .june-say.below::after{top:auto; bottom:100%; left:22px; transform:none; border-top-color:transparent; border-bottom-color:#fff;}
   @keyframes saypop2{from{opacity:0; transform:scale(.92)} to{opacity:1; transform:scale(1)}}
   @keyframes saypop{from{opacity:0; transform:translate(-50%,7px) scale(.92)} to{opacity:1; transform:translate(-50%,0) scale(1)}}
-  .cw-title{font-family:"Source Serif 4",Georgia,serif; font-size:23px; font-weight:600; letter-spacing:-.3px; color:var(--ink); margin:0 0 9px;}
-  .cw-sub{font-size:15px; line-height:1.55; color:var(--ink-soft); max-width:300px; margin:0 auto 18px;}
-  .cw-go{width:auto; min-width:220px; padding:0 30px; margin:0 auto;}
+  .cw-title{font-family:"Source Serif Pro",Georgia,serif; font-size:28px; line-height:1.18; font-weight:600; letter-spacing:-.3px; color:var(--ink); margin:0;}
+  .cw-sub{font-size:16px; line-height:24px; color:var(--ink-soft); max-width:349px; margin:0;}
+  .cw-go{width:auto; min-width:220px; padding:0 30px; margin:4px auto 0;}
   .cw-ask{display:block; margin:12px auto 0; background:none; border:0; font:inherit; font-size:14px; font-weight:800; color:var(--brand-press); cursor:pointer; text-decoration:underline;}
-  .hipaa{display:flex; align-items:center; gap:12px; text-align:left; background:#f7f6fb; border:1px solid #ece9f5; border-radius:14px; padding:12px 14px;}
+  .hipaa{display:flex; align-items:center; gap:12px; text-align:left; background:#ebf0ff; border:0; border-radius:16px; padding:14px 16px; max-width:349px;}
+  .hipaa-ico{flex:0 0 auto; width:34px; height:34px; display:flex; align-items:center; justify-content:center;}
   .hipaa-seal{flex:0 0 auto; width:42px; height:42px;}
-  .hipaa-txt{font-size:12.5px; line-height:1.45; color:#525252; font-weight:500;}
+  .hipaa-txt{font-size:14px; line-height:22px; color:var(--ink); font-weight:400;}
   .hipaa-txt b{color:var(--ink); font-weight:800;}
   /* identity-step trust microcopy */
   .fields .lockline{display:flex; align-items:flex-start; gap:6px; font-size:12px; color:var(--teal-ink); font-weight:600; margin:2px 0 0; line-height:1.45;}
@@ -200,7 +206,9 @@
   .trust{display:flex; flex-direction:column; align-items:center; gap:11px; width:100%; margin-top:20px;}
   .trust-lock{display:flex; align-items:flex-start; gap:10px; background:#f1f8f5; border:1px solid #d3e8de; border-radius:14px; padding:12px 14px; font-size:12.5px; line-height:1.5; color:#0c7d70; font-weight:600; text-align:left;}
   .trust-lock svg{flex:0 0 auto; margin-top:1px;} .trust-lock b{font-weight:800;}
-  .trust-row{display:flex; flex-wrap:wrap; justify-content:center; gap:7px;}
+  .trust-row{display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:16px;}
+  .trust-item{display:inline-flex; align-items:center; gap:8px; font-size:14px; line-height:22px; font-weight:600; color:#005b52;}
+  .trust-item svg{flex:0 0 auto;}
   .trust-chip{display:inline-flex; align-items:center; gap:5px; background:#f6f4fc; border:1px solid #ece6f8; border-radius:20px; padding:6px 11px; font-size:11.5px; font-weight:700; color:var(--ink-soft);}
   .trust-chip svg{color:var(--brand); flex:0 0 auto;}
 
@@ -263,7 +271,7 @@
   .elig.partd .elig-band{background:linear-gradient(135deg,#2f6df0,#6b34e6);}
   .elig.lifestyle .elig-band{background:linear-gradient(135deg,#7b3af0,#5b16e0);}
   .elig-badge{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:800; background:rgba(255,255,255,.18); padding:4px 10px; border-radius:20px; letter-spacing:.03em; margin-bottom:10px;}
-  .elig-title{font-family:"Source Serif 4",Georgia,serif; font-size:20px; line-height:1.28; font-weight:600; margin:0;}
+  .elig-title{font-family:"Source Serif Pro",Georgia,serif; font-size:20px; line-height:1.28; font-weight:600; margin:0;}
   .elig-body{padding:16px 18px 18px;}
   .cost{border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:15px;}
   .crow{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:13px 14px;}
@@ -340,7 +348,7 @@
 
   /* summary */
   .allset{text-align:center; padding:4px 2px;}
-  .allset .big{font-family:"Source Serif 4",Georgia,serif; font-size:26px; font-weight:700; margin:6px 0 6px;}
+  .allset .big{font-family:"Source Serif Pro",Georgia,serif; font-size:26px; font-weight:700; margin:6px 0 6px;}
   .allset .lead{font-size:15px; color:var(--ink-soft); line-height:1.5; margin:0 auto 16px; max-width:300px;}
   .callcard{text-align:left; background:#fff; border:1px solid var(--line); border-radius:16px; padding:15px; box-shadow:var(--shadow); margin-bottom:12px;}
   .callcard .ch{font-size:11px; font-weight:800; color:var(--brand-press); text-transform:uppercase; letter-spacing:.5px;}
@@ -501,8 +509,8 @@
   .lp-featured-lbl{color:#fff; font-size:13px; font-weight:700; margin-bottom:15px;}
   .lp-logos{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:16px 26px; color:#fff;}
   .lp-logos span{opacity:.92; white-space:nowrap;}
-  .lp-logo-nyt{font-family:"Source Serif 4",Georgia,serif; font-weight:700; font-size:19px;}
-  .lp-logo-forbes{font-family:"Source Serif 4",Georgia,serif; font-weight:700; font-size:22px; letter-spacing:-.5px;}
+  .lp-logo-nyt{font-family:"Source Serif Pro",Georgia,serif; font-weight:700; font-size:19px;}
+  .lp-logo-forbes{font-family:"Source Serif Pro",Georgia,serif; font-weight:700; font-size:22px; letter-spacing:-.5px;}
   .lp-logo-mc{font-weight:800; font-size:17px; line-height:1.05;}
   .lp-logo-tc{font-weight:800; font-size:18px; letter-spacing:-.3px;}
   .lp-testi-cta{text-align:center; margin:28px 0 0;}
@@ -657,7 +665,7 @@
           </nav>
           <div class="lp-navactions">
             <button class="lp-login" type="button">Sign in</button>
-            <button class="lp-navcta" type="button" onclick="enterJune('eligibility')">Check eligibility</button>
+            <button class="lp-navcta" type="button" onclick="enterJune('onboard')">Check eligibility</button>
           </div>
         </div>
         <div class="lp-hero">
@@ -937,32 +945,31 @@ function juneTap(orb, below){
   clearTimeout(orb._sayT); orb._sayT=setTimeout(()=>{ if(b.parentNode) b.remove(); },2600);
 }
 /* big June orb welcome hero (like the main prototype) */
-function welcomeHero(){
-  return new Promise(resolve=>{
-    const node=el(`<div class="chat-welcome">
-      <div class="cworb" id="cw-orb">${june(122)}</div>
+/* Intro screen — one welcome for every entry (design file "Screen · Welcome" 130:1500).
+   No entry button: it holds long enough to be read, then the conversation starts on its
+   own and the screen compacts so the questions flow straight on underneath. */
+async function welcomeHero(){
+  const node=el(`<div class="chat-welcome">
+      <div class="cworb" id="cw-orb">${june(64)}</div>
       <div class="cw-title">Hi ${esc(PROFILE.name||"there")} — I'm June</div>
       <div class="cw-sub">I'm your AI health assistant. I'll help you verify your coverage and answer any questions along the way. This chat is private and secure.</div>
-      <button class="go cw-go">Verify my coverage</button>
-      <div class="trust">
-        <div class="hipaa">
-          <img class="hipaa-seal" src="hipaa-seal.png" alt="HIPAA compliant seal" width="42" height="42">
-          <div class="hipaa-txt"><b>Bold is HIPAA compliant.</b> Your health information is encrypted, never sold, and shared only with your care team.</div>
-        </div>
-        <div class="trust-row">
-          <span class="trust-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Doctor-supervised</span>
-          <span class="trust-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Medicare-covered</span>
-          <span class="trust-chip"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Built for adults 65+</span>
-        </div>
+      <div class="trust-row">
+        <span class="trust-item"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.6 4.3 8 11 1" stroke="#00b5a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Doctor-supervised</span>
+        <span class="trust-item"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.6 4.3 8 11 1" stroke="#00b5a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Medicare-covered</span>
+      </div>
+      <div class="hipaa">
+        <span class="hipaa-ico"><svg width="22" height="26" viewBox="0 0 22 26" fill="none"><path d="M11 1.2 20.2 4.4v7.2c0 5.9-3.9 10.4-9.2 12.6C5.7 22 1.8 17.5 1.8 11.6V4.4L11 1.2Z" stroke="#3366ff" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.3 12.5 10 15.2l4.8-4.9" stroke="#3366ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="hipaa-txt">Bold is HIPAA compliant. Your health information is encrypted, never sold, and shared only with your care team.</div>
       </div>
     </div>`);
-    node.querySelector(".cw-go").onclick=()=>{ askMode=false; if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; } node.querySelector(".cw-go").remove(); resolve(); };
-    const heroOrb=node.querySelector("#cw-orb"); if(heroOrb) heroOrb.onclick=()=>juneTap(heroOrb,false);
-    thread.appendChild(node);
-    lastBotText="Hi "+(PROFILE.name||"there")+", I'm June, your AI health assistant. Thanks for signing up — I'll answer any questions and get you set up in about two minutes.";
-    if(autoRead) speakOne(lastBotText);
-    scroll();
-  });
+  const heroOrb=node.querySelector("#cw-orb"); if(heroOrb) heroOrb.onclick=()=>juneTap(heroOrb,false);
+  thread.appendChild(node);
+  askMode=false; if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
+  lastBotText="Hi "+(PROFILE.name||"there")+", I'm June, your AI health assistant. I'll help you verify your coverage and answer any questions along the way. This chat is private and secure.";
+  if(autoRead) speakOne(lastBotText);
+  scroll();
+  await wait(1800);               // let the entry land before the conversation begins
+  node.classList.add("compact");  // release the full-height entry so the thread flows on
 }
 /* "Ask a question first" — reveal the composer + quick questions June can answer (does not advance onboarding) */
 async function showAskPills(){
@@ -1686,19 +1693,8 @@ async function runAsk(){
   await bot("Ask me anything about Bold — your coverage, your costs, or how visits work. It's private and secure, and whenever you're ready I can check your coverage for you.");
   askPills();
 }
-/* Nav "Check eligibility" entry — opens June already on the task (no landing form needed).
-   Task-first opener per the entry-point spec: never "what's on your mind?", straight to coverage. */
-async function runEligibility(){
-  thread.innerHTML=""; setProgress(.06);
-  composer.hidden=true; composer.classList.remove("open");
-  aiHistory=[];
-  Object.assign(PROFILE,{ signedUp:false, coverageConfirmed:false, goal:"", conditions:[], contra:[], glp1hx:"", comorbid:[], focus:"", slot:"", outcome:"bridge", bmi:0 });
-  askMode=false; onboarding=true; endMode=false;
-  await bot("Hi, I'm June — Bold's AI health assistant.", {first:true});
-  await bot("Let's check what Medicare covers for you, and what you'd actually pay. It takes about a minute, and a Bold care coordinator confirms everything with you before anything is billed.");
-  await runOnboarding(true);   // skip its intro — this entry already framed the task
-}
-/* Onboarding entry (Check coverage) — full-page welcome, then the guided flow */
+/* Onboarding entry — used by BOTH the nav "Check eligibility" CTA and the hero form.
+   Same welcome screen either way; the form entry just arrives with a name already known. */
 async function run(){
   thread.innerHTML=""; setProgress(.06);
   composer.hidden=true; composer.classList.remove("open");
@@ -1709,10 +1705,10 @@ async function run(){
   await runOnboarding();
 }
 /* the guided onboarding continuation — reused by the Check-coverage entry and the ask-mode "verify my coverage" hand-off */
-async function runOnboarding(skipIntro){
+async function runOnboarding(){
   hideComposer();   // hidden through the identity fields; shown again once those are captured (see verifyCoverage)
   askMode=false; onboarding=true; endMode=false;
-  if(!skipIntro) await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name} — then I can give you a better estimate.` : "Let's confirm your coverage — then I can give you a better estimate.", {first:true});
+  await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name}. It takes about a minute, and a Bold care coordinator confirms everything with you before anything is billed.` : "Let's confirm your coverage. It takes about a minute, and a Bold care coordinator confirms everything with you before anything is billed.", {first:true});
   await verifyCoverage();
   if(PROFILE.eligibleState===false){ onboarding=false; return; }   // out of Bold's service area — stop here; composer stays open for questions
   await bot("Good news — with Medicare, most Bold members pay $0 for their visits.");
@@ -1939,7 +1935,7 @@ const screenEl=document.querySelector(".screen");
 const viewLanding=document.getElementById("view-landing"), viewChat=document.getElementById("view-chat"), fab=document.getElementById("fab");
 function showView(name){ viewLanding.hidden=(name!=="landing"); viewChat.hidden=(name!=="chat"); screenEl.classList.toggle("landing", name==="landing"); }
 let juneStarted=false, juneMode=null;
-function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){ juneStarted=true; juneMode=mode; if(mode==="ask") runAsk(); else if(mode==="eligibility") runEligibility(); else run(); } }
+function enterJune(mode){ showView("chat"); if(!juneStarted || juneMode!==mode){ juneStarted=true; juneMode=mode; if(mode==="ask") runAsk(); else run(); } }
 function startFromLanding(){
   const f=document.getElementById("lp-first"), l=document.getElementById("lp-last"), eaddr=document.getElementById("lp-email"), errEl=document.getElementById("lp-err");
   [f,l,eaddr].forEach(x=>x.classList.remove("invalid"));
@@ -1951,6 +1947,7 @@ function startFromLanding(){
   if(bad){ bad.classList.add("invalid"); if(errEl){ errEl.textContent=msg; errEl.hidden=false; } bad.scrollIntoView({block:"center",behavior:"smooth"}); bad.focus(); return; }
   if(errEl) errEl.hidden=true;
   PROFILE.name=first; PROFILE.last=last; PROFILE.email=email; PROFILE.signedUp=true; PROFILE.insurer="UnitedHealthcare";
+  juneStarted=false;   // the form supplies fresh identity, so always start a name-aware run
   enterJune("onboard");
 }
 document.getElementById("lp-check").onclick=startFromLanding;
