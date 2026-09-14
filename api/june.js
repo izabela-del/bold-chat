@@ -21,7 +21,8 @@
  */
 
 const ALLOWED_ORIGINS = [
-  "https://izabela-del.github.io",
+  "https://izabela-del.github.io",   // GitHub Pages copy
+  "https://bold-chat.vercel.app",    // this deployment also serves the pages (same-origin chat)
   "http://localhost:8765",
   "http://127.0.0.1:8765",
 ];
