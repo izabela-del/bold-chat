@@ -153,9 +153,8 @@
 
   /* big June orb welcome hero (matches the main prototype) */
   /* intro screen — matches design file "Screen · Welcome" (130:1500) */
-  .chat-welcome{display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:16px; min-height:100%; padding:16px 22px 20px; transition:min-height .45s ease, padding .45s ease;}
+  .chat-welcome{display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; padding:0 7px 4px;}
   /* once the conversation starts, stop filling the screen so the questions follow on naturally */
-  .chat-welcome.compact{min-height:0; padding-top:6px; padding-bottom:6px;}
   .cworb{position:relative; width:64px; height:64px; margin:0 auto; display:flex; align-items:center; justify-content:center; animation:juneHue 7s ease-in-out infinite;}
   .cworb svg{width:100%; height:auto; display:block; animation:juneFloat 3.2s ease-in-out infinite;
     filter:drop-shadow(0 0 15px rgba(150,112,236,.42)) drop-shadow(7px 9px 17px rgba(226,122,206,.26)) drop-shadow(-8px 3px 15px rgba(120,162,240,.24));}
@@ -950,26 +949,21 @@ function juneTap(orb, below){
    own and the screen compacts so the questions flow straight on underneath. */
 async function welcomeHero(){
   const node=el(`<div class="chat-welcome">
-      <div class="cworb" id="cw-orb">${june(64)}</div>
-      <div class="cw-title">Hi ${esc(PROFILE.name||"there")} — I'm June</div>
-      <div class="cw-sub">I'm your AI health assistant. I'll help you verify your coverage and answer any questions along the way. This chat is private and secure.</div>
-      <div class="trust-row">
-        <span class="trust-item"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.6 4.3 8 11 1" stroke="#00b5a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Doctor-supervised</span>
-        <span class="trust-item"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.6 4.3 8 11 1" stroke="#00b5a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Medicare-covered</span>
-      </div>
       <div class="hipaa">
         <span class="hipaa-ico"><svg width="22" height="26" viewBox="0 0 22 26" fill="none"><path d="M11 1.2 20.2 4.4v7.2c0 5.9-3.9 10.4-9.2 12.6C5.7 22 1.8 17.5 1.8 11.6V4.4L11 1.2Z" stroke="#3366ff" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.3 12.5 10 15.2l4.8-4.9" stroke="#3366ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <div class="hipaa-txt">Bold is HIPAA compliant. Your health information is encrypted, never sold, and shared only with your care team.</div>
       </div>
+      <div class="trust-row">
+        <span class="trust-item"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.6 4.3 8 11 1" stroke="#00b5a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Doctor-supervised</span>
+        <span class="trust-item"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.6 4.3 8 11 1" stroke="#00b5a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Medicare-covered</span>
+      </div>
     </div>`);
-  const heroOrb=node.querySelector("#cw-orb"); if(heroOrb) heroOrb.onclick=()=>juneTap(heroOrb,false);
   thread.appendChild(node);
   askMode=false; if(askPillsRow){ askPillsRow.remove(); askPillsRow=null; }
-  lastBotText="Hi "+(PROFILE.name||"there")+", I'm June, your AI health assistant. I'll help you verify your coverage and answer any questions along the way. This chat is private and secure.";
-  if(autoRead) speakOne(lastBotText);
   scroll();
-  await wait(1800);               // let the entry land before the conversation begins
-  node.classList.add("compact");  // release the full-height entry so the thread flows on
+  await wait(400);
+  // June greets in the thread now that there's no separate welcome screen
+  await bot(`Hi ${PROFILE.name || "there"}, I'm June, and I'm really glad you're here.`, {first:true});
 }
 /* "Ask a question first" — reveal the composer + quick questions June can answer (does not advance onboarding) */
 async function showAskPills(){
@@ -1708,7 +1702,7 @@ async function run(){
 async function runOnboarding(){
   hideComposer();   // hidden through the identity fields; shown again once those are captured (see verifyCoverage)
   askMode=false; onboarding=true; endMode=false;
-  await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name}. It takes about a minute, and a Bold care coordinator confirms everything with you before anything is billed.` : "Let's confirm your coverage. It takes about a minute, and a Bold care coordinator confirms everything with you before anything is billed.", {first:true});
+  await bot(PROFILE.signedUp ? `Let's confirm your coverage, ${PROFILE.name}. It takes about a minute.` : "Let's confirm your coverage. It takes about a minute.");
   await verifyCoverage();
   if(PROFILE.eligibleState===false){ onboarding=false; return; }   // out of Bold's service area — stop here; composer stays open for questions
   await bot("Good news — with Medicare, most Bold members pay $0 for their visits.");
