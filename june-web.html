@@ -349,6 +349,19 @@
   .allset{text-align:center; padding:4px 2px;}
   .allset .big{font-family:"Source Serif Pro",Georgia,serif; font-size:26px; font-weight:700; margin:6px 0 6px;}
   .allset .lead{font-size:15px; color:var(--ink-soft); line-height:1.5; margin:0 auto 16px; max-width:300px;}
+  /* Call Confirmed card — same design as the dashboard card so chat and portal agree */
+  .apptcard{position:relative; align-self:stretch; width:100%;}
+  .appt-badge{display:inline-flex; align-items:center; gap:9px; background:#00b5a3; color:#fff; font-size:14px; font-weight:700; padding:9px 16px; border-radius:16px 16px 0 0;}
+  .appt-body{background:#fff; border:1px solid var(--line); border-top:0; border-radius:0 16px 16px 16px; padding:16px;}
+  .appt-title{font-size:20px; font-weight:700; line-height:1.25; color:var(--ink); max-width:215px; margin:0 0 10px;}
+  .appt-line{display:flex; align-items:center; gap:9px; font-size:16px; line-height:1.5; color:var(--ink); margin-top:3px;}
+  .appt-line svg{flex:0 0 auto; color:var(--ink);}
+  .appt-line a{color:var(--brand-press); font-weight:600;}
+  .appt-av{position:absolute; top:-4px; right:4px; width:96px; height:96px; border-radius:50%; object-fit:cover;}
+  .apptacts{display:flex; flex-wrap:wrap; gap:9px; align-self:stretch;}
+  .abtn{background:#fafafa; border:1px solid #e5e5e5; border-radius:14px; padding:15px 22px; font:inherit; font-size:14px; font-weight:700; color:var(--brand-press); cursor:pointer;}
+  .abtn:hover{background:#f3f1fa; border-color:#d9d2f2;}
+  .dashgo{align-self:stretch; width:100%; margin-top:0;}
   .callcard{text-align:left; background:#fff; border:1px solid var(--line); border-radius:16px; padding:15px; box-shadow:var(--shadow); margin-bottom:12px;}
   .callcard .ch{font-size:11px; font-weight:800; color:var(--brand-press); text-transform:uppercase; letter-spacing:.5px;}
   .callcard .cn{font-size:17px; font-weight:800; margin:6px 0 2px;}
@@ -1586,6 +1599,34 @@ function askPhone(){
 }
 
 /* ---------- summary ---------- */
+/* Closing sequence — matches the design file's "Screen · Chat complete" (1209:15658):
+   confirmation, the Call Confirmed card, the calendar/number nudge, then the dashboard handoff.
+   The composer stays open, so June remains reachable rather than the chat hard-closing. */
+async function closeChat(){
+  setProgress(1);
+  const slot = PROFILE.slot || "Mon, Nov 3 at 9:00am";
+  await bot(`You're all set, ${PROFILE.name}. Ali will call you ${slot}, and there's nothing you need to do before then.`);
+  control(apptCard(slot));
+  await bot("Add it to your calendar and save our number, so you'll know it's us when the phone rings.");
+  control(el(`<div class="apptacts"><button class="abtn" type="button">Add to calendar</button><button class="abtn" type="button">Save our number</button></div>`));
+  await bot("Your dashboard is where you can manage this appointment and see your coverage. I'm there too, so ask me anything whenever you like.");
+  control(el(`<button class="go dashgo" type="button">Go to my dashboard</button>`));
+  composer.hidden=false; composer.classList.add("open");
+  endMode=true;
+}
+/* Call Confirmed card — mirrors the dashboard card (Figma 1196:2010) minus its own buttons,
+   since the chat offers Add to calendar / Save our number as separate actions below it. */
+function apptCard(slot){
+  return el(`<div class="apptcard">
+    <div class="appt-badge"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>Call Confirmed</div>
+    <div class="appt-body">
+      <div class="appt-title">15-min free consult with Ali N.</div>
+      <div class="appt-line"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span>${esc(slot)}</span></div>
+      <div class="appt-line"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3h3l1.5 4-2 1.5a12 12 0 0 0 5.5 5.5L16 12l4 1.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4 6.2 2 2 0 0 1 6.5 3Z"/></svg><span>From <a href="tel:+14245775266">(424) 577-5266</a></span></div>
+    </div>
+    <img class="appt-av" src="profile-avatar.png" alt="Ali N.">
+  </div>`);
+}
 function summary(){
   const o=OUTCOMES[PROFILE.outcome]||OUTCOMES.bridge;
   const covLine = PROFILE.goal!=="weight"
@@ -1783,12 +1824,7 @@ async function runOnboarding(){
   setProgress(.96);
 
   onboarding=false;   // flow complete
-  await bot(`That's everything, ${PROFILE.name}. You're all set.`);
-  summary();
-  composer.hidden=false; composer.classList.add("open");   // now open the free-text box for any questions
-  endMode=true;
-  await bot("I'm right here if you have any questions — tap one below or just type.");
-  endPills();
+  await closeChat();
 }
 
 /* ---------- open-text chat: ask June anything, anytime (runs alongside the guided flow) ---------- */
