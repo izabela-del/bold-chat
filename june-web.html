@@ -1891,7 +1891,13 @@ function sendText(){
   if(askMode && (/\b(verify|confirm|check)\b[\s\S]{0,20}\b(coverage|insurance|eligib)/i.test(t) || /\blet'?s (do it|get started|start|go)\b/i.test(t) || /\b(sign me up|get me started|get started)\b/i.test(t))){ replying=false; steerToOnboarding(); return; }
   if(onboarding){
     const corr=detectCorrection(t); if(hasCorrection(corr)){ applyCorrection(corr).finally(()=>{ replying=false; }); return; }  // "fix my state/name" → overwrite it, don't defer
-    juneReply(t).finally(()=>{ replying=false; }); return;   // during the guided flow use controlled canned replies — never the live improviser
+    // Off-script questions mid-flow go to the real June — the canned matcher fell through to a
+    // generic deflection for anything it had no keyword for ("are you real"), which reads evasive
+    // at exactly the moment someone is deciding whether to trust us. askJune() calls
+    // resumeOnboarding() afterwards, so the pending question is re-surfaced and the flow continues.
+    // Safety keywords are caught above, before any network call, and corrections stay deterministic.
+    if(JUNE_PROXY){ askJune(t).finally(()=>{ replying=false; }); return; }
+    juneReply(t).finally(()=>{ replying=false; }); return;   // no proxy configured: canned fallback
   }
   if(JUNE_PROXY){ askJune(t).finally(()=>{ replying=false; }); return; } // real Claude (Ask June + end of flow)
   juneReply(t).finally(()=>{ replying=false; });                        // canned fallback
